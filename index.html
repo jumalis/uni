@@ -3,664 +3,798 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhysioTrack – MHH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PhysioTrack</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  const SUPABASE_URL = "DEINE_SUPABASE_URL";
+  const SUPABASE_KEY = "DEIN_ANON_KEY";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#070d1c;color:#e2e8f0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,textarea,select{font-family:inherit;color:#e2e8f0;background:#1e293b;border:1px solid #334155;border-radius:8px;outline:none}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:#070d1c;color:#e2e8f0;min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,textarea{font-family:inherit;font-size:inherit;border:none;outline:none;background:none;color:inherit;cursor:pointer;-webkit-appearance:none}
+input,textarea{background:#1e293b;border:1px solid #334155;border-radius:8px;color:#e2e8f0;padding:10px 12px}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4)}
-.card{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#334155;border-radius:2px}
 .mono{font-family:'IBM Plex Mono',monospace}
-.tag{display:inline-flex;align-items:center;gap:4px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:20px;padding:2px 10px;font-size:12px;color:#93c5fd;cursor:pointer}
-.unit-row{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:#0f172a;border:1px solid #1e293b;margin-bottom:4px;cursor:pointer;transition:background .15s}
-.unit-row:hover{background:#162032}
-.unit-row.active{background:#1e3a5f;border-color:#1d4ed8}
-.tab-btn{padding:6px 14px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;color:#64748b}
-.tab-btn.active{background:#1e3a5f;color:#38bdf8;border-bottom-color:#0ea5e9;font-weight:600}
-.tab-btn:hover:not(.active){background:#1a2744}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
-.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.star{font-size:16px;cursor:pointer;user-select:none;transition:color .15s}
-.cal-day{border-radius:8px;padding:6px;min-height:60px;background:#0f172a;border:1px solid #1e293b;font-size:10px}
-.cal-day.has-plan{border-color:#1d4ed8}
-.cal-day.today{background:#0c4a6e;border-color:#06b6d4}
-#detail-panel{position:sticky;top:76px;align-self:start;max-height:calc(100vh - 100px);overflow-y:auto}
-@media(max-width:640px){.hide-sm{display:none!important}.tab-btn{padding:6px 10px;font-size:12px}}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px}
+.tag{display:inline-flex;align-items:center;gap:4px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:20px;padding:3px 10px;font-size:12px;color:#93c5fd}
+.bdg{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:4px;display:inline-block}
+#hdr{position:sticky;top:0;z-index:100;background:#0a1628;border-bottom:1px solid #1e293b;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.logo{width:36px;height:36px;flex-shrink:0;background:linear-gradient(135deg,#0e7490,#1d4ed8);border-radius:10px;font-size:18px;display:flex;align-items:center;justify-content:center}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+#nav{display:flex;gap:2px;padding:6px 12px;background:#090f1e;border-bottom:1px solid #1e293b;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#nav::-webkit-scrollbar{display:none}
+.tbtn{padding:8px 12px;border-radius:8px;font-size:13px;font-weight:500;white-space:nowrap;color:#64748b;border-bottom:2px solid transparent;min-height:44px;display:flex;align-items:center;gap:5px;transition:all .15s}
+.tbtn.on{background:#1e3a5f;color:#38bdf8;border-bottom-color:#0ea5e9;font-weight:600}
+#main{padding:16px;max-width:900px;margin:0 auto;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.urow{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #1e293b;margin-bottom:5px;cursor:pointer;transition:background .15s;min-height:52px;user-select:none}
+.urow:active,.urow.on{background:#1e3a5f;border-color:#1d4ed8}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.stars{display:flex;gap:3px}
+.star{font-size:18px;min-width:28px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.sbtn{padding:8px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #334155;color:#64748b;min-height:44px;transition:all .15s}
+.pb{height:8px;background:#1e293b;border-radius:6px;overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:6px;transition:width .5s}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cday{border-radius:8px;padding:6px 4px;min-height:58px;background:#0f172a;border:1px solid #1e293b;font-size:10px}
+.cday.hp{border-color:#1d4ed8}.cday.td{background:#0c4a6e;border-color:#06b6d4}
+.cdot{font-size:9px;padding:2px 3px;border-radius:3px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sg{display:flex;gap:3px;flex-wrap:wrap}
+.sd{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #334155;background:#1e293b}
+.sd.ok{background:#0e7490;border-color:#0284c7;color:#67e8f9}.sd.td{border-color:#06b6d4}
+.rg{display:grid;gap:10px}
+#dp{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px}
+.lpg{display:flex;flex-direction:column;gap:14px}
+.abtn{padding:13px 24px;border-radius:12px;font-weight:700;font-size:15px;border:2px solid;min-height:52px}
+.tdisp{font-size:clamp(44px,14vw,72px);font-weight:600;letter-spacing:.05em;line-height:1}
+.es{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 16px;color:#334155;text-align:center;gap:8px}
+#sync{font-size:11px;color:#334155}
+@media(min-width:640px){.lpg{flex-direction:row}.lplist{flex:1}#dp{position:sticky;top:76px;max-height:calc(100vh - 100px);overflow-y:auto;flex:1.3}.rg{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:639px){.hsm{display:none!important}.tbtn{padding:8px 8px;font-size:12px}.rg{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
-
-<header style="background:#0a1628;border-bottom:1px solid #1e293b;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px">
+<div id="hdr">
   <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:34px;height:34px;background:linear-gradient(135deg,#0e7490,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚕</div>
-    <div class="hide-sm">
-      <div class="mono" style="font-weight:600;font-size:14px;color:#f1f5f9;letter-spacing:.05em">PhysioTrack</div>
-      <div style="font-size:10px;color:#475569">MHH · HannibaL 2025/26</div>
-    </div>
+    <div class="logo">⚕</div>
+    <div class="hsm"><div class="mono" style="font-weight:600;font-size:14px;color:#f1f5f9">PhysioTrack</div><div style="font-size:10px;color:#475569">MHH · HannibaL 2025/26</div></div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-    <span id="sync-dot" style="font-size:11px;color:#334155">● Gespeichert</span>
-    <span id="pill-streak" class="pill" style="background:#431407;border:1px solid #9a3412;color:#fed7aa">🔥 0</span>
-    <span id="pill-mc1" class="pill" style="border:1px solid #10b981;color:#10b981">⏱ MC1 –d</span>
-    <span id="pill-mc2" class="pill" style="border:1px solid #f59e0b;color:#f59e0b">📋 MC2 –d</span>
-    <span class="pill" style="background:#1e1b4b;border:1px solid #4338ca;color:#a5b4fc">🎓 <span id="pill-oral">–</span>d</span>
-    <button onclick="resetData()" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#64748b;padding:4px 8px;font-size:11px">🗑 Reset</button>
+    <div id="sync" style="cursor:pointer" data-a="login" title="Anmelden für Sync">● Lokal</div>
+    <div id="pstr" class="pill" style="background:#431407;border-color:#9a3412;color:#fed7aa">🔥 0</div>
+    <div id="psr"  class="pill" style="background:#450a0a;border-color:#7f1d1d;color:#fca5a5;display:none">🔁 0</div>
+    <div id="pmc1" class="pill" style="border-color:#10b981;color:#10b981">MC1</div>
+    <div id="pmc2" class="pill" style="border-color:#f59e0b;color:#f59e0b">MC2</div>
+    <div class="pill" style="background:#1e1b4b;border-color:#4338ca;color:#a5b4fc">🎓 <span id="por">–</span>d</div>
   </div>
-</header>
-
-<!-- NAV -->
-
-<nav style="display:flex;gap:2px;padding:6px 12px;background:#090f1e;border-bottom:1px solid #1e293b;overflow-x:auto">
-  <button class="tab-btn active" onclick="showTab('dashboard')" id="tab-dashboard">▦ <span class="hide-sm">Dashboard</span></button>
-  <button class="tab-btn" onclick="showTab('lehrplan')"  id="tab-lehrplan">≡ <span class="hide-sm">Lehrplan</span></button>
-  <button class="tab-btn" onclick="showTab('kalender')"  id="tab-kalender">⊞ <span class="hide-sm">Kalender</span></button>
-  <button class="tab-btn" onclick="showTab('radar')"     id="tab-radar">◎ <span class="hide-sm">Radar</span></button>
-  <button class="tab-btn" onclick="showTab('timer')"     id="tab-timer">◷ <span class="hide-sm">Timer</span></button>
-  <button class="tab-btn" onclick="showTab('export')"    id="tab-export">↑ <span class="hide-sm">Export</span></button>
+</div>
+<nav id="nav">
+  <button class="tbtn on" data-tab="db">▦ Dashboard</button>
+  <button class="tbtn" data-tab="lp">≡ Lehrplan</button>
+  <button class="tbtn" data-tab="kal">⊞ Kalender</button>
+  <button class="tbtn" data-tab="rad">◎ Radar</button>
+  <button class="tbtn" data-tab="tmr">◷ Timer</button>
+  <button class="tbtn" data-tab="exp">↑ Export</button>
 </nav>
-
-<!-- MAIN -->
-
-<main id="main" style="padding:16px;max-width:900px;margin:0 auto"></main>
-
+<main id="main"><div style="padding:40px;text-align:center;color:#475569">Lade…</div></main>
+<!-- Login Modal -->
+<div id="login-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:24px;width:100%;max-width:380px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-weight:700;font-size:16px">☁ Sync aktivieren</div>
+      <button id="modal-close" style="color:#475569;font-size:22px;padding:4px;min-width:44px;min-height:44px">✕</button>
+    </div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6">Melde dich an um Daten auf iPhone, iPad und Mac zu synchronisieren. Kein Passwort – nur ein Magic Link per E-Mail.</div>
+    <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:6px">E-MAIL</div>
+    <input id="modal-email" type="email" placeholder="name@email.de" style="width:100%;margin-bottom:12px;font-size:14px">
+    <button id="modal-send" style="width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,#0e7490,#1d4ed8);color:#fff;font-weight:700;font-size:14px;min-height:50px">Magic Link senden ✉</button>
+    <div id="modal-msg" style="margin-top:10px;font-size:12px;text-align:center;min-height:18px"></div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid #1e293b;text-align:center">
+      <button id="modal-skip" style="color:#475569;font-size:13px;text-decoration:underline;min-height:44px">Ohne Sync weiter (nur lokal)</button>
+    </div>
+  </div>
+</div>
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
-const MC1 = new Date("2026-05-24");
-const MC2 = new Date("2026-07-07");
-const ORAL= new Date("2026-08-15");
+'use strict';
 
-const UNITS = [
-  {id:1, p:1,mc2:false,rev:false,title:"Blut",                       topics:["Blutbestandteile & Hämatopoese","Blutgruppen (AB0, Rhesus)","Hämostase & Gerinnung","Blutbild (Hb, Hk, MCV)","Plasmapuffer"]},
-  {id:2, p:1,mc2:false,rev:false,title:"Herz 1 – EKG / Dipol",       topics:["Erregungsausbreitung (SA→AV→His)","AP Herzmuskel vs. Schrittmacher","EKG-Ableitungen (Einthoven, Goldberger)","P-QRS-T, Lagetypen, Achse","Dipol-Konzept"]},
-  {id:3, p:1,mc2:false,rev:false,title:"Herz 2",                      topics:["Herzzyklus & Phasen","Druck-Volumen-Diagramm","HMV, Schlagvolumen, EF","Frank-Starling-Mechanismus","Koronardurchblutung"]},
-  {id:4, p:1,mc2:false,rev:false,title:"Kreislauf 1 – Strömung",      topics:["Hagen-Poiseuille-Gesetz","Laminare vs. turbulente Strömung","Laplace-Gesetz","Windkesselfunktion der Aorta"]},
-  {id:5, p:1,mc2:false,rev:false,title:"Kreislauf 2",                 topics:["Blutdruckregulation (kurz/mittel/lang)","Barorezeptoren & RAAS","Starling-Kräfte","Schock-Formen & Kompensation"]},
-  {id:6, p:1,mc2:false,rev:false,title:"Atmung",                      topics:["Lungenvolumina & -kapazitäten","Compliance, Resistance, Atemarbeit","Gasaustausch & V/Q-Verhältnis","Hb-Dissoziationskurve","Atemregulation"]},
-  {id:7, p:1,mc2:false,rev:false,title:"Salz-Wasser-Haushalt",        topics:["Körperwasser-Kompartimente","GFR & Clearance (Kreatinin, Inulin)","Na⁺/K⁺-Regulation, ADH, Aldosteron","Konzentrierungs- & Verdünnungsleistung"]},
-  {id:8, p:1,mc2:false,rev:false,title:"Säuren-Basen / Energieumsatz",topics:["Henderson-Hasselbalch-Gleichung","Puffersysteme","Metabolische/respiratorische Störungen","Kompensationsmechanismen","Ergometrie, O₂-Schuld, Laktat"]},
-  {id:9, p:1,mc2:false,rev:true, title:"Generalwdh. I",               topics:["Blut, Herz 1+2 – MC-Fragen & Lücken"]},
-  {id:10,p:1,mc2:false,rev:true, title:"Generalwdh. II",              topics:["Kreislauf, Atmung – MC-Fragen"]},
-  {id:11,p:1,mc2:false,rev:true, title:"Generalwdh. III (Finale)",    topics:["Alle 8 MC-Themen – Schwachstellen"]},
-  {id:12,p:2,mc2:false,rev:false,title:"Nerv 1",                      topics:["Ruhemembranpotenzial & Nernst-Gleichung","Ionenkanäle, Ohm, Leitfähigkeit","Aktionspotenzial: Phasen & Refraktärzeit","Empfindungsschwellen"]},
-  {id:13,p:2,mc2:false,rev:false,title:"Nerv 2",                      topics:["Nervenleitgeschwindigkeit (NLG)","Elektroneurographie & EMG","N. ulnaris & N. medianus","Saltatorische Leitung"]},
-  {id:14,p:2,mc2:false,rev:false,title:"Mechanik / Wärme",            topics:["Hebelgesetze & Drehmoment","Muskelkraft bei variablem Kraftarm","Wärmekapazität & Verdunstung","Schwitzen & Konvektion"]},
-  {id:15,p:2,mc2:false,rev:false,title:"Muskel 1",                    topics:["Kraft-Geschwindigkeits-Beziehung (Hill)","Kurve der Unterstützungsmaxima","Muskelarbeit & -leistung","Glatte Muskulatur & Transmitter"]},
-  {id:16,p:2,mc2:false,rev:false,title:"Muskel 2",                    topics:["Isometrische Kontraktion & Kraft-Länge","Einzelzuckung → Superposition → Tetanus","Querbrückenzyklus & Ca²⁺","Motorische Einheit"]},
-  {id:17,p:2,mc2:false,rev:true, title:"Auffrischung Phase 1",        topics:["Herz, Kreislauf, Atmung – mündliches Niveau"]},
-  {id:18,p:2,mc2:true, rev:false,title:"Akustik",                     topics:["Schallwellen: Longitudinal/Transversal","Schallintensität & Schalldruckpegel (dB)","Resonanz, Reflexion, stehende Wellen","Doppler-Effekt"]},
-  {id:19,p:2,mc2:true, rev:false,title:"Ohr",                         topics:["Anatomie Außen-/Mittel-/Innenohr","Impedanzanpassung","Cochlea, Wanderwelle, Haarzellen","Audiometrie & Schwerhörigkeit"]},
-  {id:20,p:2,mc2:true, rev:false,title:"Optik / Auge",                topics:["Brechung & Linsengleichung","Akkommodation & Refraktionsfehler","Phototransduktion (Stäbchen/Zapfen)","Gesichtsfeld & Farbsehen"]},
-  {id:21,p:2,mc2:true, rev:false,title:"ZNS",                         topics:["Reflexe, Babinski-Zeichen","Renshaw- & autogene Hemmung","Muskelspindel & γ-Innervation","Sinnesphysiologie & Nozizeption","Pupillenreflex"]},
-  {id:22,p:2,mc2:true, rev:false,title:"Bildgebende Diagnostik",      topics:["CT & Hounsfield-Einheiten, Fenstertechnik","MRT: T1/T2-Relaxation, Spin-Echo","Ultraschall: B-Mode, M-Mode, Piezo"]},
-  {id:23,p:2,mc2:false,rev:true, title:"Blut + SWH + SBH Vertiefung",topics:["Klinische Fälle & Querverbindungen","Mündliche Simulation"]},
-  {id:24,p:2,mc2:false,rev:true, title:"GenWdh: Nerv, Muskel, Mechanik",topics:[]},
-  {id:25,p:2,mc2:false,rev:true, title:"GenWdh: Herz, Kreislauf, Atmung",topics:[]},
-  {id:26,p:2,mc2:false,rev:true, title:"GenWdh: ZNS, Sinne, Bildgebung",topics:[]},
-  {id:27,p:2,mc2:false,rev:true, title:"Prüfungssimulation I",        topics:["Mündliche Fragen laut üben"]},
-  {id:28,p:2,mc2:false,rev:true, title:"Prüfungssimulation II",       topics:["Alle Lücken schließen"]},
+// ── Constants ─────────────────────────────────────────────────────────────────
+var MC1  = new Date(“2026-05-24”);
+var MC2D = new Date(“2026-07-07”);
+var ORAL = new Date(“2026-08-15”);
+
+var SC = {open:”#334155”,working:”#d97706”,done:”#059669”,gaps:”#dc2626”};
+var SL = {open:“○ Offen”,working:“◑ In Arbeit”,done:“● Fertig”,gaps:“⚠ Lücken”};
+
+var UNITS = [
+{id:1, p:1,mc2:false,rev:false,title:“Blut”,                        topics:[“Blutbestandteile & Hämatopoese”,“Blutgruppen (AB0, Rhesus)”,“Hämostase & Gerinnung”,“Blutbild (Hb, Hk, MCV)”,“Plasmapuffer”]},
+{id:2, p:1,mc2:false,rev:false,title:“Herz 1 – EKG / Dipol”,        topics:[“Erregungsausbreitung (SA-AV-His)”,“AP Herzmuskel vs. Schrittmacher”,“EKG-Ableitungen (Einthoven, Goldberger)”,“P-QRS-T, Lagetypen, Achse”,“Dipol-Konzept”]},
+{id:3, p:1,mc2:false,rev:false,title:“Herz 2”,                       topics:[“Herzzyklus & Phasen”,“Druck-Volumen-Diagramm”,“HMV, Schlagvolumen, EF”,“Frank-Starling-Mechanismus”,“Koronardurchblutung”]},
+{id:4, p:1,mc2:false,rev:false,title:“Kreislauf 1 – Strömung”,       topics:[“Hagen-Poiseuille-Gesetz”,“Laminare vs. turbulente Strömung”,“Laplace-Gesetz”,“Windkesselfunktion der Aorta”]},
+{id:5, p:1,mc2:false,rev:false,title:“Kreislauf 2”,                  topics:[“Blutdruckregulation (kurz/mittel/lang)”,“Barorezeptoren & RAAS”,“Starling-Kräfte”,“Schock-Formen & Kompensation”]},
+{id:6, p:1,mc2:false,rev:false,title:“Atmung”,                       topics:[“Lungenvolumina & -kapazitäten”,“Compliance, Resistance, Atemarbeit”,“Gasaustausch & V/Q-Verhältnis”,“Hb-Dissoziationskurve”,“Atemregulation”]},
+{id:7, p:1,mc2:false,rev:false,title:“Salz-Wasser-Haushalt”,         topics:[“Koerperwasser-Kompartimente”,“GFR & Clearance (Kreatinin, Inulin)”,“Na/K-Regulation, ADH, Aldosteron”,“Konzentrierungs- & Verdünnungsleistung”]},
+{id:8, p:1,mc2:false,rev:false,title:“Säuren-Basen / Energieumsatz”, topics:[“Henderson-Hasselbalch-Gleichung”,“Puffersysteme”,“Metabolische/respiratorische Störungen”,“Kompensationsmechanismen”,“Ergometrie, Laktat”]},
+{id:9, p:1,mc2:false,rev:true, title:“Generalwdh. I”,                topics:[“Blut, Herz 1+2 – Lücken schliessen”]},
+{id:10,p:1,mc2:false,rev:true, title:“Generalwdh. II”,               topics:[“Kreislauf, Atmung – MC-Fragen”]},
+{id:11,p:1,mc2:false,rev:true, title:“Generalwdh. III (Finale)”,     topics:[“Alle 8 MC-Themen – Schwachstellen”]},
+{id:12,p:2,mc2:false,rev:false,title:“Nerv 1”,                       topics:[“Ruhemembranpotenzial & Nernst-Gleichung”,“Ionenkanäle & Leitfähigkeit”,“Aktionspotenzial: Phasen & Refraktärzeit”,“Empfindungsschwellen”]},
+{id:13,p:2,mc2:false,rev:false,title:“Nerv 2”,                       topics:[“Nervenleitgeschwindigkeit (NLG)”,“Elektroneurographie & EMG”,“N. ulnaris & N. medianus”,“Saltatorische Leitung”]},
+{id:14,p:2,mc2:false,rev:false,title:“Mechanik / Wärme”,             topics:[“Hebelgesetze & Drehmoment”,“Muskelkraft bei variablem Kraftarm”,“Wärmekapazität & Verdunstung”,“Schwitzen & Konvektion”]},
+{id:15,p:2,mc2:false,rev:false,title:“Muskel 1”,                     topics:[“Kraft-Geschwindigkeits-Beziehung (Hill)”,“Kurve der Unterstützungsmaxima”,“Muskelarbeit & -leistung”,“Glatte Muskulatur & Transmitter”]},
+{id:16,p:2,mc2:false,rev:false,title:“Muskel 2”,                     topics:[“Isometrische Kontraktion & Kraft-Länge”,“Einzelzuckung bis Tetanus”,“Querbrückenzyklus & Ca2+”,“Motorische Einheit”]},
+{id:17,p:2,mc2:false,rev:true, title:“Auffrischung Phase 1”,         topics:[“Herz, Kreislauf, Atmung – mündliches Niveau”]},
+{id:18,p:2,mc2:true, rev:false,title:“Akustik”,                      topics:[“Schallwellen: Longitudinal/Transversal”,“Schallintensität & Schalldruckpegel (dB)”,“Resonanz & stehende Wellen”,“Doppler-Effekt”]},
+{id:19,p:2,mc2:true, rev:false,title:“Ohr”,                          topics:[“Anatomie Aussen-/Mittel-/Innenohr”,“Impedanzanpassung”,“Cochlea, Wanderwelle, Haarzellen”,“Audiometrie & Schwerhörigkeit”]},
+{id:20,p:2,mc2:true, rev:false,title:“Optik / Auge”,                 topics:[“Brechung & Linsengleichung”,“Akkommodation & Refraktionsfehler”,“Phototransduktion (Stäbchen/Zapfen)”,“Gesichtsfeld & Farbsehen”]},
+{id:21,p:2,mc2:true, rev:false,title:“ZNS”,                          topics:[“Reflexe, Babinski-Zeichen”,“Renshaw- & autogene Hemmung”,“Muskelspindel & Innervation”,“Sinnesphysiologie & Nozizeption”,“Pupillenreflex”]},
+{id:22,p:2,mc2:true, rev:false,title:“Bildgebende Diagnostik”,       topics:[“CT & Hounsfield-Einheiten”,“MRT: T1/T2-Relaxation, Spin-Echo”,“Ultraschall: B-Mode, M-Mode, Piezo”]},
+{id:23,p:2,mc2:false,rev:true, title:“Blut+SWH+SBH Vertiefung”,      topics:[“Klinische Fälle & Querverbindungen”,“Mündliche Simulation”]},
+{id:24,p:2,mc2:false,rev:true, title:“GenWdh: Nerv, Muskel, Mech.”,  topics:[]},
+{id:25,p:2,mc2:false,rev:true, title:“GenWdh: Herz, Kreislauf, Atm.”,topics:[]},
+{id:26,p:2,mc2:false,rev:true, title:“GenWdh: ZNS, Sinne, Bildgeb.”, topics:[]},
+{id:27,p:2,mc2:false,rev:true, title:“Prüfungssimulation I”,         topics:[“Mündliche Fragen laut üben”]},
+{id:28,p:2,mc2:false,rev:true, title:“Prüfungssimulation II”,        topics:[“Alle Lücken schliessen”]},
 ];
 
-const SC = {open:"#334155",working:"#d97706",done:"#059669",gaps:"#dc2626"};
-const SL = {open:"○ Offen",working:"◑ In Arbeit",done:"● Fertig",gaps:"⚠ Lücken"};
+var P1   = UNITS.filter(function(u){return u.p===1;});
+var P2   = UNITS.filter(function(u){return u.p===2;});
+var MC2U = UNITS.filter(function(u){return u.mc2;});
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let state = {
-  units: {},   // {id: {status, score, planned, completed, tags, notes}}
-  dates: [],   // streak dates
-  selId: null,
-  currentTab: "dashboard",
-  timerSec: 0,
-  timerRunning: false,
-  timerMode: "study",
-  calMonth: new Date().getMonth(),
-  calYear: new Date().getFullYear(),
-};
+// ── State ──────────────────────────────────────────────────────────────────────
+var DB={}, DATES=[], SEL=null, TAB=“db”;
+var CAL_M=new Date().getMonth(), CAL_Y=new Date().getFullYear();
+var T_SEC=0, T_RUN=false, T_MODE=“study”, T_INT=null, T_SAVE=null;
+var SBC=null, SBU=null;
 
-function mkUnit(){return {status:"open",score:0,planned:"",completed:"",tags:[],notes:""};}
-function initUnits(){const u={};UNITS.forEach(x=>{u[x.id]=mkUnit();});return u;}
-
-// ─── STORAGE ─────────────────────────────────────────────────────────────────
-let saveTimeout;
-function load(){
-  try{
-    const d=localStorage.getItem("physio_v2");
-    if(d){const p=JSON.parse(d);state.units=p.units||initUnits();state.dates=p.dates||[];}
-    else{state.units=initUnits();state.dates=[];}
-  }catch{state.units=initUnits();state.dates=[];}
+function mkU(){
+return {status:“open”,score:0,planned:””,completed:””,tags:[],notes:””,
+srNext:””,srInterval:1,srReps:0,srLast:””};
 }
-function save(){
-  const dot=document.getElementById("sync-dot");
-  if(dot){dot.style.color="#f59e0b";dot.textContent="● Speichert…";}
-  clearTimeout(saveTimeout);
-  saveTimeout=setTimeout(()=>{
-    try{localStorage.setItem("physio_v2",JSON.stringify({units:state.units,dates:state.dates}));
-    if(dot){dot.style.color="#334155";dot.textContent="● Gespeichert";}}
-    catch(e){if(dot){dot.style.color="#ef4444";dot.textContent="● Fehler";}}
-  },500);
+function initDB(){
+var d={};
+UNITS.forEach(function(u){ d[u.id]=mkU(); });
+return d;
 }
-function resetData(){if(confirm("Alle Daten zurücksetzen?")){localStorage.removeItem("physio_v2");state.units=initUnits();state.dates=[];render();}}
 
-// ─── COMPUTED ────────────────────────────────────────────────────────────────
-function daysUntil(d){return Math.ceil((new Date(d)-new Date())/86400000);}
-function streak(){
-  const sorted=[...new Set(state.dates)].sort().reverse();
-  if(!sorted.length)return 0;
-  const cur=new Date();cur.setHours(0,0,0,0);
-  let c=0;
-  for(let i=0;i<90;i++){
-    const s=cur.toISOString().split("T")[0];
-    if(sorted.includes(s)){c++;cur.setDate(cur.getDate()-1);}
-    else if(i===0)cur.setDate(cur.getDate()-1);
-    else break;
-  }
-  return c;
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function today(){ return new Date().toISOString().split(“T”)[0]; }
+function daysUntil(d){ return Math.ceil((new Date(d)-new Date())/86400000); }
 function pct(units){
-  const done=units.filter(u=>state.units[u.id]?.status==="done").length;
-  return units.length?Math.round(done/units.length*100):0;
+var done=units.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+return units.length ? Math.round(done/units.length*100) : 0;
 }
-const p1units=UNITS.filter(u=>u.p===1);
-const p2units=UNITS.filter(u=>u.p===2);
-const mc2units=UNITS.filter(u=>u.mc2);
-function allTags(){return UNITS.flatMap(u=>(state.units[u.id]?.tags||[]).map(t=>({tag:t,id:u.id,title:u.title})));}
-
-// ─── RING SVG ────────────────────────────────────────────────────────────────
-function ring(pct,size,color,label,sub){
-  const stroke=size>80?10:8,r=(size-stroke)/2,circ=2*Math.PI*r,dash=(pct/100)*circ;
-  return `<div style="position:relative;width:${size}px;height:${size}px;flex-shrink:0">
-    <svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
-      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#1e293b" stroke-width="${stroke}"/>
-      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
-        stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
-    </svg>
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <span class="mono" style="font-size:${size>80?17:12}px;font-weight:700;color:#f1f5f9">${label}</span>
-      ${sub?`<span style="font-size:10px;color:#64748b;margin-top:1px">${sub}</span>`:""}
-    </div>
-  </div>`;
-}
-
-// ─── STARS HTML ──────────────────────────────────────────────────────────────
-function starsHTML(unitId,score){
-  return [1,2,3,4,5].map(i=>
-    `<span class="star" style="color:${i<=score?"#f59e0b":"#334155"}" onclick="event.stopPropagation();setScore(${unitId},${i}===${score}?0:${i})">${i<=score?"★":"☆"}</span>`
-  ).join("");
-}
-
-function fmt(s){return String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor((s%3600)/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
-
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function showTab(name){
-  state.currentTab=name;
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.getElementById("tab-"+name).classList.add("active");
-  renderMain();
-}
-
-// ─── RENDER ──────────────────────────────────────────────────────────────────
-function render(){updateHeader();renderMain();}
-
-function updateHeader(){
-  const s=streak(),mc1d=daysUntil(MC1),mc2d=daysUntil(MC2),orald=daysUntil(ORAL);
-  document.getElementById("pill-streak").textContent="🔥 "+s;
-  const mc1c=mc1d<7?"#ef4444":mc1d<28?"#f59e0b":"#10b981";
-  const mc2c=mc2d<7?"#ef4444":mc2d<28?"#f59e0b":"#10b981";
-  const p1=document.getElementById("pill-mc1");p1.textContent="⏱ MC1 "+mc1d+"d";p1.style.borderColor=mc1c;p1.style.color=mc1c;
-  const p2=document.getElementById("pill-mc2");p2.textContent="📋 MC2 "+mc2d+"d";p2.style.borderColor=mc2c;p2.style.color=mc2c;
-  document.getElementById("pill-oral").textContent=orald;
-}
-
-function renderMain(){
-  const main=document.getElementById("main");
-  switch(state.currentTab){
-    case "dashboard": main.innerHTML=renderDashboard(); break;
-    case "lehrplan":  main.innerHTML=renderLehrplan();  attachLehrplanEvents(); break;
-    case "kalender":  main.innerHTML=renderKalender();  break;
-    case "radar":     main.innerHTML=renderRadar();     break;
-    case "timer":     main.innerHTML=renderTimer();     break;
-    case "export":    main.innerHTML=renderExport();    break;
-  }
-}
-
-// ─── DASHBOARD ───────────────────────────────────────────────────────────────
-function renderDashboard(){
-  const mc1d=daysUntil(MC1),mc2d=daysUntil(MC2),orald=daysUntil(ORAL);
-  const p1d=p1units.filter(u=>state.units[u.id]?.status==="done").length;
-  const mc2d_=mc2units.filter(u=>state.units[u.id]?.status==="done").length;
-  const p2d=p2units.filter(u=>state.units[u.id]?.status==="done").length;
-  const totd=p1d+p2d;
-  const s=streak();
-  const tags=allTags();
-
-  const nextUnits=UNITS.filter(u=>state.units[u.id]?.status!=="done").slice(0,5);
-
-  // Streak grid
-  const today=new Date().toISOString().split("T")[0];
-  let streakGrid="";
-  for(let i=29;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);
-    const ds=d.toISOString().split("T")[0];
-    const studied=state.dates.includes(ds);
-    const isToday=ds===today;
-    streakGrid+=`<div title="${ds}" style="width:26px;height:26px;border-radius:6px;background:${studied?"#0e7490":"#1e293b"};border:1px solid ${isToday?"#06b6d4":studied?"#0284c7":"#334155"};display:flex;align-items:center;justify-content:center;font-size:9px;color:${studied?"#67e8f9":"#334155"}" class="mono">${d.getDate()}</div>`;
-  }
-
-  return `
-  <div style="display:flex;flex-direction:column;gap:14px">
-
-    <!-- Rings -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-      ${[
-        [pct(p1units),"MC 1","#06b6d4",p1d+"/"+p1units.length,mc1d+"d",mc1d<7?"#ef4444":mc1d<28?"#f59e0b":"#10b981"],
-        [pct(mc2units),"MC 2","#f59e0b",mc2d_+"/"+mc2units.length,mc2d+"d",mc2d<7?"#ef4444":mc2d<28?"#f59e0b":"#10b981"],
-        [pct(p2units),"Mündl.","#8b5cf6",p2d+"/"+p2units.length,orald+"d","#a5b4fc"],
-        [Math.round(totd/UNITS.length*100),"Gesamt","#10b981",totd+"/"+UNITS.length,Math.round(totd/UNITS.length*100)+"%","#34d399"],
-      ].map(([p,sub,col,lbl,day,dc])=>`
-        <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px">
-          ${ring(p,90,col,lbl,sub)}
-          <span style="font-size:11px;color:${dc};font-weight:600">${day}</span>
-        </div>`).join("")}
-    </div>
-
-    <!-- Ampel -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">PRÜFUNGS-AMPEL</div>
-      ${[
-        ["MC 1 – 24.05.2026",p1d,p1units.length,mc1d,"#06b6d4"],
-        ["MC 2 – 07.07.2026",mc2d_,mc2units.length,mc2d,"#f59e0b"],
-        ["Mündliche – ~15.08.2026",totd,UNITS.length,orald,"#8b5cf6"],
-      ].map(([lbl,done,tot,days,col])=>{
-        const p=Math.round(done/tot*100);
-        const amp=days<7?"🔴":days<28?"🟡":"🟢";
-        return `<div style="background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:12px;font-weight:600">${amp} ${lbl}</span>
-            <span class="mono" style="font-size:12px;color:${col}">${done}/${tot}</span>
-          </div>
-          <div style="background:#0f172a;border-radius:6px;height:8px;overflow:hidden">
-            <div style="height:100%;background:${col};width:${p}%;border-radius:6px;transition:width .6s"></div>
-          </div>
-          <div style="font-size:11px;color:#475569;margin-top:4px">Noch ${tot-done} LE · ${days} Tage verbleibend</div>
-        </div>`;
-      }).join("")}
-    </div>
-
-    <!-- Streak -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">🔥 LERN-STREAK – LETZTE 30 TAGE (${s} in Folge)</div>
-      <div style="display:flex;gap:3px;flex-wrap:wrap">${streakGrid}</div>
-      <button onclick="markToday()" style="margin-top:10px;padding:6px 14px;background:#164e63;border:1px solid #0e7490;border-radius:8px;color:#67e8f9;font-size:12px;font-weight:600">Heute als gelernt markieren</button>
-    </div>
-
-    ${tags.length?`
-    <!-- Lücken -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">⚠ OFFENE LÜCKEN (${tags.length})</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
-        ${tags.slice(0,12).map(t=>`<span class="tag">⚡ ${t.tag} <span style="color:#475569;font-size:10px">(${t.title})</span></span>`).join("")}
-        ${tags.length>12?`<span style="color:#475569;font-size:12px;align-self:center">+${tags.length-12} → Radar</span>`:""}
-      </div>
-    </div>`:""}
-
-    <!-- Nächste LEs -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">▶ NÄCHSTE LERNEINHEITEN</div>
-      ${nextUnits.map(u=>{
-        const d=state.units[u.id];
-        return `<div onclick="showTab('lehrplan');selectUnit(${u.id})" class="unit-row" style="margin-bottom:4px">
-          <div class="status-dot" style="background:${SC[d.status]}"></div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              <span class="mono" style="color:#475569;font-size:11px">LE${String(u.id).padStart(2,"0")} </span>${u.title}
-            </div>
-            ${d.planned?`<div style="font-size:11px;color:#475569">📅 ${d.planned}</div>`:""}
-          </div>
-          <div style="display:flex;gap:2px">${starsHTML(u.id,d.score)}</div>
-        </div>`;
-      }).join("")}
-    </div>
-  </div>`;
-}
-
-// ─── LEHRPLAN ────────────────────────────────────────────────────────────────
-function renderLehrplan(){
-  const sel=state.selId;
-  const u=sel?UNITS.find(x=>x.id===sel):null;
-  const d=sel?state.units[sel]:null;
-
-  const list=`<div style="display:flex;flex-direction:column;gap:0">
-    ${[1,2].map(phase=>`
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin:14px 0 6px;border-bottom:1px solid #1e293b;padding-bottom:4px">
-        ${phase===1?"PHASE 1 – MC 1 (24.05.2026)":"PHASE 2 – MC 2 (07.07.) & MÜNDLICHE (15.08.2026)"}
-      </div>
-      ${UNITS.filter(x=>x.p===phase).map(x=>{
-        const dx=state.units[x.id];
-        return `<div class="unit-row${sel===x.id?" active":""}" onclick="selectUnit(${x.id})"
-          style="border-color:${sel===x.id?"#1d4ed8":x.mc2?"#78350f":"#1e293b"}">
-          <div class="status-dot" style="background:${SC[dx.status]}"></div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              <span class="mono" style="color:#475569;font-size:11px">LE${String(x.id).padStart(2,"0")} </span>${x.title}
-              ${x.rev?`<span style="font-size:10px;color:#7c3aed;background:#2e1065;padding:1px 5px;border-radius:4px;margin-left:5px">WDH</span>`:""}
-              ${x.mc2?`<span style="font-size:10px;color:#f59e0b;background:#431407;padding:1px 5px;border-radius:4px;margin-left:5px">MC2</span>`:""}
-            </div>
-            ${dx.planned?`<div style="font-size:11px;color:#475569">📅 ${dx.planned}</div>`:""}
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
-            <div style="display:flex;gap:2px">${starsHTML(x.id,dx.score)}</div>
-            ${(dx.tags||[]).length?`<span style="font-size:10px;color:#ef4444">⚠ ${dx.tags.length}</span>`:""}
-          </div>
-        </div>`;
-      }).join("")}`).join("")}
-  </div>`;
-
-  const detail=sel?`
-  <div id="detail-panel" class="card">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
-      <div>
-        <div class="mono" style="font-size:11px;color:#475569">LERNEINHEIT ${sel}</div>
-        <div style="font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.3">${u.title}</div>
-      </div>
-      <button onclick="selectUnit(null)" style="color:#475569;font-size:18px;padding:4px">✕</button>
-    </div>
-
-    <!-- Status -->
-    <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">STATUS</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${["open","working","done","gaps"].map(s=>`
-          <button onclick="setStatus(${sel},'${s}')"
-            style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${d.status===s?SC[s]+"33":"transparent"};border:1px solid ${d.status===s?SC[s]:"#334155"};color:${d.status===s?SC[s]:"#64748b"}">
-            ${SL[s]}
-          </button>`).join("")}
-      </div>
-    </div>
-
-    <!-- Score -->
-    <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">SELBSTEINSCHÄTZUNG</div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="display:flex;gap:2px">${starsHTML(sel,d.score)}</div>
-        <span style="font-size:12px;color:#475569">${["–","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score]}</span>
-      </div>
-    </div>
-
-    <!-- Dates -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">GEPLANT</div>
-        <input type="date" value="${d.planned}" onchange="setField(${sel},'planned',this.value)"
-          style="width:100%;padding:6px 8px;font-size:12px">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">ERLEDIGT AM</div>
-        <input type="date" value="${d.completed}" onchange="setField(${sel},'completed',this.value);setStatus(${sel},'done')"
-          style="width:100%;padding:6px 8px;font-size:12px">
-      </div>
-    </div>
-
-    <!-- Topics -->
-    ${u.topics.length?`
-    <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">KERNTHEMEN</div>
-      <ul style="margin:0;padding-left:16px">
-        ${u.topics.map(t=>`<li style="font-size:12px;color:#94a3b8;margin-bottom:3px">${t}</li>`).join("")}
-      </ul>
-    </div>`:""}
-
-    <!-- Tags -->
-    <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">LÜCKEN-TAGS</div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
-        ${(d.tags||[]).map((tag,i)=>`
-          <span class="tag">${tag} <span onclick="removeTag(${sel},${i})" style="color:#ef4444;margin-left:2px">✕</span></span>`).join("")}
-      </div>
-      <div style="display:flex;gap:6px">
-        <input id="tag-input" placeholder="Stichwort + Enter …" onkeydown="if(event.key==='Enter')addTag(${sel})"
-          style="flex:1;padding:6px 8px;font-size:12px">
-        <button onclick="addTag(${sel})" style="padding:6px 10px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:8px;color:#60a5fa;font-size:13px">+</button>
-      </div>
-    </div>
-
-    <!-- Notes -->
-    <div>
-      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">NOTIZEN</div>
-      <textarea rows="3" placeholder="Eigene Notizen…" onchange="setField(${sel},'notes',this.value)"
-        style="width:100%;padding:8px;font-size:12px;resize:vertical">${d.notes||""}</textarea>
-
-```
-</div>
-```
-
-  </div>`:
-  `<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:200px;color:#334155;font-size:13px">← LE auswählen</div>`;
-
-return `<div style="display:grid;grid-template-columns:${sel?"1fr 1.3fr":"1fr"};gap:14px;align-items:start">${list}${detail}</div>`;
-}
-
-function attachLehrplanEvents(){}
-
-// ─── KALENDER ────────────────────────────────────────────────────────────────
-function renderKalender(){
-const {calMonth:month,calYear:year}=state;
-const first=new Date(year,month,1),last=new Date(year,month+1,0);
-const startDay=(first.getDay()||7)-1;
-const planned={};
-UNITS.forEach(u=>{
-const d=state.units[u.id];
-if(d.planned){if(!planned[d.planned])planned[d.planned]=[];planned[d.planned].push(u);}
+function allTags(){
+var out=[];
+UNITS.forEach(function(u){
+var tags=DB[u.id]&&DB[u.id].tags||[];
+tags.forEach(function(t){ out.push({tag:t,id:u.id,title:u.title}); });
 });
-const mNames=[“Januar”,“Februar”,“März”,“April”,“Mai”,“Juni”,“Juli”,“August”,“September”,“Oktober”,“November”,“Dezember”];
-let cells=””;
-for(let i=0;i<startDay;i++)cells+=”<div></div>”;
-const today=new Date().toISOString().split(“T”)[0];
-for(let day=1;day<=last.getDate();day++){
-const ds=`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-const us=planned[ds]||[];
-cells+=`<div class="cal-day${us.length?" has-plan":""}${ds===today?" today":""}"> <div class="mono" style="font-weight:${ds===today?700:400};color:${ds===today?"#67e8f9":"#64748b"};margin-bottom:2px">${day}</div> ${us.map(u=>`<div style="font-size:9px;padding:1px 3px;border-radius:3px;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${SC[state.units[u.id].status]}22;color:${SC[state.units[u.id].status]};border:1px solid ${SC[state.units[u.id].status]}44">LE${u.id} ${u.title.substring(0,8)}</div>`).join("")} </div>`;
+return out;
 }
-return `
-
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-    <button onclick="calNav(-1)" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:5px 12px;font-size:16px">‹</button>
-    <div style="font-weight:700;font-size:15px;flex:1;text-align:center">${mNames[month]} ${year}</div>
-    <button onclick="calNav(1)"  style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:5px 12px;font-size:16px">›</button>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
-    ${["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>`<div style="text-align:center;font-size:10px;color:#475569;font-weight:700;padding:4px 0">${d}</div>`).join("")}
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">${cells}</div>`;
+function streak(){
+var sorted=[].concat(DATES).filter(function(v,i,a){return a.indexOf(v)===i;}).sort().reverse();
+if(!sorted.length) return 0;
+var cur=new Date(); cur.setHours(0,0,0,0);
+var n=0;
+for(var i=0;i<90;i++){
+var s=cur.toISOString().split(“T”)[0];
+if(sorted.indexOf(s)>=0){n++;cur.setDate(cur.getDate()-1);}
+else if(i===0){cur.setDate(cur.getDate()-1);}
+else break;
 }
-function calNav(dir){
-  state.calMonth+=dir;
-  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
-  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
-  renderMain();
+return n;
 }
-
-// ─── RADAR ───────────────────────────────────────────────────────────────────
-function renderRadar(){
-const tags=allTags();
-const gapUnits=UNITS.filter(u=>(state.units[u.id]?.tags||[]).length>0||state.units[u.id]?.status===“gaps”);
-const uniqueTitles=[…new Set(tags.map(t=>t.title))];
-return `
-
-  <div style="display:flex;flex-direction:column;gap:12px">
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:4px">◎ WIEDERHOLUNGS-RADAR</div>
-      <div style="font-size:12px;color:#64748b">Alle Lücken auf einen Blick. Klicke ✕ um ein Tag zu entfernen.</div>
-    </div>
-    ${gapUnits.map(u=>{
-      const d=state.units[u.id];
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:600;font-size:14px">LE ${u.id} – ${u.title}</div>
-          <div style="display:flex;gap:2px">${starsHTML(u.id,d.score)}</div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
-          ${(d.tags||[]).map((tag,i)=>`<span class="tag">${tag} <span onclick="removeTag(${u.id},${i})" style="color:#ef4444">✕</span></span>`).join("")}
-        </div>
-        ${d.notes?`<div style="font-size:12px;color:#64748b;font-style:italic;border-left:2px solid #334155;padding-left:8px">${d.notes}</div>`:""}
-      </div>`;
-    }).join("")}
-    ${gapUnits.length===0?`<div class="card" style="text-align:center;padding:40px;color:#475569"><div style="font-size:36px;margin-bottom:8px">✓</div><div style="font-weight:600">Keine Lücken eingetragen</div></div>`:""}
-    ${tags.length?`
-    <div class="card" style="border-color:#1d4ed8">
-      <div style="font-size:12px;font-weight:600;color:#60a5fa;margin-bottom:10px">📋 WOCHENEND-CHECKLISTE</div>
-      ${uniqueTitles.map(title=>`
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e293b;font-size:13px">
-          ☐ ${title} <span style="font-size:11px;color:#475569">(${tags.filter(t=>t.title===title).length} Lücken)</span>
-        </div>`).join("")}
-    </div>`:""}
-  </div>`;
+function fmt(s){
+return pad(Math.floor(s/3600))+”:”+pad(Math.floor((s%3600)/60))+”:”+pad(s%60);
 }
+function pad(n){ return String(n).padStart(2,“0”); }
 
-// ─── TIMER ───────────────────────────────────────────────────────────────────
-let timerInterval;
-function renderTimer(){
-const {timerSec:sec,timerMode:mode}=state;
-const goal=mode===“study”?10800:900;
-const pctVal=Math.min(sec/goal*100,100);
-const col=mode===“study”?(sec>=goal?”#10b981”:”#06b6d4”):”#10b981”;
-return `
-
-  <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
-    <div class="card" style="width:100%;text-align:center;padding:32px">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.15em;margin-bottom:14px">${mode==="study"?"⚡ LERNPHASE":"☕ PAUSE"}</div>
-      <div id="timer-display" class="mono" style="font-size:clamp(40px,12vw,64px);font-weight:600;color:${col};letter-spacing:.05em;line-height:1">${fmt(sec)}</div>
-      <div style="font-size:12px;color:#475569;margin-top:8px">${mode==="study"?"Ziel: 3h Lerneinheit":"Empfohlen: 15 Min"}</div>
-      <div style="margin-top:14px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden">
-        <div style="height:100%;background:${col};width:${pctVal}%;border-radius:6px;transition:width 1s"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <button onclick="toggleTimer()" id="timer-btn" style="padding:11px 28px;border-radius:12px;font-weight:700;font-size:15px;background:${state.timerRunning?"#7f1d1d":"#164e63"};border:2px solid ${state.timerRunning?"#ef4444":"#06b6d4"};color:${state.timerRunning?"#fca5a5":"#67e8f9"}">
-        ${state.timerRunning?"⏸ Pause":"▶ Start"}
-      </button>
-      <button onclick="resetTimer()" style="padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;background:#1e293b;border:1px solid #334155;color:#64748b">↺ Reset</button>
-      <button onclick="switchMode()" style="padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;background:#1e293b;border:1px solid #334155;color:#64748b">${mode==="study"?"☕ Pause-Modus":"⚡ Lern-Modus"}</button>
-    </div>
-    <div class="card" style="width:100%">
-      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">SCHNELL-TIMER</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${[["1,5h Zusammenfassung",5400],["1h Fragen üben",3600],["30min Wiederholung",1800],["15min Pause",900]].map(([l,s])=>
-          `<button onclick="setTimer(${s})" style="padding:6px 12px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px">${l}</button>`
-        ).join("")}
-      </div>
-    </div>
-  </div>`;
+// ── Spaced Repetition (SM-2) ──────────────────────────────────────────────────
+function srUpdate(id, score){
+var u=DB[id];
+var td=today();
+u.srLast=td;
+u.srReps=(u.srReps||0)+1;
+var interval;
+if(score<=2){
+interval=1; u.srReps=0; u.srInterval=1;
+} else if(score===3){
+interval=Math.max(2, Math.round((u.srInterval||1)*1.2));
+} else if(score===4){
+interval=Math.max(4, Math.round((u.srInterval||1)*2.0));
+} else {
+interval=Math.max(7, Math.round((u.srInterval||1)*2.5));
 }
-
-function toggleTimer(){
-if(!state.timerRunning){
-state.timerRunning=true;
-markToday();
-timerInterval=setInterval(()=>{state.timerSec++;updateTimerDisplay();},1000);
-}else{
-state.timerRunning=false;
-clearInterval(timerInterval);
+u.srInterval=interval;
+var next=new Date(td);
+next.setDate(next.getDate()+interval);
+u.srNext=next.toISOString().split(“T”)[0];
 }
-renderMain();
-}
-function resetTimer(){clearInterval(timerInterval);state.timerSec=0;state.timerRunning=false;renderMain();}
-function switchMode(){clearInterval(timerInterval);state.timerRunning=false;state.timerSec=0;state.timerMode=state.timerMode===“study”?“break”:“study”;renderMain();}
-function setTimer(s){clearInterval(timerInterval);state.timerRunning=false;state.timerSec=s;renderMain();}
-function updateTimerDisplay(){
-const el=document.getElementById(“timer-display”);
-if(el)el.textContent=fmt(state.timerSec);
-}
-
-// ─── EXPORT ──────────────────────────────────────────────────────────────────
-function renderExport(){
-const mc1d=daysUntil(MC1),orald=daysUntil(ORAL);
-const s=streak();
-const p1d=p1units.filter(u=>state.units[u.id]?.status===“done”).length;
-const p2d=p2units.filter(u=>state.units[u.id]?.status===“done”).length;
-const doneLEs=UNITS.filter(u=>state.units[u.id]?.status===“done”).map(u=>`LE${u.id} (${u.title})`).join(”, “)||”–”;
-const gapLEs=UNITS.filter(u=>(state.units[u.id]?.tags||[]).length>0);
-const warnLEs=UNITS.filter(u=>state.units[u.id]?.score>0&&state.units[u.id]?.score<=2);
-const nextLE=UNITS.find(u=>state.units[u.id]?.status!==“done”);
-const today=new Date().toLocaleDateString(“de-DE”);
-const text=`📚 PhysioTrack Status – ${today}
-──────────────────────────────
-MC 1 (24.05.2026): ${mc1d} Tage
-MC 2 (07.07.2026): ${daysUntil(MC2)} Tage
-Mündliche (~15.08.2026): ${orald} Tage
-🔥 Streak: ${s} Tage
-Phase 1 (MC 1): ${p1d}/${p1units.length} LE fertig
-Phase 2 (Mdl.): ${p2d}/${p2units.length} LE fertig
-
-✅ Fertige LEs: ${doneLEs}
-
-⚠️ Einheiten mit Lücken:
-${gapLEs.length?gapLEs.map(u=>`  • LE${u.id} ${u.title}: ${state.units[u.id].tags.join(", ")}`).join(”\n”):”  –”}
-
-⭐ Unsichere Einheiten (Score ≤ 2):
-${warnLEs.length?warnLEs.map(u=>`  • LE${u.id} ${u.title} (★${state.units[u.id].score}/5)`).join(”\n”):”  –”}
-
-▶ Nächste Einheit: ${nextLE?`LE${nextLE.id} – ${nextLE.title}`:“Alle fertig! 🎉”}
-──────────────────────────────
-Bitte hilf mir mit den offenen Themen.`;
-
-return `
-
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="card" style="border-color:#1d4ed8">
-      <div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">📤 SMART-EXPORT FÜR NEUE CHATS</div>
-      <div style="font-size:12px;color:#94a3b8;line-height:1.7">Kopiere diesen Text und füge ihn am Anfang eines neuen Chats ein.</div>
-    </div>
-    <div class="mono" style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.7;overflow-x:auto">${text}</div>
-    <button onclick="copyExport()" id="copy-btn" style="padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;align-self:flex-start;background:#164e63;border:2px solid #06b6d4;color:#67e8f9;transition:all .2s">
-      📋 In Zwischenablage kopieren
-    </button>
-  </div>
-  <script>window._exportText=${JSON.stringify(text)}<\/script>`;
-}
-
-function copyExport(){
-navigator.clipboard.writeText(window._exportText||””).then(()=>{
-const btn=document.getElementById(“copy-btn”);
-if(btn){btn.textContent=“✓ Kopiert!”;btn.style.background=”#064e3b”;btn.style.borderColor=”#10b981”;btn.style.color=”#34d399”;
-setTimeout(()=>{btn.textContent=“📋 In Zwischenablage kopieren”;btn.style.background=”#164e63”;btn.style.borderColor=”#06b6d4”;btn.style.color=”#67e8f9”;},2000);}
+function srDue(){
+var td=today();
+return UNITS.filter(function(u){
+var d=DB[u.id];
+return d && d.srNext && d.srNext<=td;
 });
 }
-
-// ─── ACTIONS ─────────────────────────────────────────────────────────────────
-function selectUnit(id){
-state.selId=id;
-renderMain();
-if(id){const el=document.getElementById(“detail-panel”);if(el)el.scrollIntoView({behavior:“smooth”,block:“start”});}
+function srSoon(){
+var td=today();
+var lim=new Date(); lim.setDate(lim.getDate()+3);
+var limS=lim.toISOString().split(“T”)[0];
+return UNITS.filter(function(u){
+var d=DB[u.id];
+return d && d.srNext && d.srNext>td && d.srNext<=limS;
+});
+}
+function srDays(id){
+var d=DB[id]; if(!d||!d.srNext) return null;
+return Math.ceil((new Date(d.srNext)-new Date())/86400000);
+}
+function srBadge(id){
+var d=DB[id]; if(!d||!d.srNext) return “”;
+var days=srDays(id);
+if(days<=0) return ‘<span class="bdg" style="color:#ef4444;background:#450a0a">🔁 fällig</span>’;
+if(days<=3) return ’<span class="bdg" style="color:#f59e0b;background:#431407">🔁 ’+days+‘d</span>’;
+return ’<span class="bdg" style="color:#34d399;background:#052e16">🔁 ’+days+‘d</span>’;
 }
 
-function setStatus(id,s){state.units[id].status=s;save();renderMain();}
-function setScore(id,v){state.units[id].score=v;save();renderMain();}
-function setField(id,f,v){state.units[id][f]=v;save();}
-
-function addTag(id){
-const inp=document.getElementById(“tag-input”);
-if(!inp||!inp.value.trim())return;
-state.units[id].tags=[…(state.units[id].tags||[]),inp.value.trim()];
-save();renderMain();
+// ── Storage ───────────────────────────────────────────────────────────────────
+function loadLocal(){
+try{
+var d=localStorage.getItem(“pt_v5_data”);
+var dt=localStorage.getItem(“pt_v5_dates”);
+DB=d?JSON.parse(d):initDB();
+DATES=dt?JSON.parse(dt):[];
+UNITS.forEach(function(u){ if(!DB[u.id]) DB[u.id]=mkU(); });
+// ensure SR fields exist on old data
+UNITS.forEach(function(u){
+var e=DB[u.id];
+if(!e.srNext)    e.srNext=””;
+if(!e.srInterval)e.srInterval=1;
+if(!e.srReps)    e.srReps=0;
+if(!e.srLast)    e.srLast=””;
+});
+} catch(e){ DB=initDB(); DATES=[]; }
 }
-function removeTag(id,i){
-state.units[id].tags=state.units[id].tags.filter((_,j)=>j!==i);
-save();renderMain();
+function saveData(){
+setSS(“saving”);
+clearTimeout(T_SAVE);
+T_SAVE=setTimeout(function(){
+try{
+localStorage.setItem(“pt_v5_data”,JSON.stringify(DB));
+localStorage.setItem(“pt_v5_dates”,JSON.stringify(DATES));
+}catch(e){}
+if(SBC&&SBU){
+SBC.from(“physio_data”).upsert(
+{user_id:SBU.id,unit_data:DB,streak_dates:DATES,updated_at:new Date().toISOString()},
+{onConflict:“user_id”}
+).then(function(r){setSS(r.error?“error”:“synced”);});
+} else { setSS(“local”); }
+},600);
 }
-
+function setSS(s){
+var el=document.getElementById(“sync”); if(!el) return;
+var map={saving:[“saving”,“● Speichert…”],synced:[””,“● Synced ✓”],local:[””,“● Lokal”],error:[“error”,“● Fehler”]};
+var v=map[s]||map.local;
+el.className=v[0]; el.textContent=v[1];
+}
 function markToday(){
-const t=new Date().toISOString().split(“T”)[0];
-if(!state.dates.includes(t)){state.dates=[…state.dates,t];save();updateHeader();}
+var t=today();
+if(DATES.indexOf(t)<0){ DATES=DATES.concat([t]); saveData(); }
+updateHdr();
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
-load();
-render();
+// ── Supabase ──────────────────────────────────────────────────────────────────
+function initSB(){
+if(typeof supabase===“undefined”||SUPABASE_URL===“DEINE_SUPABASE_URL”) return;
+try{
+SBC=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+SBC.auth.getSession().then(function(r){
+if(r.data&&r.data.session){ SBU=r.data.session.user; loadFromSB(); }
+});
+SBC.auth.onAuthStateChange(function(_,session){
+SBU=session?session.user:null; if(SBU) loadFromSB();
+});
+}catch(e){}
+}
+function loadFromSB(){
+if(!SBC||!SBU) return;
+SBC.from(“physio_data”).select(”*”).eq(“user_id”,SBU.id).single().then(function(r){
+if(r.data){ DB=r.data.unit_data||initDB(); DATES=r.data.streak_dates||[]; }
+// ensure SR fields on loaded data
+UNITS.forEach(function(u){
+var e=DB[u.id]; if(!e) return;
+if(!e.srNext)     e.srNext=””;
+if(!e.srInterval) e.srInterval=1;
+if(!e.srReps)     e.srReps=0;
+if(!e.srLast)     e.srLast=””;
+});
+setSS(“synced”); renderAll();
+});
+}
+
+// ── HTML helpers ──────────────────────────────────────────────────────────────
+function ring(p,size,col,label,sub){
+var st=10,r=(size-st)/2,c=2*Math.PI*r,d=(p/100)*c;
+return ‘<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">’
++’<svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)">’
++’<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="#1e293b" stroke-width="'+st+'"/>’
++’<circle cx=”’+size/2+’” cy=”’+size/2+’” r=”’+r+’” fill=“none” stroke=”’+col+’” stroke-width=”’+st+’”’
++’ stroke-dasharray=”’+d.toFixed(1)+’ ‘+c.toFixed(1)+’” stroke-linecap=“round”/>’
++’</svg>’
++’<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">’
++’<span class="mono" style="font-size:'+(size>80?16:12)+'px;font-weight:700;color:#f1f5f9">’+label+’</span>’
++(sub?’<span style="font-size:10px;color:#64748b;margin-top:1px">’+sub+’</span>’:””)
++’</div></div>’;
+}
+function starsH(id,score){
+var h=’<div class="stars" data-stars="'+id+'">’;
+for(var i=1;i<=5;i++){
+h+=’<span class=“star” data-sv=”’+i+’” style=“color:’+(i<=score?”#f59e0b”:”#334155”)+’”>’+(i<=score?“★”:“☆”)+’</span>’;
+}
+return h+’</div>’;
+}
+function ampel(label,done,total,days,col){
+var p=total?Math.round(done/total*100):0;
+var amp=days<7?“🔴”:days<28?“🟡”:“🟢”;
+return ‘<div style="background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px">’
++’<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">’
++’<span style="font-size:12px;font-weight:600">’+amp+’ ‘+label+’</span>’
++’<span class="mono" style="font-size:12px;color:'+col+'">’+done+’/’+total+’</span></div>’
++’<div class="pb"><div class="pf" style="width:'+p+'%;background:'+col+'"></div></div>’
++’<div style="font-size:11px;color:#475569;margin-top:5px">Noch ‘+(total-done)+’ LE · ‘+days+’ Tage</div></div>’;
+}
+function lbl(text){
+return ‘<div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:8px">’+text+’</div>’;
+}
+
+// ── Render engine ─────────────────────────────────────────────────────────────
+function renderAll(){ updateHdr(); renderMain(); }
+function updateHdr(){
+var s=streak(), mc1d=daysUntil(MC1), mc2d=daysUntil(MC2D), od=daysUntil(ORAL);
+document.getElementById(“pstr”).textContent=“🔥 “+s;
+var mc1c=mc1d<7?”#ef4444”:mc1d<28?”#f59e0b”:”#10b981”;
+var mc2c=mc2d<7?”#ef4444”:mc2d<28?”#f59e0b”:”#10b981”;
+var p1=document.getElementById(“pmc1”); p1.textContent=“MC1 “+mc1d+“d”; p1.style.borderColor=mc1c; p1.style.color=mc1c;
+var p2=document.getElementById(“pmc2”); p2.textContent=“MC2 “+mc2d+“d”; p2.style.borderColor=mc2c; p2.style.color=mc2c;
+document.getElementById(“por”).textContent=od;
+var due=srDue(), srP=document.getElementById(“psr”);
+if(srP){ if(due.length){srP.style.display=“flex”;srP.textContent=“🔁 “+due.length+” fällig”;}else{srP.style.display=“none”;} }
+}
+function renderMain(){
+var m=document.getElementById(“main”);
+if(TAB===“db”)  m.innerHTML=rDash();
+else if(TAB===“lp”)  m.innerHTML=rLP();
+else if(TAB===“kal”) m.innerHTML=rKal();
+else if(TAB===“rad”) m.innerHTML=rRad();
+else if(TAB===“tmr”) m.innerHTML=rTmr();
+else if(TAB===“exp”) m.innerHTML=rExp();
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function rDash(){
+var mc1d=daysUntil(MC1),mc2d=daysUntil(MC2D),od=daysUntil(ORAL);
+var p1d=P1.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+var m2d=MC2U.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+var p2d=P2.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+var tot=p1d+p2d;
+var tags=allTags();
+var next=UNITS.filter(function(u){return DB[u.id]&&DB[u.id].status!==“done”;}).slice(0,5);
+var due=srDue(), soon=srSoon();
+var td=today();
+
+var sg=””;
+for(var i=29;i>=0;i–){
+var dd=new Date(); dd.setDate(dd.getDate()-i);
+var ds=dd.toISOString().split(“T”)[0];
+var cls=“sd mono”+(DATES.indexOf(ds)>=0?” ok”:””)+(ds===td?” td”:””);
+sg+=’<div class="'+cls+'">’+dd.getDate()+’</div>’;
+}
+
+var srSection=””;
+if(due.length||soon.length){
+srSection=’<div class="card" style="border-color:#7f1d1d">’
++lbl(’<span style="color:#fca5a5">🔁 SPACED REPETITION – HEUTE</span>’);
+if(due.length){
+srSection+=’<div style="font-size:12px;font-weight:600;color:#ef4444;margin-bottom:6px">Fällig (’+due.length+’)</div>’;
+due.forEach(function(u){
+var d=DB[u.id];
+srSection+=’<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#7f1d1d;margin-bottom:5px">’
++’<div class="dot" style="background:#ef4444"></div>’
++’<div style="flex:1;min-width:0">’
++’<div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LE’+u.id+’ ‘+u.title+’</div>’
++’<div style="font-size:11px;color:#ef4444">Intervall: ‘+d.srInterval+‘d · ‘+d.srReps+‘× wiederholt</div>’
++’</div>’+starsH(u.id,d.score)+’</div>’;
+});
+}
+if(soon.length){
+srSection+=’<div style=“font-size:12px;font-weight:600;color:#f59e0b;margin:’+(due.length?“10px”:0)+’ 0 6px”>Demnächst (’+soon.length+’)</div>’;
+soon.forEach(function(u){
+srSection+=’<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#78350f;margin-bottom:5px">’
++’<div class="dot" style="background:#f59e0b"></div>’
++’<div style="flex:1;min-width:0">’
++’<div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LE’+u.id+’ ‘+u.title+’</div>’
++’<div style="font-size:11px;color:#f59e0b">in ‘+srDays(u.id)+’ Tag(en)</div>’
++’</div>’+starsH(u.id,DB[u.id].score)+’</div>’;
+});
+}
+srSection+=’</div>’;
+}
+
+var tagSec=””;
+if(tags.length){
+tagSec=’<div class="card"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">⚠ OFFENE LÜCKEN (’+tags.length+’)</div><div style="display:flex;flex-wrap:wrap;gap:6px">’;
+tags.slice(0,10).forEach(function(t){ tagSec+=’<span class="tag">⚡ ‘+t.tag+’ <span style="color:#475569;font-size:10px">(’+t.title+’)</span></span>’; });
+if(tags.length>10) tagSec+=’<span style="color:#475569;font-size:12px;align-self:center">+’+(tags.length-10)+’ → Radar</span>’;
+tagSec+=’</div></div>’;
+}
+
+var nextSec=’<div class="card"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">▶ NÄCHSTE LERNEINHEITEN</div>’;
+next.forEach(function(u){
+var d=DB[u.id];
+nextSec+=’<div class="urow" data-a="ou" data-id="'+u.id+'">’
++’<div class="dot" style="background:'+SC[d.status]+'"></div>’
++’<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’
++’<span class="mono" style="color:#475569;font-size:11px">LE’+pad(u.id)+’ </span>’+u.title+’</div>’
++(d.planned?’<div style="font-size:11px;color:#475569">📅 ‘+d.planned+’</div>’:””)
++’</div>’+starsH(u.id,d.score)+’</div>’;
+});
+nextSec+=’</div>’;
+
+return ‘<div style="display:flex;flex-direction:column;gap:14px">’
++’<div class="rg">’
++[
+[pct(P1),”#06b6d4”,p1d+”/”+P1.length,“MC 1”,mc1d+“d”],
+[pct(MC2U),”#f59e0b”,m2d+”/”+MC2U.length,“MC 2”,mc2d+“d”],
+[pct(P2),”#8b5cf6”,p2d+”/”+P2.length,“Mdl.”,od+“d”],
+[Math.round(tot/UNITS.length*100),”#10b981”,tot+”/”+UNITS.length,“Gesamt”,Math.round(tot/UNITS.length*100)+”%”]
+].map(function(r){
+return ‘<div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px">’+ring(r[0],90,r[1],r[2],r[3])+’<span style="font-size:11px;color:'+r[1]+';font-weight:600">’+r[4]+’</span></div>’;
+}).join(””)
++’</div>’
++’<div class="card">’+lbl(“PRÜFUNGS-AMPEL”)+ampel(“MC 1 – 24.05.2026”,p1d,P1.length,mc1d,”#06b6d4”)+ampel(“MC 2 – 07.07.2026”,m2d,MC2U.length,mc2d,”#f59e0b”)+ampel(“Mündliche – ~15.08.2026”,tot,UNITS.length,od,”#8b5cf6”)+’</div>’
++srSection
++’<div class="card">’+lbl(“🔥 LERN-STREAK – LETZTE 30 TAGE”)+’<div class="sg">’+sg+’</div>’
++’<button data-a="mt" style="margin-top:12px;padding:9px 16px;background:#164e63;border:1px solid #0e7490;border-radius:8px;color:#67e8f9;font-size:13px;font-weight:600;min-height:44px">Heute als gelernt markieren ✓</button></div>’
++tagSec+nextSec
++’</div>’;
+}
+
+// ── Lehrplan ──────────────────────────────────────────────────────────────────
+function rLP(){
+var u=SEL?UNITS.filter(function(x){return x.id===SEL;})[0]:null;
+var d=SEL?DB[SEL]:null;
+
+var list=’<div class="lplist">’;
+[1,2].forEach(function(phase){
+list+=’<div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin:14px 0 8px;border-bottom:1px solid #1e293b;padding-bottom:4px">’
++(phase===1?“PHASE 1 – MC 1 (24.05.2026)”:“PHASE 2 – MC 2 (07.07.) & MÜNDLICHE (15.08.2026)”)+’</div>’;
+UNITS.filter(function(x){return x.p===phase;}).forEach(function(x){
+var dx=DB[x.id];
+list+=’<div class=“urow’+(SEL===x.id?” on”:””)+’” data-a=“su” data-id=”’+x.id+’”>’
++’<div class="dot" style="background:'+SC[dx.status]+'"></div>’
++’<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’
++’<span class="mono" style="color:#475569;font-size:11px">LE’+pad(x.id)+’ </span>’+x.title
++(x.rev?’<span class="bdg" style="color:#a78bfa;background:#2e1065">WDH</span>’:””)
++(x.mc2?’<span class="bdg" style="color:#fbbf24;background:#451a03">MC2</span>’:””)
++srBadge(x.id)
++’</div>’+(dx.planned?’<div style="font-size:11px;color:#475569">📅 ‘+dx.planned+’</div>’:””)+’</div>’
++’<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">’
++starsH(x.id,dx.score)
++((dx.tags&&dx.tags.length)?’<span style="font-size:10px;color:#ef4444">⚠ ‘+dx.tags.length+’</span>’:””)
++’</div></div>’;
+});
+});
+list+=’</div>’;
+
+var det;
+if(u&&d){
+var days=srDays(u.id);
+var srInfo=””;
+if(d.srNext){
+var col=days<=0?”#ef4444”:days<=3?”#f59e0b”:”#34d399”;
+var dayTxt=days<=0?“Heute fällig!”:days+” Tage”;
+srInfo=’<div style=“margin-top:14px;padding:12px;background:#1e293b;border-radius:10px;border:1px solid ‘+(days<=0?”#7f1d1d”:days<=3?”#78350f”:”#1e3a5f”)+’”>’
++lbl(“🔁 SPACED REPETITION”)
++’<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">’
++’<div><div style="color:#64748b;margin-bottom:2px">Nächste Wdh.</div><div style="font-weight:600;color:'+col+'">’+dayTxt+’</div></div>’
++’<div><div style="color:#64748b;margin-bottom:2px">Intervall</div><div style="font-weight:600;color:#94a3b8">’+d.srInterval+’ Tage</div></div>’
++’<div><div style="color:#64748b;margin-bottom:2px">Wiederholt</div><div style="font-weight:600;color:#94a3b8">’+d.srReps+‘×</div></div>’
++’<div><div style="color:#64748b;margin-bottom:2px">Zuletzt</div><div style="font-weight:600;color:#94a3b8">’+(d.srLast||”–”)+’</div></div>’
++’</div>’
++’<div style="margin-top:8px;font-size:11px;color:#475569">★ Bewertung anpassen → Intervall wird automatisch aktualisiert</div>’
++’</div>’;
+} else {
+srInfo=’<div style="margin-top:14px;font-size:11px;color:#475569;padding:10px;background:#1e293b;border-radius:8px">💡 Vergib eine ★-Bewertung um Spaced Repetition zu starten.</div>’;
+}
+
+```
+var tagList="";
+(d.tags||[]).forEach(function(tag,i){
+  tagList+='<span class="tag">'+tag+'<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:22px;text-align:center;font-size:16px">✕</span></span>';
+});
+
+var topicList="";
+u.topics.forEach(function(t){ topicList+='<li style="font-size:12px;color:#94a3b8;margin-bottom:4px">'+t+'</li>'; });
+
+det='<div id="dp">'
+  +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'
+  +'<div><div class="mono" style="font-size:11px;color:#475569">LERNEINHEIT '+u.id+'</div>'
+  +'<div style="font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.3;margin-top:2px">'+u.title+'</div></div>'
+  +'<button data-a="cu" style="color:#475569;font-size:20px;padding:4px;min-width:44px;min-height:44px">✕</button></div>'
+
+  +'<div style="margin-bottom:16px">'+lbl("STATUS")
+  +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+  +["open","working","done","gaps"].map(function(s){
+    var on=d.status===s;
+    return '<button class="sbtn" data-a="ss" data-id="'+u.id+'" data-val="'+s+'" style="'+(on?"background:"+SC[s]+"33;border-color:"+SC[s]+";color:"+SC[s]:"")+'">'+SL[s]+'</button>';
+  }).join("")
+  +'</div></div>'
+
+  +'<div style="margin-bottom:16px">'+lbl("SELBSTEINSCHÄTZUNG")
+  +'<div style="display:flex;align-items:center;gap:10px">'
+  +starsH(u.id,d.score)
+  +'<span style="font-size:12px;color:#475569">'+["–","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score]+'</span></div></div>'
+
+  +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">'
+  +'<div>'+lbl("GEPLANT")+'<input type="date" id="fp" value="'+(d.planned||"")+'" style="width:100%;font-size:13px"></div>'
+  +'<div>'+lbl("ERLEDIGT")+'<input type="date" id="fc" value="'+(d.completed||"")+'" style="width:100%;font-size:13px"></div></div>'
+
+  +(u.topics.length?'<div style="margin-bottom:16px">'+lbl("KERNTHEMEN")+'<ul style="margin:0;padding-left:16px">'+topicList+'</ul></div>':"")
+
+  +'<div style="margin-bottom:16px">'+lbl("LÜCKEN-TAGS")
+  +'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">'+tagList+'</div>'
+  +'<div style="display:flex;gap:8px">'
+  +'<input id="ti" placeholder="Stichwort + Enter …" style="flex:1;font-size:13px">'
+  +'<button data-a="at" data-id="'+u.id+'" style="padding:10px 14px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:8px;color:#60a5fa;font-size:18px;min-width:44px;min-height:44px">+</button>'
+  +'</div></div>'
+
+  +'<div>'+lbl("NOTIZEN")
+  +'<textarea id="fn" rows="3" placeholder="Eigene Notizen…" style="width:100%;font-size:13px;resize:vertical;padding:10px 12px">'+(d.notes||"")+'</textarea></div>'
+
+  +srInfo
+  +'</div>';
+```
+
+} else {
+det=’<div class="card es" style="min-height:200px"><div style="font-size:36px">≡</div><div>Lerneinheit auswählen</div></div>’;
+}
+
+return ‘<div class="lpg">’+list+det+’</div>’;
+}
+
+// ── Kalender ──────────────────────────────────────────────────────────────────
+function rKal(){
+var first=new Date(CAL_Y,CAL_M,1), last=new Date(CAL_Y,CAL_M+1,0);
+var sd=(first.getDay()||7)-1;
+var plan={};
+UNITS.forEach(function(u){ var d=DB[u.id]; if(d&&d.planned){if(!plan[d.planned])plan[d.planned]=[];plan[d.planned].push(u);} });
+var mn=[“Januar”,“Februar”,“März”,“April”,“Mai”,“Juni”,“Juli”,“August”,“September”,“Oktober”,“November”,“Dezember”];
+var cells=””;
+for(var i=0;i<sd;i++) cells+=”<div></div>”;
+var td=today();
+for(var day=1;day<=last.getDate();day++){
+var ds=CAL_Y+”-”+pad(CAL_M+1)+”-”+pad(day);
+var us=plan[ds]||[], isT=ds===td;
+cells+=’<div class=“cday’+(us.length?” hp”:””)+(isT?” td”:””)+’”><div class=“mono” style=“font-size:11px;font-weight:’+(isT?700:400)+’;color:’+(isT?”#67e8f9”:”#64748b”)+’;margin-bottom:2px”>’+day+’</div>’;
+us.forEach(function(u){ cells+=’<div class="cdot" style="background:'+SC[DB[u.id].status]+'22;color:'+SC[DB[u.id].status]+';border:1px solid '+SC[DB[u.id].status]+'44">LE’+u.id+’</div>’; });
+cells+=’</div>’;
+}
+return ‘<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">’
++’<button data-a="cp" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:8px 14px;font-size:18px;min-width:44px;min-height:44px">‹</button>’
++’<div style="font-weight:700;font-size:15px;flex:1;text-align:center">’+mn[CAL_M]+’ ‘+CAL_Y+’</div>’
++’<button data-a="cn" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:8px 14px;font-size:18px;min-width:44px;min-height:44px">›</button></div>’
++’<div class="cg" style="margin-bottom:4px">’+[“Mo”,“Di”,“Mi”,“Do”,“Fr”,“Sa”,“So”].map(function(d){return’<div style="text-align:center;font-size:10px;color:#475569;font-weight:700;padding:4px 0">’+d+’</div>’;}).join(””)+’</div>’
++’<div class="cg">’+cells+’</div>’;
+}
+
+// ── Radar ─────────────────────────────────────────────────────────────────────
+function rRad(){
+var tags=allTags();
+var due=srDue();
+var gu=UNITS.filter(function(u){return (DB[u.id]&&DB[u.id].tags&&DB[u.id].tags.length>0)||( DB[u.id]&&DB[u.id].status===“gaps”);});
+var ut=[];
+tags.forEach(function(t){if(ut.indexOf(t.title)<0)ut.push(t.title);});
+
+var html=’<div style="display:flex;flex-direction:column;gap:12px">’;
+html+=’<div class="card">’+lbl(“◎ WIEDERHOLUNGS-RADAR”)+’<div style="font-size:12px;color:#64748b">Alle Lücken auf einen Blick. Tippe ✕ zum Entfernen.</div></div>’;
+
+if(due.length){
+html+=’<div class="card" style="border-color:#7f1d1d">’+lbl(’<span style="color:#fca5a5">🔁 FÄLLIGE WIEDERHOLUNGEN (’+due.length+’)</span>’);
+due.forEach(function(u){
+var d=DB[u.id];
+html+=’<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#7f1d1d;margin-bottom:5px">’
++’<div class="dot" style="background:#ef4444"></div>’
++’<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">LE’+u.id+’ – ‘+u.title+’</div>’
++’<div style="font-size:11px;color:#ef4444">Intervall: ‘+d.srInterval+‘d · ‘+d.srReps+‘× · ★’+d.score+’/5</div></div></div>’;
+});
+html+=’</div>’;
+}
+
+gu.forEach(function(u){
+var d=DB[u.id];
+html+=’<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:600;font-size:14px">LE ‘+u.id+’ – ‘+u.title+’</div>’+starsH(u.id,d.score)+’</div>’;
+html+=’<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">’;
+(d.tags||[]).forEach(function(tag,i){
+html+=’<span class="tag">’+tag+’<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:22px;text-align:center;font-size:16px">✕</span></span>’;
+});
+html+=’</div>’+(d.notes?’<div style="font-size:12px;color:#64748b;font-style:italic;border-left:2px solid #334155;padding-left:8px">’+d.notes+’</div>’:””)+’</div>’;
+});
+
+if(!gu.length&&!due.length) html+=’<div class="card es"><div style="font-size:36px">✓</div><div style="font-weight:600">Keine Lücken eingetragen</div><div style="font-size:12px;color:#475569">Im Lehrplan Lücken-Tags hinzufügen</div></div>’;
+
+if(tags.length){
+html+=’<div class="card" style="border-color:#1d4ed8"><div style="font-size:12px;font-weight:600;color:#60a5fa;margin-bottom:10px">📋 WOCHENEND-CHECKLISTE</div>’;
+ut.forEach(function(title){
+var cnt=tags.filter(function(t){return t.title===title;}).length;
+html+=’<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:13px;min-height:44px">☐ ‘+title+’ <span style="font-size:11px;color:#475569">(’+cnt+’ Lücken)</span></div>’;
+});
+html+=’</div>’;
+}
+return html+’</div>’;
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────────────
+function rTmr(){
+var col=T_MODE===“study”?(T_SEC>=10800?”#10b981”:”#06b6d4”):”#10b981”;
+var goal=T_MODE===“study”?10800:900;
+var p=Math.min(T_SEC/goal*100,100);
+return ‘<div style="display:flex;flex-direction:column;align-items:center;gap:16px">’
++’<div class="card" style="width:100%;text-align:center;padding:32px">’
++’<div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.15em;margin-bottom:16px">’+(T_MODE===“study”?“⚡ LERNPHASE”:“☕ PAUSE”)+’</div>’
++’<div id="tdisp" class="mono tdisp" style="color:'+col+'">’+fmt(T_SEC)+’</div>’
++’<div style="font-size:12px;color:#475569;margin-top:8px">’+(T_MODE===“study”?“Ziel: 3h”:“Ziel: 15 Min”)+’</div>’
++’<div class="pb" style="margin-top:14px"><div class="pf" style="width:'+p+'%;background:'+col+'"></div></div></div>’
++’<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">’
++’<button data-a=“tt” class=“abtn” style=“background:’+(T_RUN?”#7f1d1d”:”#164e63”)+’;border-color:’+(T_RUN?”#ef4444”:”#06b6d4”)+’;color:’+(T_RUN?”#fca5a5”:”#67e8f9”)+’”>’+(T_RUN?“⏸ Pause”:“▶ Start”)+’</button>’
++’<button data-a="tr" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">↺ Reset</button>’
++’<button data-a="tm" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">’+(T_MODE===“study”?“☕ Pause”:“⚡ Lernen”)+’</button></div>’
++’<div class="card" style="width:100%">’+lbl(“SCHNELL-TIMER”)+’<div style="display:flex;gap:8px;flex-wrap:wrap">’
++[[“1,5h”,5400],[“1h”,3600],[“30min”,1800],[“15min”,900]].map(function(r){
+return ‘<button data-a="ts" data-val="'+r[1]+'" style="padding:10px 14px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px;min-height:44px">’+r[0]+’</button>’;
+}).join(””)+’</div></div></div>’;
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+function rExp(){
+var mc1d=daysUntil(MC1),mc2d=daysUntil(MC2D),od=daysUntil(ORAL),s=streak();
+var p1d=P1.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+var p2d=P2.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).length;
+var dLEs=UNITS.filter(function(u){return DB[u.id]&&DB[u.id].status===“done”;}).map(function(u){return “LE”+u.id;}).join(”, “)||”–”;
+var gLEs=UNITS.filter(function(u){return DB[u.id]&&DB[u.id].tags&&DB[u.id].tags.length>0;});
+var wLEs=UNITS.filter(function(u){return DB[u.id]&&DB[u.id].score>0&&DB[u.id].score<=2;});
+var nxt=UNITS.filter(function(u){return DB[u.id]&&DB[u.id].status!==“done”;})[0];
+var due=srDue();
+var td=new Date().toLocaleDateString(“de-DE”);
+
+var txt=“📚 PhysioTrack Status – “+td+”\n”
++“──────────────────────\n”
++“MC 1 (24.05.2026): “+mc1d+” Tage\n”
++“MC 2 (07.07.2026): “+mc2d+” Tage\n”
++“Mündliche (~15.08.2026): “+od+” Tage\n”
++“🔥 Streak: “+s+” Tage\n”
++“Phase 1: “+p1d+”/”+P1.length+” | Phase 2: “+p2d+”/”+P2.length+”\n\n”
++“✅ Fertig: “+dLEs+”\n\n”
++“⚠️ Lücken:\n”+(gLEs.length?gLEs.map(function(u){return “  • LE”+u.id+” “+u.title+”: “+DB[u.id].tags.join(”, “);}).join(”\n”):”  –”)+”\n\n”
++“⭐ Unsicher (★1-2):\n”+(wLEs.length?wLEs.map(function(u){return “  • LE”+u.id+” “+u.title+” (★”+DB[u.id].score+”/5)”;}).join(”\n”):”  –”)+”\n\n”
++“🔁 SR fällig heute:\n”+(due.length?due.map(function(u){return “  • LE”+u.id+” “+u.title;}).join(”\n”):”  –”)+”\n\n”
++“▶ Nächste: “+(nxt?“LE”+nxt.id+” – “+nxt.title:“Alle fertig! 🎉”)+”\n”
++“──────────────────────\n”
++“Bitte hilf mir gezielt weiter.”;
+
+return ‘<div style="display:flex;flex-direction:column;gap:14px">’
++’<div class="card" style="border-color:#1d4ed8"><div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">📤 SMART-EXPORT FÜR NEUE CHATS</div><div style="font-size:12px;color:#94a3b8;line-height:1.7">Kopiere diesen Text und füge ihn am Anfang eines neuen Chats ein.</div></div>’
++’<pre id="etxt" class="mono" style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.7;word-break:break-word">’+txt+’</pre>’
++’<button data-a="ce" style="padding:13px 24px;border-radius:12px;font-weight:700;font-size:14px;align-self:flex-start;background:#164e63;border:2px solid #06b6d4;color:#67e8f9;min-height:50px">📋 Kopieren</button></div>’;
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+document.addEventListener(“click”, function(e){
+// Tabs
+var tb=e.target.closest(”.tbtn[data-tab]”);
+if(tb){
+TAB=tb.dataset.tab;
+document.querySelectorAll(”.tbtn”).forEach(function(b){b.classList.remove(“on”);});
+tb.classList.add(“on”);
+renderMain(); return;
+}
+// Stars
+var st=e.target.closest(”.star[data-sv]”);
+if(st){
+var row=st.closest(”[data-stars]”); if(!row) return;
+var id=+row.dataset.stars, val=+st.dataset.sv;
+var newScore=DB[id].score===val?0:val;
+DB[id].score=newScore;
+if(newScore>0){ srUpdate(id,newScore); }
+saveData(); renderAll(); return;
+}
+// Actions
+var el=e.target.closest(”[data-a]”); if(!el) return;
+var a=el.dataset.a;
+if(a===“mt”){ markToday(); renderMain(); }
+else if(a===“ou”){ SEL=+el.dataset.id; TAB=“lp”; document.querySelectorAll(”.tbtn”).forEach(function(b){b.classList.remove(“on”);}); document.querySelector(”[data-tab=‘lp’]”).classList.add(“on”); renderMain(); }
+else if(a===“su”){ SEL=SEL===+el.dataset.id?null:+el.dataset.id; renderMain(); setTimeout(function(){var dp=document.getElementById(“dp”);if(dp)dp.scrollIntoView({behavior:“smooth”,block:“nearest”});},50); }
+else if(a===“cu”){ SEL=null; renderMain(); }
+else if(a===“ss”){ DB[+el.dataset.id].status=el.dataset.val; saveData(); renderMain(); }
+else if(a===“rt”){ var uid=+el.dataset.id,idx=+el.dataset.idx; DB[uid].tags=DB[uid].tags.filter(function(_,i){return i!==idx;}); saveData(); renderMain(); }
+else if(a===“at”){ var inp=document.getElementById(“ti”); if(!inp||!inp.value.trim())return; var uid=+el.dataset.id; DB[uid].tags=(DB[uid].tags||[]).concat([inp.value.trim()]); inp.value=””; saveData(); renderMain(); }
+else if(a===“cp”){ CAL_M–; if(CAL_M<0){CAL_M=11;CAL_Y–;} renderMain(); }
+else if(a===“cn”){ CAL_M++; if(CAL_M>11){CAL_M=0;CAL_Y++;} renderMain(); }
+else if(a===“tt”){
+T_RUN=!T_RUN;
+if(T_RUN){ markToday(); clearInterval(T_INT); T_INT=setInterval(function(){T_SEC++;var el=document.getElementById(“tdisp”);if(el)el.textContent=fmt(T_SEC);},1000); }
+else{ clearInterval(T_INT); }
+renderMain();
+}
+else if(a===“tr”){ clearInterval(T_INT); T_RUN=false; T_SEC=0; renderMain(); }
+else if(a===“tm”){ clearInterval(T_INT); T_RUN=false; T_SEC=0; T_MODE=T_MODE===“study”?“break”:“study”; renderMain(); }
+else if(a===“ts”){ clearInterval(T_INT); T_RUN=false; T_SEC=+el.dataset.val; renderMain(); }
+else if(a===“ce”){
+var txt=document.getElementById(“etxt”);
+if(txt) navigator.clipboard.writeText(txt.textContent).then(function(){
+var btn=document.querySelector(”[data-a=‘ce’]”);
+if(btn){btn.textContent=“✓ Kopiert!”;btn.style.background=”#064e3b”;btn.style.borderColor=”#10b981”;btn.style.color=”#34d399”;
+setTimeout(function(){btn.textContent=“📋 Kopieren”;btn.style.background=”#164e63”;btn.style.borderColor=”#06b6d4”;btn.style.color=”#67e8f9”;},2000);}
+}).catch(function(){alert(“Bitte manuell kopieren.”);});
+}
+}, true);
+
+document.addEventListener(“change”, function(e){
+if(!SEL) return;
+var t=e.target;
+if(t.id===“fp”){ DB[SEL].planned=t.value; saveData(); }
+if(t.id===“fc”){ DB[SEL].completed=t.value; DB[SEL].status=“done”; saveData(); renderMain(); }
+if(t.id===“fn”){ DB[SEL].notes=t.value; saveData(); }
+}, true);
+
+document.addEventListener(“keydown”, function(e){
+if(e.key===“Enter”&&e.target.id===“ti”&&SEL){
+var v=e.target.value.trim(); if(!v) return;
+DB[SEL].tags=(DB[SEL].tags||[]).concat([v]); e.target.value=””; saveData(); renderMain();
+}
+}, true);
+
+// ── Login Modal ───────────────────────────────────────────────────────────────
+function showLogin(){
+var m=document.getElementById(“login-modal”);
+if(m){ m.style.display=“flex”; }
+}
+function hideLogin(){
+var m=document.getElementById(“login-modal”);
+if(m){ m.style.display=“none”; }
+}
+document.addEventListener(“click”,function(e){
+var el=e.target.closest(”[data-a=‘login’]”);
+if(el&&!SBU){ showLogin(); return; }
+if(e.target.id===“modal-close”||e.target.id===“modal-skip”){ hideLogin(); return; }
+if(e.target.id===“modal-send”){
+var email=document.getElementById(“modal-email”).value.trim();
+var msg=document.getElementById(“modal-msg”);
+if(!email||email.indexOf(”@”)<0){ if(msg){msg.style.color=”#ef4444”;msg.textContent=“Bitte gültige E-Mail eingeben.”;} return; }
+var btn=document.getElementById(“modal-send”);
+if(btn){ btn.textContent=“Sende…”; btn.disabled=true; }
+if(SBC){
+SBC.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.href}}).then(function(r){
+if(msg){
+if(r.error){ msg.style.color=”#ef4444”; msg.textContent=r.error.message; if(btn){btn.textContent=“Magic Link senden ✉”;btn.disabled=false;} }
+else{ msg.style.color=”#10b981”; msg.textContent=“✓ Link gesendet! Schau ins Postfach.”; if(btn){btn.textContent=“Link gesendet ✓”;} }
+}
+});
+} else {
+if(msg){ msg.style.color=”#ef4444”; msg.textContent=“Supabase nicht konfiguriert. Siehe SETUP.md.”; }
+if(btn){ btn.textContent=“Magic Link senden ✉”; btn.disabled=false; }
+}
+return;
+}
+},false);
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadLocal();
+initSB();
+renderAll();
 </script>
 
 </body>
