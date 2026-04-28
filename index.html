@@ -6,19 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PhysioTrack – MHH HannibaL</title>
 
-  <!-- ════════════════════════════════════════════════
-       ⚙️  SCHRITT 1: Deine Supabase-Zugangsdaten
-       Aus: supabase.com → Dein Projekt → Settings → API
-  ════════════════════════════════════════════════ -->
-
-  <script>
-    window.SB_URL = "DEINE_SUPABASE_URL";        // z.B. https://abcdef.supabase.co
-    window.SB_KEY = "DEIN_SUPABASE_ANON_KEY";    // beginnt mit "eyJ..."
-  </script>
-
   <!-- Dependencies via CDN -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 
@@ -233,14 +221,11 @@ function LoginScreen() {
   );
 }
 
-// ── Main App ──────────────────────────────────────────────────────────────────
+// ── Main App (LocalStorage) ───────────────────────────────────────────────────
 function App() {
-  const [session, setSession] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const [tab, setTab]     = useState("dashboard");
-  const [data, setData]   = useState(null);
-  const [dates, setDates] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [data, setData]   = useState(() => { try { return JSON.parse(localStorage.getItem("physio_data")) || mkDefault(); } catch { return mkDefault(); } });
+  const [dates, setDates] = useState(() => { try { return JSON.parse(localStorage.getItem("physio_dates")) || []; } catch { return []; } });
   const [sync, setSync]   = useState("idle");
   const [sel, setSel]     = useState(null);
   const [tagInput, setTagInput] = useState("");
@@ -250,64 +235,24 @@ function App() {
   const timerRef = useRef(null);
   const saveTimer = useRef(null);
 
-  // Auth
-  useEffect(() => {
-    sb.auth.getSession().then(({data:{session}}) => { setSession(session); setAuthLoading(false); });
-    const {data:{subscription}} = sb.auth.onAuthStateChange((_,s) => { setSession(s); setAuthLoading(false); });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Load data
-  useEffect(() => {
-    if (!session) return;
-    (async () => {
-      const {data:row} = await sb.from("physio_data").select("*").eq("user_id",session.user.id).single();
-      if (row) { setData(row.unit_data||mkDefault()); setDates(row.streak_dates||[]); }
-      else { setData(mkDefault()); setDates([]); }
-      setLoaded(true);
-    })();
-  }, [session]);
-
-  // Save (debounced)
-  const persist = useCallback(async (d, s) => {
-    if (!session) return;
+  const persist = useCallback((d, s) => {
     setSync("saving");
     clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(async () => {
-      const {error} = await sb.from("physio_data").upsert({
-        user_id: session.user.id, unit_data: d, streak_dates: s, updated_at: new Date().toISOString()
-      }, {onConflict:"user_id"});
-      setSync(error ? "error" : "idle");
-    }, 800);
-  }, [session]);
+    saveTimer.current = setTimeout(() => {
+      try { localStorage.setItem("physio_data", JSON.stringify(d)); localStorage.setItem("physio_dates", JSON.stringify(s)); setSync("idle"); }
+      catch(e) { setSync("error"); }
+    }, 600);
+  }, []);
 
-  const upd = (id, patch) => {
-    const nd = {...data,[id]:{...data[id],...patch}};
-    setData(nd); persist(nd, dates);
-  };
+  const upd = (id, patch) => { const nd={...data,[id]:{...data[id],...patch}}; setData(nd); persist(nd,dates); };
+  const markToday = () => { const t=new Date().toISOString().split("T")[0]; if(dates.includes(t))return; const nd=[...dates,t]; setDates(nd); persist(data,nd); };
+  const logout = () => { if(confirm("Alle lokalen Daten zurücksetzen?")){ localStorage.clear(); setData(mkDefault()); setDates([]); } };
 
-  const markToday = () => {
-    const t = new Date().toISOString().split("T")[0];
-    if (dates.includes(t)) return;
-    const nd = [...dates,t]; setDates(nd); persist(data,nd);
-  };
-
-  const logout = () => sb.auth.signOut();
-
-  // Timer
   useEffect(() => {
     if (running) { timerRef.current = setInterval(()=>setTimer(t=>t+1),1000); }
     else clearInterval(timerRef.current);
     return ()=>clearInterval(timerRef.current);
   }, [running]);
-
-  if (authLoading) return (
-    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"#06b6d4",fontFamily:"'IBM Plex Mono',monospace"}}>Verbinde…</div>
-  );
-  if (!session) return <LoginScreen/>;
-  if (!loaded)  return (
-    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"#06b6d4",fontFamily:"'IBM Plex Mono',monospace"}}>Lade Daten…</div>
-  );
 
   // Derived
   const mcDays   = daysUntil(MC_EXAM);
