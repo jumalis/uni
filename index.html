@@ -2,743 +2,665 @@
 
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PhysioTrack – MHH HannibaL</title>
-
-  <!-- Dependencies via CDN -->
-
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body,#root{height:100%;width:100%}
-    body{background:#070d1c;color:#e2e8f0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
-    button{font-family:inherit;cursor:pointer;border:none;outline:none}
-    input,textarea{font-family:inherit;outline:none}
-    .card{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px}
-    .unit-row:hover{background:#162032!important;cursor:pointer}
-    .tab-btn:hover{background:#1a2744!important}
-    .tag{display:inline-flex;align-items:center;gap:4px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:20px;padding:2px 10px;font-size:12px;color:#93c5fd}
-    .cal-day{border-radius:8px;padding:6px;min-height:64px;background:#0f172a;border:1px solid #1e293b;font-size:11px}
-    input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
-    @media(max-width:640px){.hide-mobile{display:none!important}}
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhysioTrack – MHH</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#070d1c;color:#e2e8f0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;color:#e2e8f0;background:#1e293b;border:1px solid #334155;border-radius:8px;outline:none}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4)}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px}
+.mono{font-family:'IBM Plex Mono',monospace}
+.tag{display:inline-flex;align-items:center;gap:4px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:20px;padding:2px 10px;font-size:12px;color:#93c5fd;cursor:pointer}
+.unit-row{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:#0f172a;border:1px solid #1e293b;margin-bottom:4px;cursor:pointer;transition:background .15s}
+.unit-row:hover{background:#162032}
+.unit-row.active{background:#1e3a5f;border-color:#1d4ed8}
+.tab-btn{padding:6px 14px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;color:#64748b}
+.tab-btn.active{background:#1e3a5f;color:#38bdf8;border-bottom-color:#0ea5e9;font-weight:600}
+.tab-btn:hover:not(.active){background:#1a2744}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.star{font-size:16px;cursor:pointer;user-select:none;transition:color .15s}
+.cal-day{border-radius:8px;padding:6px;min-height:60px;background:#0f172a;border:1px solid #1e293b;font-size:10px}
+.cal-day.has-plan{border-color:#1d4ed8}
+.cal-day.today{background:#0c4a6e;border-color:#06b6d4}
+#detail-panel{position:sticky;top:76px;align-self:start;max-height:calc(100vh - 100px);overflow-y:auto}
+@media(max-width:640px){.hide-sm{display:none!important}.tab-btn{padding:6px 10px;font-size:12px}}
+</style>
 </head>
 <body>
-<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#06b6d4;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em">Lade PhysioTrack…</div></div>
 
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useRef, useCallback, useMemo } = React;
+<!-- HEADER -->
 
-// ── Supabase ──────────────────────────────────────────────────────────────────
-const sb = supabase.createClient(window.SB_URL, window.SB_KEY);
+<header style="background:#0a1628;border-bottom:1px solid #1e293b;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:34px;height:34px;background:linear-gradient(135deg,#0e7490,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚕</div>
+    <div class="hide-sm">
+      <div class="mono" style="font-weight:600;font-size:14px;color:#f1f5f9;letter-spacing:.05em">PhysioTrack</div>
+      <div style="font-size:10px;color:#475569">MHH · HannibaL 2025/26</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+    <span id="sync-dot" style="font-size:11px;color:#334155">● Gespeichert</span>
+    <span id="pill-streak" class="pill" style="background:#431407;border:1px solid #9a3412;color:#fed7aa">🔥 0</span>
+    <span id="pill-mc1" class="pill" style="border:1px solid #10b981;color:#10b981">⏱ MC1 –d</span>
+    <span id="pill-mc2" class="pill" style="border:1px solid #f59e0b;color:#f59e0b">📋 MC2 –d</span>
+    <span class="pill" style="background:#1e1b4b;border:1px solid #4338ca;color:#a5b4fc">🎓 <span id="pill-oral">–</span>d</span>
+    <button onclick="resetData()" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#64748b;padding:4px 8px;font-size:11px">🗑 Reset</button>
+  </div>
+</header>
 
-// ── Data ──────────────────────────────────────────────────────────────────────
-const MC_EXAM   = new Date("2026-05-24");
-const MC2_EXAM  = new Date("2026-07-07");
-const ORAL_EXAM = new Date("2026-08-15");
+<!-- NAV -->
+
+<nav style="display:flex;gap:2px;padding:6px 12px;background:#090f1e;border-bottom:1px solid #1e293b;overflow-x:auto">
+  <button class="tab-btn active" onclick="showTab('dashboard')" id="tab-dashboard">▦ <span class="hide-sm">Dashboard</span></button>
+  <button class="tab-btn" onclick="showTab('lehrplan')"  id="tab-lehrplan">≡ <span class="hide-sm">Lehrplan</span></button>
+  <button class="tab-btn" onclick="showTab('kalender')"  id="tab-kalender">⊞ <span class="hide-sm">Kalender</span></button>
+  <button class="tab-btn" onclick="showTab('radar')"     id="tab-radar">◎ <span class="hide-sm">Radar</span></button>
+  <button class="tab-btn" onclick="showTab('timer')"     id="tab-timer">◷ <span class="hide-sm">Timer</span></button>
+  <button class="tab-btn" onclick="showTab('export')"    id="tab-export">↑ <span class="hide-sm">Export</span></button>
+</nav>
+
+<!-- MAIN -->
+
+<main id="main" style="padding:16px;max-width:900px;margin:0 auto"></main>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const MC1 = new Date("2026-05-24");
+const MC2 = new Date("2026-07-07");
+const ORAL= new Date("2026-08-15");
 
 const UNITS = [
-  {id:1, phase:1,title:"Blut",rev:false,topics:["Blutbestandteile & Hämatopoese","Blutgruppen (AB0, Rhesus)","Hämostase & Gerinnung","Blutbild (Hb, Hk, MCV)","Plasmapuffer"]},
-  {id:2, phase:1,title:"Herz 1 – EKG / Dipol",rev:false,topics:["Erregungsausbreitung (SA→AV→His)","AP Herzmuskel vs. Schrittmacher","EKG-Ableitungen (Einthoven, Goldberger)","P-QRS-T, Lagetypen, Achse","Dipol-Konzept"]},
-  {id:3, phase:1,title:"Herz 2",rev:false,topics:["Herzzyklus & Phasen","Druck-Volumen-Diagramm","HMV, Schlagvolumen, EF","Frank-Starling-Mechanismus","Koronardurchblutung"]},
-  {id:4, phase:1,title:"Kreislauf 1 – Strömung",rev:false,topics:["Hagen-Poiseuille-Gesetz","Laminare vs. turbulente Strömung","Laplace-Gesetz","Windkesselfunktion der Aorta"]},
-  {id:5, phase:1,title:"Kreislauf 2",rev:false,topics:["Blutdruckregulation (kurz/mittel/lang)","Barorezeptoren & RAAS","Starling-Kräfte","Schock-Formen & Kompensation"]},
-  {id:6, phase:1,title:"Atmung",rev:false,topics:["Lungenvolumina & -kapazitäten","Compliance, Resistance, Atemarbeit","Gasaustausch & V/Q-Verhältnis","Hb-Dissoziationskurve","Atemregulation"]},
-  {id:7, phase:1,title:"Salz-Wasser-Haushalt",rev:false,mc2:true,topics:["Körperwasser-Kompartimente","GFR & Clearance (Kreatinin, Inulin)","Na⁺/K⁺-Regulation, ADH, Aldosteron","Konzentrierungs- & Verdünnungsleistung"]},
-  {id:8, phase:1,title:"Säuren-Basen / Energieumsatz",rev:false,topics:["Henderson-Hasselbalch-Gleichung","Puffersysteme","Metabolische/respiratorische Störungen","Kompensationsmechanismen","Ergometrie, O₂-Schuld, Laktat"]},
-  {id:9, phase:1,title:"Generalwdh. I",rev:true,topics:["Blut, Herz 1+2 – MC-Fragen & Lücken"]},
-  {id:10,phase:1,title:"Generalwdh. II",rev:true,topics:["Kreislauf, Atmung – MC-Fragen"]},
-  {id:11,phase:1,title:"Generalwdh. III (Finale)",rev:true,topics:["Alle 8 MC-Themen – Schwachstellen"]},
-  {id:12,phase:2,title:"Nerv 1",rev:false,topics:["Ruhemembranpotenzial & Nernst-Gleichung","Ionenkanäle, Ohm, Leitfähigkeit","Aktionspotenzial: Phasen & Refraktärzeit","Empfindungsschwellen"]},
-  {id:13,phase:2,title:"Nerv 2",rev:false,topics:["Nervenleitgeschwindigkeit (NLG)","Elektroneurographie & EMG","N. ulnaris & N. medianus","Saltatorische Leitung"]},
-  {id:14,phase:2,title:"Mechanik / Wärme",rev:false,topics:["Hebelgesetze & Drehmoment","Muskelkraft bei variablem Kraftarm","Wärmekapazität & Verdunstung","Schwitzen & Konvektion"]},
-  {id:15,phase:2,title:"Muskel 1",rev:false,topics:["Kraft-Geschwindigkeits-Beziehung (Hill)","Kurve der Unterstützungsmaxima","Muskelarbeit & -leistung","Glatte Muskulatur & Transmitter"]},
-  {id:16,phase:2,title:"Muskel 2",rev:false,topics:["Isometrische Kontraktion & Kraft-Länge","Einzelzuckung → Superposition → Tetanus","Querbrückenzyklus & Ca²⁺","Motorische Einheit"]},
-  {id:17,phase:2,title:"Auffrischung Phase 1",rev:true,topics:["Herz, Kreislauf, Atmung – mündliches Niveau"]},
-  {id:18,phase:2,title:"Akustik",rev:false,mc2:true,topics:["Schallwellen: Longitudinal/Transversal","Schallintensität & Schalldruckpegel (dB)","Resonanz, Reflexion, stehende Wellen","Doppler-Effekt"]},
-  {id:19,phase:2,title:"Ohr",rev:false,mc2:true,topics:["Anatomie Außen-/Mittel-/Innenohr","Impedanzanpassung","Cochlea, Wanderwelle, Haarzellen","Audiometrie & Schwerhörigkeit"]},
-  {id:20,phase:2,title:"Optik / Auge",rev:false,mc2:true,topics:["Brechung & Linsengleichung","Akkommodation & Refraktionsfehler","Phototransduktion (Stäbchen/Zapfen)","Gesichtsfeld & Farbsehen"]},
-  {id:21,phase:2,title:"ZNS",rev:false,mc2:true,topics:["Reflexe, Babinski-Zeichen","Renshaw- & autogene Hemmung","Muskelspindel & γ-Innervation","Sinnesphysiologie & Nozizeption","Pupillenreflex"]},
-  {id:22,phase:2,title:"Bildgebende Diagnostik",rev:false,mc2:true,topics:["CT & Hounsfield-Einheiten, Fenstertechnik","MRT: T1/T2-Relaxation, Spin-Echo","Ultraschall: B-Mode, M-Mode, Piezo"]},
-  {id:23,phase:2,title:"Blut + SWH + SBH (Vertiefung)",rev:true,topics:["Klinische Fälle & Querverbindungen","Mündliche Simulation"]},
-  {id:24,phase:2,title:"GenWdh: Nerv, Muskel, Mechanik",rev:true,topics:[]},
-  {id:25,phase:2,title:"GenWdh: Herz, Kreislauf, Atmung",rev:true,topics:[]},
-  {id:26,phase:2,title:"GenWdh: ZNS, Sinne, Bildgebung",rev:true,topics:[]},
-  {id:27,phase:2,title:"Prüfungssimulation I",rev:true,topics:["Mündliche Fragen laut üben"]},
-  {id:28,phase:2,title:"Prüfungssimulation II",rev:true,topics:["Alle ⚠️-Themen, letzte Lücken"]},
+  {id:1, p:1,mc2:false,rev:false,title:"Blut",                       topics:["Blutbestandteile & Hämatopoese","Blutgruppen (AB0, Rhesus)","Hämostase & Gerinnung","Blutbild (Hb, Hk, MCV)","Plasmapuffer"]},
+  {id:2, p:1,mc2:false,rev:false,title:"Herz 1 – EKG / Dipol",       topics:["Erregungsausbreitung (SA→AV→His)","AP Herzmuskel vs. Schrittmacher","EKG-Ableitungen (Einthoven, Goldberger)","P-QRS-T, Lagetypen, Achse","Dipol-Konzept"]},
+  {id:3, p:1,mc2:false,rev:false,title:"Herz 2",                      topics:["Herzzyklus & Phasen","Druck-Volumen-Diagramm","HMV, Schlagvolumen, EF","Frank-Starling-Mechanismus","Koronardurchblutung"]},
+  {id:4, p:1,mc2:false,rev:false,title:"Kreislauf 1 – Strömung",      topics:["Hagen-Poiseuille-Gesetz","Laminare vs. turbulente Strömung","Laplace-Gesetz","Windkesselfunktion der Aorta"]},
+  {id:5, p:1,mc2:false,rev:false,title:"Kreislauf 2",                 topics:["Blutdruckregulation (kurz/mittel/lang)","Barorezeptoren & RAAS","Starling-Kräfte","Schock-Formen & Kompensation"]},
+  {id:6, p:1,mc2:false,rev:false,title:"Atmung",                      topics:["Lungenvolumina & -kapazitäten","Compliance, Resistance, Atemarbeit","Gasaustausch & V/Q-Verhältnis","Hb-Dissoziationskurve","Atemregulation"]},
+  {id:7, p:1,mc2:false,rev:false,title:"Salz-Wasser-Haushalt",        topics:["Körperwasser-Kompartimente","GFR & Clearance (Kreatinin, Inulin)","Na⁺/K⁺-Regulation, ADH, Aldosteron","Konzentrierungs- & Verdünnungsleistung"]},
+  {id:8, p:1,mc2:false,rev:false,title:"Säuren-Basen / Energieumsatz",topics:["Henderson-Hasselbalch-Gleichung","Puffersysteme","Metabolische/respiratorische Störungen","Kompensationsmechanismen","Ergometrie, O₂-Schuld, Laktat"]},
+  {id:9, p:1,mc2:false,rev:true, title:"Generalwdh. I",               topics:["Blut, Herz 1+2 – MC-Fragen & Lücken"]},
+  {id:10,p:1,mc2:false,rev:true, title:"Generalwdh. II",              topics:["Kreislauf, Atmung – MC-Fragen"]},
+  {id:11,p:1,mc2:false,rev:true, title:"Generalwdh. III (Finale)",    topics:["Alle 8 MC-Themen – Schwachstellen"]},
+  {id:12,p:2,mc2:false,rev:false,title:"Nerv 1",                      topics:["Ruhemembranpotenzial & Nernst-Gleichung","Ionenkanäle, Ohm, Leitfähigkeit","Aktionspotenzial: Phasen & Refraktärzeit","Empfindungsschwellen"]},
+  {id:13,p:2,mc2:false,rev:false,title:"Nerv 2",                      topics:["Nervenleitgeschwindigkeit (NLG)","Elektroneurographie & EMG","N. ulnaris & N. medianus","Saltatorische Leitung"]},
+  {id:14,p:2,mc2:false,rev:false,title:"Mechanik / Wärme",            topics:["Hebelgesetze & Drehmoment","Muskelkraft bei variablem Kraftarm","Wärmekapazität & Verdunstung","Schwitzen & Konvektion"]},
+  {id:15,p:2,mc2:false,rev:false,title:"Muskel 1",                    topics:["Kraft-Geschwindigkeits-Beziehung (Hill)","Kurve der Unterstützungsmaxima","Muskelarbeit & -leistung","Glatte Muskulatur & Transmitter"]},
+  {id:16,p:2,mc2:false,rev:false,title:"Muskel 2",                    topics:["Isometrische Kontraktion & Kraft-Länge","Einzelzuckung → Superposition → Tetanus","Querbrückenzyklus & Ca²⁺","Motorische Einheit"]},
+  {id:17,p:2,mc2:false,rev:true, title:"Auffrischung Phase 1",        topics:["Herz, Kreislauf, Atmung – mündliches Niveau"]},
+  {id:18,p:2,mc2:true, rev:false,title:"Akustik",                     topics:["Schallwellen: Longitudinal/Transversal","Schallintensität & Schalldruckpegel (dB)","Resonanz, Reflexion, stehende Wellen","Doppler-Effekt"]},
+  {id:19,p:2,mc2:true, rev:false,title:"Ohr",                         topics:["Anatomie Außen-/Mittel-/Innenohr","Impedanzanpassung","Cochlea, Wanderwelle, Haarzellen","Audiometrie & Schwerhörigkeit"]},
+  {id:20,p:2,mc2:true, rev:false,title:"Optik / Auge",                topics:["Brechung & Linsengleichung","Akkommodation & Refraktionsfehler","Phototransduktion (Stäbchen/Zapfen)","Gesichtsfeld & Farbsehen"]},
+  {id:21,p:2,mc2:true, rev:false,title:"ZNS",                         topics:["Reflexe, Babinski-Zeichen","Renshaw- & autogene Hemmung","Muskelspindel & γ-Innervation","Sinnesphysiologie & Nozizeption","Pupillenreflex"]},
+  {id:22,p:2,mc2:true, rev:false,title:"Bildgebende Diagnostik",      topics:["CT & Hounsfield-Einheiten, Fenstertechnik","MRT: T1/T2-Relaxation, Spin-Echo","Ultraschall: B-Mode, M-Mode, Piezo"]},
+  {id:23,p:2,mc2:false,rev:true, title:"Blut + SWH + SBH Vertiefung",topics:["Klinische Fälle & Querverbindungen","Mündliche Simulation"]},
+  {id:24,p:2,mc2:false,rev:true, title:"GenWdh: Nerv, Muskel, Mechanik",topics:[]},
+  {id:25,p:2,mc2:false,rev:true, title:"GenWdh: Herz, Kreislauf, Atmung",topics:[]},
+  {id:26,p:2,mc2:false,rev:true, title:"GenWdh: ZNS, Sinne, Bildgebung",topics:[]},
+  {id:27,p:2,mc2:false,rev:true, title:"Prüfungssimulation I",        topics:["Mündliche Fragen laut üben"]},
+  {id:28,p:2,mc2:false,rev:true, title:"Prüfungssimulation II",       topics:["Alle Lücken schließen"]},
 ];
 
-const STATUSES = ["open","working","done","gaps"];
-const S_LABEL  = {open:"Offen",working:"In Arbeit",done:"Fertig",gaps:"Lücken"};
-const S_COLOR  = {open:"#334155",working:"#d97706",done:"#059669",gaps:"#dc2626"};
-const S_ICON   = {open:"○",working:"◑",done:"●",gaps:"⚠"};
+const SC = {open:"#334155",working:"#d97706",done:"#059669",gaps:"#dc2626"};
+const SL = {open:"○ Offen",working:"◑ In Arbeit",done:"● Fertig",gaps:"⚠ Lücken"};
 
-const mkDefault = () => {
-  const d = {};
-  UNITS.forEach(u => { d[u.id] = {status:"open",score:0,planned:"",completed:"",tags:[],notes:""}; });
-  return d;
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  units: {},   // {id: {status, score, planned, completed, tags, notes}}
+  dates: [],   // streak dates
+  selId: null,
+  currentTab: "dashboard",
+  timerSec: 0,
+  timerRunning: false,
+  timerMode: "study",
+  calMonth: new Date().getMonth(),
+  calYear: new Date().getFullYear(),
 };
 
-const daysUntil = d => Math.ceil((new Date(d) - new Date()) / 86400000);
+function mkUnit(){return {status:"open",score:0,planned:"",completed:"",tags:[],notes:""};}
+function initUnits(){const u={};UNITS.forEach(x=>{u[x.id]=mkUnit();});return u;}
 
-const calcStreak = dates => {
-  if (!dates.length) return 0;
-  const sorted = [...new Set(dates)].sort().reverse();
-  const cur = new Date(); cur.setHours(0,0,0,0);
-  let count = 0;
-  for (let i = 0; i < 90; i++) {
-    const s = cur.toISOString().split("T")[0];
-    if (sorted.includes(s)) { count++; cur.setDate(cur.getDate()-1); }
-    else if (i === 0) cur.setDate(cur.getDate()-1);
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+let saveTimeout;
+function load(){
+  try{
+    const d=localStorage.getItem("physio_v2");
+    if(d){const p=JSON.parse(d);state.units=p.units||initUnits();state.dates=p.dates||[];}
+    else{state.units=initUnits();state.dates=[];}
+  }catch{state.units=initUnits();state.dates=[];}
+}
+function save(){
+  const dot=document.getElementById("sync-dot");
+  if(dot){dot.style.color="#f59e0b";dot.textContent="● Speichert…";}
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(()=>{
+    try{localStorage.setItem("physio_v2",JSON.stringify({units:state.units,dates:state.dates}));
+    if(dot){dot.style.color="#334155";dot.textContent="● Gespeichert";}}
+    catch(e){if(dot){dot.style.color="#ef4444";dot.textContent="● Fehler";}}
+  },500);
+}
+function resetData(){if(confirm("Alle Daten zurücksetzen?")){localStorage.removeItem("physio_v2");state.units=initUnits();state.dates=[];render();}}
+
+// ─── COMPUTED ────────────────────────────────────────────────────────────────
+function daysUntil(d){return Math.ceil((new Date(d)-new Date())/86400000);}
+function streak(){
+  const sorted=[...new Set(state.dates)].sort().reverse();
+  if(!sorted.length)return 0;
+  const cur=new Date();cur.setHours(0,0,0,0);
+  let c=0;
+  for(let i=0;i<90;i++){
+    const s=cur.toISOString().split("T")[0];
+    if(sorted.includes(s)){c++;cur.setDate(cur.getDate()-1);}
+    else if(i===0)cur.setDate(cur.getDate()-1);
     else break;
   }
-  return count;
-};
+  return c;
+}
+function pct(units){
+  const done=units.filter(u=>state.units[u.id]?.status==="done").length;
+  return units.length?Math.round(done/units.length*100):0;
+}
+const p1units=UNITS.filter(u=>u.p===1);
+const p2units=UNITS.filter(u=>u.p===2);
+const mc2units=UNITS.filter(u=>u.mc2);
+function allTags(){return UNITS.flatMap(u=>(state.units[u.id]?.tags||[]).map(t=>({tag:t,id:u.id,title:u.title})));}
 
-const fmt = s => {
-  const h = String(Math.floor(s/3600)).padStart(2,"0");
-  const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
-  return `${h}:${m}:${String(s%60).padStart(2,"0")}`;
-};
+// ─── RING SVG ────────────────────────────────────────────────────────────────
+function ring(pct,size,color,label,sub){
+  const stroke=size>80?10:8,r=(size-stroke)/2,circ=2*Math.PI*r,dash=(pct/100)*circ;
+  return `<div style="position:relative;width:${size}px;height:${size}px;flex-shrink:0">
+    <svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#1e293b" stroke-width="${stroke}"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+        stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+    </svg>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <span class="mono" style="font-size:${size>80?17:12}px;font-weight:700;color:#f1f5f9">${label}</span>
+      ${sub?`<span style="font-size:10px;color:#64748b;margin-top:1px">${sub}</span>`:""}
+    </div>
+  </div>`;
+}
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function Ring({pct,size=100,stroke=10,color="#06b6d4",label,sub}) {
-  const r=(size-stroke)/2, circ=2*Math.PI*r, dash=(pct/100)*circ;
-  return (
-    <div style={{position:"relative",width:size,height:size,flexShrink:0}}>
-      <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e293b" strokeWidth={stroke}/>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color}
-          strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
-          style={{transition:"stroke-dasharray .6s ease"}}/>
-      </svg>
-      <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-        <span style={{fontSize:size>80?17:12,fontWeight:700,color:"#f1f5f9",fontFamily:"'IBM Plex Mono',monospace"}}>{label}</span>
-        {sub&&<span style={{fontSize:10,color:"#64748b",marginTop:1}}>{sub}</span>}
+// ─── STARS HTML ──────────────────────────────────────────────────────────────
+function starsHTML(unitId,score){
+  return [1,2,3,4,5].map(i=>
+    `<span class="star" style="color:${i<=score?"#f59e0b":"#334155"}" onclick="event.stopPropagation();setScore(${unitId},${i}===${score}?0:${i})">${i<=score?"★":"☆"}</span>`
+  ).join("");
+}
+
+function fmt(s){return String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor((s%3600)/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function showTab(name){
+  state.currentTab=name;
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  renderMain();
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render(){updateHeader();renderMain();}
+
+function updateHeader(){
+  const s=streak(),mc1d=daysUntil(MC1),mc2d=daysUntil(MC2),orald=daysUntil(ORAL);
+  document.getElementById("pill-streak").textContent="🔥 "+s;
+  const mc1c=mc1d<7?"#ef4444":mc1d<28?"#f59e0b":"#10b981";
+  const mc2c=mc2d<7?"#ef4444":mc2d<28?"#f59e0b":"#10b981";
+  const p1=document.getElementById("pill-mc1");p1.textContent="⏱ MC1 "+mc1d+"d";p1.style.borderColor=mc1c;p1.style.color=mc1c;
+  const p2=document.getElementById("pill-mc2");p2.textContent="📋 MC2 "+mc2d+"d";p2.style.borderColor=mc2c;p2.style.color=mc2c;
+  document.getElementById("pill-oral").textContent=orald;
+}
+
+function renderMain(){
+  const main=document.getElementById("main");
+  switch(state.currentTab){
+    case "dashboard": main.innerHTML=renderDashboard(); break;
+    case "lehrplan":  main.innerHTML=renderLehrplan();  attachLehrplanEvents(); break;
+    case "kalender":  main.innerHTML=renderKalender();  break;
+    case "radar":     main.innerHTML=renderRadar();     break;
+    case "timer":     main.innerHTML=renderTimer();     break;
+    case "export":    main.innerHTML=renderExport();    break;
+  }
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const mc1d=daysUntil(MC1),mc2d=daysUntil(MC2),orald=daysUntil(ORAL);
+  const p1d=p1units.filter(u=>state.units[u.id]?.status==="done").length;
+  const mc2d_=mc2units.filter(u=>state.units[u.id]?.status==="done").length;
+  const p2d=p2units.filter(u=>state.units[u.id]?.status==="done").length;
+  const totd=p1d+p2d;
+  const s=streak();
+  const tags=allTags();
+
+  const nextUnits=UNITS.filter(u=>state.units[u.id]?.status!=="done").slice(0,5);
+
+  // Streak grid
+  const today=new Date().toISOString().split("T")[0];
+  let streakGrid="";
+  for(let i=29;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split("T")[0];
+    const studied=state.dates.includes(ds);
+    const isToday=ds===today;
+    streakGrid+=`<div title="${ds}" style="width:26px;height:26px;border-radius:6px;background:${studied?"#0e7490":"#1e293b"};border:1px solid ${isToday?"#06b6d4":studied?"#0284c7":"#334155"};display:flex;align-items:center;justify-content:center;font-size:9px;color:${studied?"#67e8f9":"#334155"}" class="mono">${d.getDate()}</div>`;
+  }
+
+  return `
+  <div style="display:flex;flex-direction:column;gap:14px">
+
+    <!-- Rings -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      ${[
+        [pct(p1units),"MC 1","#06b6d4",p1d+"/"+p1units.length,mc1d+"d",mc1d<7?"#ef4444":mc1d<28?"#f59e0b":"#10b981"],
+        [pct(mc2units),"MC 2","#f59e0b",mc2d_+"/"+mc2units.length,mc2d+"d",mc2d<7?"#ef4444":mc2d<28?"#f59e0b":"#10b981"],
+        [pct(p2units),"Mündl.","#8b5cf6",p2d+"/"+p2units.length,orald+"d","#a5b4fc"],
+        [Math.round(totd/UNITS.length*100),"Gesamt","#10b981",totd+"/"+UNITS.length,Math.round(totd/UNITS.length*100)+"%","#34d399"],
+      ].map(([p,sub,col,lbl,day,dc])=>`
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px">
+          ${ring(p,90,col,lbl,sub)}
+          <span style="font-size:11px;color:${dc};font-weight:600">${day}</span>
+        </div>`).join("")}
+    </div>
+
+    <!-- Ampel -->
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">PRÜFUNGS-AMPEL</div>
+      ${[
+        ["MC 1 – 24.05.2026",p1d,p1units.length,mc1d,"#06b6d4"],
+        ["MC 2 – 07.07.2026",mc2d_,mc2units.length,mc2d,"#f59e0b"],
+        ["Mündliche – ~15.08.2026",totd,UNITS.length,orald,"#8b5cf6"],
+      ].map(([lbl,done,tot,days,col])=>{
+        const p=Math.round(done/tot*100);
+        const amp=days<7?"🔴":days<28?"🟡":"🟢";
+        return `<div style="background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;font-weight:600">${amp} ${lbl}</span>
+            <span class="mono" style="font-size:12px;color:${col}">${done}/${tot}</span>
+          </div>
+          <div style="background:#0f172a;border-radius:6px;height:8px;overflow:hidden">
+            <div style="height:100%;background:${col};width:${p}%;border-radius:6px;transition:width .6s"></div>
+          </div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">Noch ${tot-done} LE · ${days} Tage verbleibend</div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <!-- Streak -->
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">🔥 LERN-STREAK – LETZTE 30 TAGE (${s} in Folge)</div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">${streakGrid}</div>
+      <button onclick="markToday()" style="margin-top:10px;padding:6px 14px;background:#164e63;border:1px solid #0e7490;border-radius:8px;color:#67e8f9;font-size:12px;font-weight:600">Heute als gelernt markieren</button>
+    </div>
+
+    ${tags.length?`
+    <!-- Lücken -->
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">⚠ OFFENE LÜCKEN (${tags.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${tags.slice(0,12).map(t=>`<span class="tag">⚡ ${t.tag} <span style="color:#475569;font-size:10px">(${t.title})</span></span>`).join("")}
+        ${tags.length>12?`<span style="color:#475569;font-size:12px;align-self:center">+${tags.length-12} → Radar</span>`:""}
       </div>
-    </div>
-  );
-}
+    </div>`:""}
 
-function Stars({score,onChange}) {
-  return (
-    <div style={{display:"flex",gap:2}}>
-      {[1,2,3,4,5].map(i=>(
-        <span key={i} onClick={e=>{e.stopPropagation();onChange(i===score?0:i)}}
-          style={{cursor:"pointer",fontSize:15,color:i<=score?"#f59e0b":"#334155",transition:"color .15s",userSelect:"none"}}>★</span>
-      ))}
-    </div>
-  );
-}
-
-function Pill({icon,label,bg,border,color}) {
-  return (
-    <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,background:bg,border:`1px solid ${border}`,fontSize:12,fontWeight:600,color,whiteSpace:"nowrap"}}>
-      {icon} {label}
-    </div>
-  );
-}
-
-function Label({children}) {
-  return <div style={{fontSize:10,fontWeight:700,color:"#475569",letterSpacing:".12em",marginBottom:5}}>{children}</div>;
-}
-
-function StatusDot({s}) {
-  return <div style={{width:9,height:9,borderRadius:"50%",background:S_COLOR[s],flexShrink:0}}/>;
-}
-
-function SyncDot({status}) {
-  const cfg = {idle:{c:"#334155",t:"Gespeichert"},saving:{c:"#f59e0b",t:"Speichert…"},error:{c:"#ef4444",t:"Fehler"}};
-  const {c,t} = cfg[status]||cfg.idle;
-  return <div style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:c}}><div style={{width:7,height:7,borderRadius:"50%",background:c,animation:status==="saving"?"pulse 1s infinite":""}}/>  {t}</div>;
-}
-
-// ── Login Screen ──────────────────────────────────────────────────────────────
-function LoginScreen() {
-  const [email,setEmail] = useState("");
-  const [sent,setSent]   = useState(false);
-  const [err,setErr]     = useState("");
-  const [loading,setLoading] = useState(false);
-
-  const send = async () => {
-    if (!email.includes("@")) return setErr("Bitte eine gültige E-Mail eingeben.");
-    setLoading(true); setErr("");
-    const {error} = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.href }
-    });
-    setLoading(false);
-    if (error) setErr(error.message);
-    else setSent(true);
-  };
-
-  return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,background:"#070d1c"}}>
-      <div style={{width:"100%",maxWidth:400}}>
-        <div style={{textAlign:"center",marginBottom:32}}>
-          <div style={{width:60,height:60,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,margin:"0 auto 16px"}}>⚕</div>
-          <div style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:600,fontSize:22,color:"#f1f5f9",letterSpacing:".05em"}}>PhysioTrack</div>
-          <div style={{fontSize:13,color:"#475569",marginTop:4}}>MHH · HannibaL 2025/26</div>
-        </div>
-
-        <div className="card" style={{padding:24}}>
-          {!sent ? (
-            <>
-              <div style={{fontSize:14,color:"#94a3b8",marginBottom:20,textAlign:"center",lineHeight:1.6}}>
-                Melde dich mit deiner E-Mail an. Du bekommst einen Magic Link — kein Passwort nötig.
-              </div>
-              <Label>E-MAIL</Label>
-              <input type="email" value={email} onChange={e=>setEmail(e.target.value)}
-                onKeyDown={e=>e.key==="Enter"&&send()}
-                placeholder="name@email.de"
-                style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:10,padding:"12px 14px",color:"#e2e8f0",fontSize:14,marginBottom:12}}/>
-              {err && <div style={{color:"#ef4444",fontSize:12,marginBottom:10}}>{err}</div>}
-              <button onClick={send} disabled={loading}
-                style={{width:"100%",padding:"12px",borderRadius:10,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",color:"#fff",fontWeight:700,fontSize:14,opacity:loading?.6:1}}>
-                {loading?"Sende Link…":"Magic Link senden ✉"}
-              </button>
-            </>
-          ) : (
-            <div style={{textAlign:"center",padding:"20px 0"}}>
-              <div style={{fontSize:40,marginBottom:12}}>✉</div>
-              <div style={{fontWeight:600,fontSize:16,marginBottom:8}}>Link gesendet!</div>
-              <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.7}}>Schau in dein Postfach ({email}) und klicke auf den Link. Du wirst automatisch eingeloggt.</div>
+    <!-- Nächste LEs -->
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">▶ NÄCHSTE LERNEINHEITEN</div>
+      ${nextUnits.map(u=>{
+        const d=state.units[u.id];
+        return `<div onclick="showTab('lehrplan');selectUnit(${u.id})" class="unit-row" style="margin-bottom:4px">
+          <div class="status-dot" style="background:${SC[d.status]}"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <span class="mono" style="color:#475569;font-size:11px">LE${String(u.id).padStart(2,"0")} </span>${u.title}
             </div>
-          )}
-        </div>
-      </div>
+            ${d.planned?`<div style="font-size:11px;color:#475569">📅 ${d.planned}</div>`:""}
+          </div>
+          <div style="display:flex;gap:2px">${starsHTML(u.id,d.score)}</div>
+        </div>`;
+      }).join("")}
     </div>
-  );
+  </div>`;
 }
 
-// ── Main App (LocalStorage) ───────────────────────────────────────────────────
-function App() {
-  const [tab, setTab]     = useState("dashboard");
-  const [data, setData]   = useState(() => { try { return JSON.parse(localStorage.getItem("physio_data")) || mkDefault(); } catch { return mkDefault(); } });
-  const [dates, setDates] = useState(() => { try { return JSON.parse(localStorage.getItem("physio_dates")) || []; } catch { return []; } });
-  const [sync, setSync]   = useState("idle");
-  const [sel, setSel]     = useState(null);
-  const [tagInput, setTagInput] = useState("");
-  const [timer, setTimer] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [timerMode, setTimerMode] = useState("study");
-  const timerRef = useRef(null);
-  const saveTimer = useRef(null);
+// ─── LEHRPLAN ────────────────────────────────────────────────────────────────
+function renderLehrplan(){
+  const sel=state.selId;
+  const u=sel?UNITS.find(x=>x.id===sel):null;
+  const d=sel?state.units[sel]:null;
 
-  const persist = useCallback((d, s) => {
-    setSync("saving");
-    clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      try { localStorage.setItem("physio_data", JSON.stringify(d)); localStorage.setItem("physio_dates", JSON.stringify(s)); setSync("idle"); }
-      catch(e) { setSync("error"); }
-    }, 600);
-  }, []);
+  const list=`<div style="display:flex;flex-direction:column;gap:0">
+    ${[1,2].map(phase=>`
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin:14px 0 6px;border-bottom:1px solid #1e293b;padding-bottom:4px">
+        ${phase===1?"PHASE 1 – MC 1 (24.05.2026)":"PHASE 2 – MC 2 (07.07.) & MÜNDLICHE (15.08.2026)"}
+      </div>
+      ${UNITS.filter(x=>x.p===phase).map(x=>{
+        const dx=state.units[x.id];
+        return `<div class="unit-row${sel===x.id?" active":""}" onclick="selectUnit(${x.id})"
+          style="border-color:${sel===x.id?"#1d4ed8":x.mc2?"#78350f":"#1e293b"}">
+          <div class="status-dot" style="background:${SC[dx.status]}"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <span class="mono" style="color:#475569;font-size:11px">LE${String(x.id).padStart(2,"0")} </span>${x.title}
+              ${x.rev?`<span style="font-size:10px;color:#7c3aed;background:#2e1065;padding:1px 5px;border-radius:4px;margin-left:5px">WDH</span>`:""}
+              ${x.mc2?`<span style="font-size:10px;color:#f59e0b;background:#431407;padding:1px 5px;border-radius:4px;margin-left:5px">MC2</span>`:""}
+            </div>
+            ${dx.planned?`<div style="font-size:11px;color:#475569">📅 ${dx.planned}</div>`:""}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+            <div style="display:flex;gap:2px">${starsHTML(x.id,dx.score)}</div>
+            ${(dx.tags||[]).length?`<span style="font-size:10px;color:#ef4444">⚠ ${dx.tags.length}</span>`:""}
+          </div>
+        </div>`;
+      }).join("")}`).join("")}
+  </div>`;
 
-  const upd = (id, patch) => { const nd={...data,[id]:{...data[id],...patch}}; setData(nd); persist(nd,dates); };
-  const markToday = () => { const t=new Date().toISOString().split("T")[0]; if(dates.includes(t))return; const nd=[...dates,t]; setDates(nd); persist(data,nd); };
-  const logout = () => { if(confirm("Alle lokalen Daten zurücksetzen?")){ localStorage.clear(); setData(mkDefault()); setDates([]); } };
+  const detail=sel?`
+  <div id="detail-panel" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div>
+        <div class="mono" style="font-size:11px;color:#475569">LERNEINHEIT ${sel}</div>
+        <div style="font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.3">${u.title}</div>
+      </div>
+      <button onclick="selectUnit(null)" style="color:#475569;font-size:18px;padding:4px">✕</button>
+    </div>
 
-  useEffect(() => {
-    if (running) { timerRef.current = setInterval(()=>setTimer(t=>t+1),1000); }
-    else clearInterval(timerRef.current);
-    return ()=>clearInterval(timerRef.current);
-  }, [running]);
+    <!-- Status -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">STATUS</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${["open","working","done","gaps"].map(s=>`
+          <button onclick="setStatus(${sel},'${s}')"
+            style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${d.status===s?SC[s]+"33":"transparent"};border:1px solid ${d.status===s?SC[s]:"#334155"};color:${d.status===s?SC[s]:"#64748b"}">
+            ${SL[s]}
+          </button>`).join("")}
+      </div>
+    </div>
 
-  // Derived
-  const mcDays   = daysUntil(MC_EXAM);
-  const mc2Days  = daysUntil(MC2_EXAM);
-  const oralDays = daysUntil(ORAL_EXAM);
-  const streak   = calcStreak(dates);
-  const p1       = UNITS.filter(u=>u.phase===1);
-  const p2       = UNITS.filter(u=>u.phase===2);
-  const mc2Units = UNITS.filter(u=>u.mc2);
-  const p1done   = p1.filter(u=>data[u.id]?.status==="done").length;
-  const mc2done  = mc2Units.filter(u=>data[u.id]?.status==="done").length;
-  const p2done   = p2.filter(u=>data[u.id]?.status==="done").length;
-  const totalDone= p1done+p2done;
-  const allTags  = Object.entries(data).flatMap(([id,d])=>(d.tags||[]).map(tag=>({tag,id:+id,title:UNITS.find(u=>u.id===+id)?.title||""})));
-  const mcColor  = mcDays<7?"#ef4444":mcDays<28?"#f59e0b":"#10b981";
+    <!-- Score -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">SELBSTEINSCHÄTZUNG</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;gap:2px">${starsHTML(sel,d.score)}</div>
+        <span style="font-size:12px;color:#475569">${["–","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score]}</span>
+      </div>
+    </div>
 
-  const TABS = [
-    {id:"dashboard",icon:"▦",label:"Dashboard"},
-    {id:"lehrplan", icon:"≡", label:"Lehrplan"},
-    {id:"kalender", icon:"⊞",label:"Kalender"},
-    {id:"radar",    icon:"◎",label:"Radar"},
-    {id:"timer",    icon:"◷",label:"Timer"},
-    {id:"export",   icon:"↑", label:"Export"},
-  ];
+    <!-- Dates -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">GEPLANT</div>
+        <input type="date" value="${d.planned}" onchange="setField(${sel},'planned',this.value)"
+          style="width:100%;padding:6px 8px;font-size:12px">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">ERLEDIGT AM</div>
+        <input type="date" value="${d.completed}" onchange="setField(${sel},'completed',this.value);setStatus(${sel},'done')"
+          style="width:100%;padding:6px 8px;font-size:12px">
+      </div>
+    </div>
 
-  return (
-    <div style={{minHeight:"100vh",background:"#070d1c",color:"#e2e8f0",fontFamily:"'IBM Plex Sans',system-ui,sans-serif"}}>
-      <style>{`
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-        .unit-row:hover{background:#162032!important}
-        .tab-btn:hover{background:#1a2744!important}
-      `}</style>
+    <!-- Topics -->
+    ${u.topics.length?`
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">KERNTHEMEN</div>
+      <ul style="margin:0;padding-left:16px">
+        ${u.topics.map(t=>`<li style="font-size:12px;color:#94a3b8;margin-bottom:3px">${t}</li>`).join("")}
+      </ul>
+    </div>`:""}
+
+    <!-- Tags -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">LÜCKEN-TAGS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
+        ${(d.tags||[]).map((tag,i)=>`
+          <span class="tag">${tag} <span onclick="removeTag(${sel},${i})" style="color:#ef4444;margin-left:2px">✕</span></span>`).join("")}
+      </div>
+      <div style="display:flex;gap:6px">
+        <input id="tag-input" placeholder="Stichwort + Enter …" onkeydown="if(event.key==='Enter')addTag(${sel})"
+          style="flex:1;padding:6px 8px;font-size:12px">
+        <button onclick="addTag(${sel})" style="padding:6px 10px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:8px;color:#60a5fa;font-size:13px">+</button>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#475569;letter-spacing:.12em;margin-bottom:5px">NOTIZEN</div>
+      <textarea rows="3" placeholder="Eigene Notizen…" onchange="setField(${sel},'notes',this.value)"
+        style="width:100%;padding:8px;font-size:12px;resize:vertical">${d.notes||""}</textarea>
 
 ```
-  {/* Header */}
-  <header style={{background:"#0a1628",borderBottom:"1px solid #1e293b",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100,gap:8}}>
-    <div style={{display:"flex",alignItems:"center",gap:10}}>
-      <div style={{width:34,height:34,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}>⚕</div>
-      <div className="hide-mobile">
-        <div style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:600,fontSize:14,color:"#f1f5f9",letterSpacing:".05em"}}>PhysioTrack</div>
-        <div style={{fontSize:10,color:"#475569"}}>MHH · HannibaL 2025/26</div>
+</div>
+```
+
+  </div>`:
+  `<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:200px;color:#334155;font-size:13px">← LE auswählen</div>`;
+
+return `<div style="display:grid;grid-template-columns:${sel?"1fr 1.3fr":"1fr"};gap:14px;align-items:start">${list}${detail}</div>`;
+}
+
+function attachLehrplanEvents(){}
+
+// ─── KALENDER ────────────────────────────────────────────────────────────────
+function renderKalender(){
+const {calMonth:month,calYear:year}=state;
+const first=new Date(year,month,1),last=new Date(year,month+1,0);
+const startDay=(first.getDay()||7)-1;
+const planned={};
+UNITS.forEach(u=>{
+const d=state.units[u.id];
+if(d.planned){if(!planned[d.planned])planned[d.planned]=[];planned[d.planned].push(u);}
+});
+const mNames=[“Januar”,“Februar”,“März”,“April”,“Mai”,“Juni”,“Juli”,“August”,“September”,“Oktober”,“November”,“Dezember”];
+let cells=””;
+for(let i=0;i<startDay;i++)cells+=”<div></div>”;
+const today=new Date().toISOString().split(“T”)[0];
+for(let day=1;day<=last.getDate();day++){
+const ds=`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+const us=planned[ds]||[];
+cells+=`<div class="cal-day${us.length?" has-plan":""}${ds===today?" today":""}"> <div class="mono" style="font-weight:${ds===today?700:400};color:${ds===today?"#67e8f9":"#64748b"};margin-bottom:2px">${day}</div> ${us.map(u=>`<div style="font-size:9px;padding:1px 3px;border-radius:3px;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${SC[state.units[u.id].status]}22;color:${SC[state.units[u.id].status]};border:1px solid ${SC[state.units[u.id].status]}44">LE${u.id} ${u.title.substring(0,8)}</div>`).join("")} </div>`;
+}
+return `
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+    <button onclick="calNav(-1)" style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:5px 12px;font-size:16px">‹</button>
+    <div style="font-weight:700;font-size:15px;flex:1;text-align:center">${mNames[month]} ${year}</div>
+    <button onclick="calNav(1)"  style="background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;padding:5px 12px;font-size:16px">›</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+    ${["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>`<div style="text-align:center;font-size:10px;color:#475569;font-weight:700;padding:4px 0">${d}</div>`).join("")}
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">${cells}</div>`;
+}
+function calNav(dir){
+  state.calMonth+=dir;
+  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  renderMain();
+}
+
+// ─── RADAR ───────────────────────────────────────────────────────────────────
+function renderRadar(){
+const tags=allTags();
+const gapUnits=UNITS.filter(u=>(state.units[u.id]?.tags||[]).length>0||state.units[u.id]?.status===“gaps”);
+const uniqueTitles=[…new Set(tags.map(t=>t.title))];
+return `
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:4px">◎ WIEDERHOLUNGS-RADAR</div>
+      <div style="font-size:12px;color:#64748b">Alle Lücken auf einen Blick. Klicke ✕ um ein Tag zu entfernen.</div>
+    </div>
+    ${gapUnits.map(u=>{
+      const d=state.units[u.id];
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-weight:600;font-size:14px">LE ${u.id} – ${u.title}</div>
+          <div style="display:flex;gap:2px">${starsHTML(u.id,d.score)}</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+          ${(d.tags||[]).map((tag,i)=>`<span class="tag">${tag} <span onclick="removeTag(${u.id},${i})" style="color:#ef4444">✕</span></span>`).join("")}
+        </div>
+        ${d.notes?`<div style="font-size:12px;color:#64748b;font-style:italic;border-left:2px solid #334155;padding-left:8px">${d.notes}</div>`:""}
+      </div>`;
+    }).join("")}
+    ${gapUnits.length===0?`<div class="card" style="text-align:center;padding:40px;color:#475569"><div style="font-size:36px;margin-bottom:8px">✓</div><div style="font-weight:600">Keine Lücken eingetragen</div></div>`:""}
+    ${tags.length?`
+    <div class="card" style="border-color:#1d4ed8">
+      <div style="font-size:12px;font-weight:600;color:#60a5fa;margin-bottom:10px">📋 WOCHENEND-CHECKLISTE</div>
+      ${uniqueTitles.map(title=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e293b;font-size:13px">
+          ☐ ${title} <span style="font-size:11px;color:#475569">(${tags.filter(t=>t.title===title).length} Lücken)</span>
+        </div>`).join("")}
+    </div>`:""}
+  </div>`;
+}
+
+// ─── TIMER ───────────────────────────────────────────────────────────────────
+let timerInterval;
+function renderTimer(){
+const {timerSec:sec,timerMode:mode}=state;
+const goal=mode===“study”?10800:900;
+const pctVal=Math.min(sec/goal*100,100);
+const col=mode===“study”?(sec>=goal?”#10b981”:”#06b6d4”):”#10b981”;
+return `
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+    <div class="card" style="width:100%;text-align:center;padding:32px">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.15em;margin-bottom:14px">${mode==="study"?"⚡ LERNPHASE":"☕ PAUSE"}</div>
+      <div id="timer-display" class="mono" style="font-size:clamp(40px,12vw,64px);font-weight:600;color:${col};letter-spacing:.05em;line-height:1">${fmt(sec)}</div>
+      <div style="font-size:12px;color:#475569;margin-top:8px">${mode==="study"?"Ziel: 3h Lerneinheit":"Empfohlen: 15 Min"}</div>
+      <div style="margin-top:14px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden">
+        <div style="height:100%;background:${col};width:${pctVal}%;border-radius:6px;transition:width 1s"></div>
       </div>
     </div>
-    <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-      <SyncDot status={sync}/>
-      <Pill icon="🔥" label={`${streak}`} bg="#431407" border="#9a3412" color="#fed7aa"/>
-      <Pill icon="⏱" label={`MC1 ${mcDays}d`} bg={mcDays<7?"#450a0a":mcDays<28?"#431407":"#052e16"} border={mcColor} color={mcColor}/>
-      <Pill icon="📋" label={`MC2 ${mc2Days}d`} bg={mc2Days<7?"#450a0a":mc2Days<28?"#431407":"#052e16"} border={mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"} color={mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"}/>
-      <Pill icon="🎓" label={`${oralDays}d`} bg="#1e1b4b" border="#4338ca" color="#a5b4fc"/>
-      <button onClick={logout} style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#64748b",padding:"4px 8px",fontSize:11}}>Logout</button>
-    </div>
-  </header>
-
-  {/* Nav */}
-  <nav style={{display:"flex",gap:2,padding:"6px 12px",background:"#090f1e",borderBottom:"1px solid #1e293b",overflowX:"auto"}}>
-    {TABS.map(t=>(
-      <button key={t.id} className="tab-btn" onClick={()=>setTab(t.id)}
-        style={{padding:"6px 12px",borderRadius:8,background:tab===t.id?"#1e3a5f":"transparent",
-          color:tab===t.id?"#38bdf8":"#64748b",fontWeight:tab===t.id?600:400,
-          fontSize:12,display:"flex",gap:5,alignItems:"center",whiteSpace:"nowrap",
-          borderBottom:tab===t.id?"2px solid #0ea5e9":"2px solid transparent",transition:"all .15s"}}>
-        <span style={{fontFamily:"'IBM Plex Mono',monospace"}}>{t.icon}</span>
-        <span className="hide-mobile">{t.label}</span>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <button onclick="toggleTimer()" id="timer-btn" style="padding:11px 28px;border-radius:12px;font-weight:700;font-size:15px;background:${state.timerRunning?"#7f1d1d":"#164e63"};border:2px solid ${state.timerRunning?"#ef4444":"#06b6d4"};color:${state.timerRunning?"#fca5a5":"#67e8f9"}">
+        ${state.timerRunning?"⏸ Pause":"▶ Start"}
       </button>
-    ))}
-  </nav>
-
-  {/* Main */}
-  <main style={{padding:"16px",maxWidth:900,margin:"0 auto"}}>
-
-    {/* ── DASHBOARD ── */}
-    {tab==="dashboard" && (
-      <div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-          {[
-            {pct:Math.round((p1done/p1.length)*100),label:`${p1done}/${p1.length}`,sub:"MC 1 – 24.05.",color:"#06b6d4",days:mcDays,dayColor:mcColor},
-            {pct:Math.round((mc2done/mc2Units.length)*100),label:`${mc2done}/${mc2Units.length}`,sub:"MC 2 – 07.07.",color:"#f59e0b",days:mc2Days,dayColor:mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"},
-            {pct:Math.round((p2done/p2.length)*100),label:`${p2done}/${p2.length}`,sub:"Phase 2 – Mdl.",color:"#8b5cf6",days:oralDays,dayColor:"#a5b4fc"},
-            {pct:Math.round((totalDone/UNITS.length)*100),label:`${totalDone}/${UNITS.length}`,sub:"Gesamt",color:"#10b981",days:null},
-          ].map((r,i)=>(
-            <div key={i} className="card" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:12}}>
-              <Ring pct={r.pct} size={90} label={r.label} sub={r.sub} color={r.color}/>
-              <div style={{fontSize:11,color:"#64748b",textAlign:"center"}}>
-                {r.days!=null?<><span style={{color:r.dayColor,fontWeight:600}}>{r.days}d</span></>:<span style={{color:"#10b981",fontWeight:600}}>{r.pct}%</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Ampel */}
-        <div className="card">
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>PRÜFUNGS-AMPEL</div>
-          {[
-            {label:"MC 1 – Prüfung (24.05.2026)",done:p1done,total:p1.length,days:mcDays,color:"#06b6d4"},
-            {label:"MC 2 – Prüfung (07.07.2026)",done:mc2done,total:mc2Units.length,days:mc2Days,color:"#f59e0b"},
-            {label:"Mündliche (~15.08.2026)",done:totalDone,total:UNITS.length,days:oralDays,color:"#8b5cf6"},
-          ].map((a,i)=>{
-            const pct=Math.round((a.done/a.total)*100);
-            const ampel=a.days<7?"🔴":a.days<28?"🟡":"🟢";
-            return (
-              <div key={i} style={{background:"#1e293b",borderRadius:10,padding:12,marginBottom:i===0?8:0}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <div style={{fontSize:12,fontWeight:600}}>{ampel} {a.label}</div>
-                  <div style={{fontSize:12,fontFamily:"'IBM Plex Mono',monospace",color:a.color}}>{a.done}/{a.total}</div>
-                </div>
-                <div style={{background:"#0f172a",borderRadius:6,height:8,overflow:"hidden"}}>
-                  <div style={{height:"100%",background:a.color,width:`${pct}%`,transition:"width .6s",borderRadius:6}}/>
-                </div>
-                <div style={{fontSize:11,color:"#475569",marginTop:4}}>Noch {a.total-a.done} LE · {a.days} Tage verbleibend</div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Streak */}
-        <div className="card">
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>🔥 LERN-STREAK – LETZTE 30 TAGE</div>
-          <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-            {Array.from({length:30},(_,i)=>{
-              const d=new Date(); d.setDate(d.getDate()-(29-i));
-              const s=d.toISOString().split("T")[0];
-              const studied=dates.includes(s);
-              const isToday=i===29;
-              return (
-                <div key={i} title={s} style={{width:26,height:26,borderRadius:6,
-                  background:studied?"#0e7490":"#1e293b",
-                  border:`1px solid ${isToday?"#06b6d4":studied?"#0284c7":"#334155"}`,
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  fontSize:9,color:studied?"#67e8f9":"#334155",fontFamily:"'IBM Plex Mono',monospace"}}>
-                  {d.getDate()}
-                </div>
-              );
-            })}
-          </div>
-          <button onClick={markToday} style={{marginTop:10,padding:"6px 14px",background:"#164e63",border:"1px solid #0e7490",borderRadius:8,color:"#67e8f9",fontSize:12,fontWeight:600}}>
-            Heute als gelernt markieren
-          </button>
-        </div>
-
-        {/* Lücken */}
-        {allTags.length>0&&(
-          <div className="card">
-            <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>⚠ OFFENE LÜCKEN ({allTags.length})</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-              {allTags.slice(0,10).map((t,i)=>(
-                <span key={i} className="tag">⚡ {t.tag} <span style={{color:"#475569",fontSize:10}}>({t.title})</span></span>
-              ))}
-              {allTags.length>10&&<span style={{color:"#475569",fontSize:12,alignSelf:"center"}}>+{allTags.length-10} → Radar</span>}
-            </div>
-          </div>
-        )}
-
-        {/* Nächste LEs */}
-        <div className="card">
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>▶ NÄCHSTE LERNEINHEITEN</div>
-          {UNITS.filter(u=>data[u.id]?.status!=="done").slice(0,5).map(u=>(
-            <div key={u.id} onClick={()=>{setSel(u.id);setTab("lehrplan");}} className="unit-row"
-              style={{display:"flex",alignItems:"center",gap:10,padding:"8px 8px",borderRadius:8,borderBottom:"1px solid #1e293b",cursor:"pointer",transition:"all .15s"}}>
-              <StatusDot s={data[u.id]?.status||"open"}/>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:13,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                  <span style={{color:"#475569",fontFamily:"'IBM Plex Mono',monospace",fontSize:11}}>LE{String(u.id).padStart(2,"0")} </span>{u.title}
-                </div>
-                {data[u.id]?.planned&&<div style={{fontSize:11,color:"#475569"}}>📅 {data[u.id].planned}</div>}
-              </div>
-              <Stars score={data[u.id]?.score||0} onChange={v=>upd(u.id,{score:v})}/>
-            </div>
-          ))}
-        </div>
+      <button onclick="resetTimer()" style="padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;background:#1e293b;border:1px solid #334155;color:#64748b">↺ Reset</button>
+      <button onclick="switchMode()" style="padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;background:#1e293b;border:1px solid #334155;color:#64748b">${mode==="study"?"☕ Pause-Modus":"⚡ Lern-Modus"}</button>
+    </div>
+    <div class="card" style="width:100%">
+      <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">SCHNELL-TIMER</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${[["1,5h Zusammenfassung",5400],["1h Fragen üben",3600],["30min Wiederholung",1800],["15min Pause",900]].map(([l,s])=>
+          `<button onclick="setTimer(${s})" style="padding:6px 12px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px">${l}</button>`
+        ).join("")}
       </div>
-    )}
+    </div>
+  </div>`;
+}
 
-    {/* ── LEHRPLAN ── */}
-    {tab==="lehrplan" && (
-      <div style={{display:"grid",gridTemplateColumns:sel?"1fr 1.3fr":"1fr",gap:14}}>
-        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {[1,2].map(phase=>(
-            <div key={phase}>
-              <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",margin:"14px 0 6px",borderBottom:"1px solid #1e293b",paddingBottom:4}}>
-                {phase===1?"PHASE 1 – MC 1 (24.05.2026)":"PHASE 2 – MC 2 (07.07.) & MÜNDLICHE (15.08.2026)"}
-              </div>
-              {UNITS.filter(u=>u.phase===phase).map(u=>{
-                const d=data[u.id]; const isActive=sel===u.id;
-                return (
-                  <div key={u.id} className="unit-row" onClick={()=>setSel(isActive?null:u.id)}
-                    style={{display:"flex",alignItems:"center",gap:8,padding:"9px 10px",borderRadius:10,
-                      background:isActive?"#1e3a5f":"#0f172a",
-                      border:`1px solid ${isActive?"#1d4ed8":u.mc2?"#78350f":"#1e293b"}`,
-                      marginBottom:4,transition:"all .15s"}}>
-                    <StatusDot s={d?.status||"open"}/>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontSize:13,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                        <span style={{color:"#475569",fontFamily:"'IBM Plex Mono',monospace",fontSize:11}}>LE{String(u.id).padStart(2,"0")} </span>
-                        {u.title}
-                        {u.rev&&<span style={{fontSize:10,color:"#7c3aed",background:"#2e1065",padding:"1px 5px",borderRadius:4,marginLeft:5}}>WDH</span>}
-                        {u.mc2&&<span style={{fontSize:10,color:"#f59e0b",background:"#431407",padding:"1px 5px",borderRadius:4,marginLeft:5}}>MC2</span>}
-                      </div>
-                      {d?.planned&&<div style={{fontSize:11,color:"#475569"}}>📅 {d.planned}</div>}
-                    </div>
-                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
-                      <Stars score={d?.score||0} onChange={v=>upd(u.id,{score:v})}/>
-                      {(d?.tags||[]).length>0&&<span style={{fontSize:10,color:"#ef4444"}}>⚠ {d.tags.length}</span>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+function toggleTimer(){
+if(!state.timerRunning){
+state.timerRunning=true;
+markToday();
+timerInterval=setInterval(()=>{state.timerSec++;updateTimerDisplay();},1000);
+}else{
+state.timerRunning=false;
+clearInterval(timerInterval);
+}
+renderMain();
+}
+function resetTimer(){clearInterval(timerInterval);state.timerSec=0;state.timerRunning=false;renderMain();}
+function switchMode(){clearInterval(timerInterval);state.timerRunning=false;state.timerSec=0;state.timerMode=state.timerMode===“study”?“break”:“study”;renderMain();}
+function setTimer(s){clearInterval(timerInterval);state.timerRunning=false;state.timerSec=s;renderMain();}
+function updateTimerDisplay(){
+const el=document.getElementById(“timer-display”);
+if(el)el.textContent=fmt(state.timerSec);
+}
 
-        {/* Detail */}
-        {sel&&(()=>{
-          const u=UNITS.find(x=>x.id===sel); const d=data[sel];
-          return (
-            <div className="card" style={{position:"sticky",top:76,alignSelf:"start",maxHeight:"calc(100vh - 100px)",overflowY:"auto"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
-                <div>
-                  <div style={{fontSize:11,color:"#475569",fontFamily:"'IBM Plex Mono',monospace"}}>LERNEINHEIT {sel}</div>
-                  <div style={{fontSize:16,fontWeight:700,color:"#f1f5f9",lineHeight:1.3}}>{u.title}</div>
-                </div>
-                <button onClick={()=>setSel(null)} style={{background:"none",color:"#475569",fontSize:18,padding:4,flexShrink:0}}>✕</button>
-              </div>
-
-              <div style={{marginBottom:14}}>
-                <Label>STATUS</Label>
-                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {STATUSES.map(s=>(
-                    <button key={s} onClick={()=>upd(sel,{status:s})}
-                      style={{padding:"4px 10px",borderRadius:20,fontSize:11,fontWeight:600,
-                        background:d.status===s?S_COLOR[s]+"33":"transparent",
-                        border:`1px solid ${d.status===s?S_COLOR[s]:"#334155"}`,
-                        color:d.status===s?S_COLOR[s]:"#64748b"}}>
-                      {S_ICON[s]} {S_LABEL[s]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{marginBottom:14}}>
-                <Label>SELBSTEINSCHÄTZUNG</Label>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <Stars score={d.score||0} onChange={v=>upd(sel,{score:v})}/>
-                  <span style={{fontSize:12,color:"#475569"}}>{["–","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score||0]}</span>
-                </div>
-              </div>
-
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-                {[["GEPLANT","planned",""],["ERLEDIGT AM","completed","done"]].map(([lbl,key,setStatus])=>(
-                  <div key={key}>
-                    <Label>{lbl}</Label>
-                    <input type="date" value={d[key]||""} onChange={e=>upd(sel,{[key]:e.target.value,...(setStatus?{status:setStatus}:{})})}
-                      style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"6px 8px",color:"#e2e8f0",fontSize:12}}/>
-                  </div>
-                ))}
-              </div>
-
-              {u.topics.length>0&&(
-                <div style={{marginBottom:14}}>
-                  <Label>KERNTHEMEN</Label>
-                  <ul style={{margin:0,paddingLeft:16}}>
-                    {u.topics.map((t,i)=><li key={i} style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>{t}</li>)}
-                  </ul>
-                </div>
-              )}
-
-              <div style={{marginBottom:14}}>
-                <Label>LÜCKEN-TAGS</Label>
-                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:6}}>
-                  {(d.tags||[]).map((tag,i)=>(
-                    <span key={i} className="tag">{tag}
-                      <span onClick={()=>upd(sel,{tags:d.tags.filter((_,j)=>j!==i)})} style={{cursor:"pointer",color:"#ef4444",marginLeft:2}}>✕</span>
-                    </span>
-                  ))}
-                </div>
-                <div style={{display:"flex",gap:6}}>
-                  <input value={tagInput} onChange={e=>setTagInput(e.target.value)}
-                    onKeyDown={e=>{if(e.key==="Enter"&&tagInput.trim()){upd(sel,{tags:[...(d.tags||[]),tagInput.trim()]});setTagInput("");}}}
-                    placeholder="Stichwort + Enter …"
-                    style={{flex:1,background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"6px 8px",color:"#e2e8f0",fontSize:12}}/>
-                  <button onClick={()=>{if(tagInput.trim()){upd(sel,{tags:[...(d.tags||[]),tagInput.trim()]});setTagInput("");}}}
-                    style={{padding:"6px 10px",background:"#1e3a5f",border:"1px solid #1d4ed8",borderRadius:8,color:"#60a5fa",fontSize:13}}>+</button>
-                </div>
-              </div>
-
-              <div>
-                <Label>NOTIZEN</Label>
-                <textarea value={d.notes||""} onChange={e=>upd(sel,{notes:e.target.value})} rows={3}
-                  placeholder="Eigene Notizen…"
-                  style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"8px",color:"#e2e8f0",fontSize:12,resize:"vertical"}}/>
-              </div>
-            </div>
-          );
-        })()}
-      </div>
-    )}
-
-    {/* ── KALENDER ── */}
-    {tab==="kalender" && (() => {
-      const [month, setMonth] = useState(new Date().getMonth());
-      const [year, setYear]   = useState(new Date().getFullYear());
-      const first = new Date(year,month,1), last = new Date(year,month+1,0);
-      const startDay = (first.getDay()||7)-1, totalDays = last.getDate();
-      const planned = {};
-      Object.entries(data).forEach(([id,d])=>{
-        if(d.planned){if(!planned[d.planned])planned[d.planned]=[];planned[d.planned].push({id:+id,title:UNITS.find(u=>u.id===+id)?.title||"",status:d.status});}
-      });
-      const cells=[];
-      for(let i=0;i<startDay;i++)cells.push(null);
-      for(let d=1;d<=totalDays;d++)cells.push(d);
-      const mNames=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-      return (
-        <div>
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-            <button onClick={()=>{if(month===0){setMonth(11);setYear(y=>y-1);}else setMonth(m=>m-1);}}
-              style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#94a3b8",padding:"5px 12px",fontSize:16}}>‹</button>
-            <div style={{fontWeight:700,fontSize:15,flex:1,textAlign:"center"}}>{mNames[month]} {year}</div>
-            <button onClick={()=>{if(month===11){setMonth(0);setYear(y=>y+1);}else setMonth(m=>m+1);}}
-              style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#94a3b8",padding:"5px 12px",fontSize:16}}>›</button>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
-            {["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>(
-              <div key={d} style={{textAlign:"center",fontSize:10,color:"#475569",fontWeight:700,padding:"4px 0"}}>{d}</div>
-            ))}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
-            {cells.map((d,i)=>{
-              if(!d)return <div key={i}/>;
-              const s=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-              const us=planned[s]||[], isToday=s===new Date().toISOString().split("T")[0];
-              return (
-                <div key={i} className="cal-day" style={{borderColor:isToday?"#06b6d4":us.length?"#1d4ed8":"#1e293b",background:isToday?"#0c4a6e":"#0f172a"}}>
-                  <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:11,fontWeight:isToday?700:400,color:isToday?"#67e8f9":"#64748b",marginBottom:2}}>{d}</div>
-                  {us.map((u,j)=>(
-                    <div key={j} style={{fontSize:9,padding:"1px 3px",borderRadius:3,marginBottom:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
-                      background:S_COLOR[u.status]+"22",color:S_COLOR[u.status],border:`1px solid ${S_COLOR[u.status]}44`}}>
-                      LE{u.id} {u.title.substring(0,8)}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    })()}
-
-    {/* ── RADAR ── */}
-    {tab==="radar" && (
-      <div style={{display:"flex",flexDirection:"column",gap:12}}>
-        <div className="card">
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:4}}>◎ WIEDERHOLUNGS-RADAR</div>
-          <div style={{fontSize:12,color:"#64748b"}}>Alle Lücken auf einen Blick. Klicke ✕ um ein Tag zu entfernen.</div>
-        </div>
-        {UNITS.filter(u=>(data[u.id]?.tags||[]).length>0||data[u.id]?.status==="gaps").map(u=>(
-          <div key={u.id} className="card">
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <div style={{fontWeight:600,fontSize:14}}>LE {u.id} – {u.title}</div>
-              <Stars score={data[u.id]?.score||0} onChange={v=>upd(u.id,{score:v})}/>
-            </div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
-              {(data[u.id]?.tags||[]).map((tag,i)=>(
-                <span key={i} className="tag" onClick={()=>upd(u.id,{tags:data[u.id].tags.filter((_,j)=>j!==i)})} style={{cursor:"pointer"}}>
-                  {tag} <span style={{color:"#ef4444"}}>✕</span>
-                </span>
-              ))}
-            </div>
-            {data[u.id]?.notes&&<div style={{fontSize:12,color:"#64748b",fontStyle:"italic",borderLeft:"2px solid #334155",paddingLeft:8}}>{data[u.id].notes}</div>}
-          </div>
-        ))}
-        {allTags.length===0&&(
-          <div className="card" style={{textAlign:"center",padding:40,color:"#475569"}}>
-            <div style={{fontSize:36,marginBottom:8}}>✓</div>
-            <div style={{fontWeight:600}}>Keine Lücken eingetragen</div>
-            <div style={{fontSize:12,marginTop:4}}>Füge im Lehrplan Lücken-Tags hinzu</div>
-          </div>
-        )}
-        {allTags.length>0&&(
-          <div className="card" style={{border:"1px solid #1d4ed8"}}>
-            <div style={{fontSize:12,fontWeight:600,color:"#60a5fa",marginBottom:10}}>📋 WOCHENEND-CHECKLISTE</div>
-            {[...new Set(allTags.map(t=>t.title))].map((title,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",borderBottom:"1px solid #1e293b",fontSize:13}}>
-                <span style={{color:"#334155"}}>☐</span> {title}
-                <span style={{fontSize:11,color:"#475569"}}>({allTags.filter(t=>t.title===title).length} Lücken)</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    )}
-
-    {/* ── TIMER ── */}
-    {tab==="timer" && (
-      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
-        <div className="card" style={{width:"100%",textAlign:"center",padding:32}}>
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".15em",marginBottom:14}}>
-            {timerMode==="study"?"⚡ LERNPHASE":"☕ PAUSE"}
-          </div>
-          <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:clamp(48,10),fontWeight:600,
-            color:timerMode==="study"?"#06b6d4":"#10b981",letterSpacing:".05em",lineHeight:1}}>
-            {fmt(timer)}
-          </div>
-          <div style={{fontSize:12,color:"#475569",marginTop:8}}>
-            {timerMode==="study"?"Ziel: 3h Lerneinheit":"Empfohlen: 15 Min"}
-          </div>
-          <div style={{marginTop:14,background:"#1e293b",borderRadius:8,height:6,overflow:"hidden"}}>
-            <div style={{height:"100%",background:timerMode==="study"?(timer>=10800?"#10b981":"#06b6d4"):"#10b981",
-              width:`${Math.min(timer/(timerMode==="study"?10800:900)*100,100)}%`,transition:"width 1s",borderRadius:6}}/>
-          </div>
-        </div>
-        <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
-          <button onClick={()=>{setRunning(!running);if(!running)markToday();}}
-            style={{padding:"11px 28px",borderRadius:12,fontWeight:700,fontSize:15,
-              background:running?"#7f1d1d":"#164e63",border:`2px solid ${running?"#ef4444":"#06b6d4"}`,
-              color:running?"#fca5a5":"#67e8f9"}}>
-            {running?"⏸ Pause":"▶ Start"}
-          </button>
-          <button onClick={()=>{setRunning(false);setTimer(0);}}
-            style={{padding:"11px 18px",borderRadius:12,fontWeight:600,fontSize:14,background:"#1e293b",border:"1px solid #334155",color:"#64748b"}}>
-            ↺ Reset
-          </button>
-          <button onClick={()=>{setTimerMode(m=>m==="study"?"break":"study");setTimer(0);setRunning(false);}}
-            style={{padding:"11px 18px",borderRadius:12,fontWeight:600,fontSize:14,background:"#1e293b",border:"1px solid #334155",color:"#64748b"}}>
-            {timerMode==="study"?"☕ Pause-Modus":"⚡ Lern-Modus"}
-          </button>
-        </div>
-        <div className="card" style={{width:"100%"}}>
-          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>SCHNELL-TIMER</div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {[["1,5h Zusammenfassung",5400],["1h Fragen üben",3600],["30min Wiederholung",1800],["15min Pause",900]].map(([l,s])=>(
-              <button key={l} onClick={()=>{setTimer(s);setRunning(false);}}
-                style={{padding:"6px 12px",borderRadius:8,background:"#1e293b",border:"1px solid #334155",color:"#94a3b8",fontSize:12}}>{l}</button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* ── EXPORT ── */}
-    {tab==="export" && (() => {
-      const [copied,setCopied]=useState(false);
-      const today=new Date().toLocaleDateString("de-DE");
-      const doneLEs=UNITS.filter(u=>data[u.id]?.status==="done").map(u=>`LE${u.id} (${u.title})`).join(", ")||"–";
-      const gapLEs=UNITS.filter(u=>(data[u.id]?.tags||[]).length>0);
-      const nextLE=UNITS.find(u=>data[u.id]?.status!=="done");
-      const warnLEs=UNITS.filter(u=>data[u.id]?.score>0&&data[u.id]?.score<=2);
-      const text=`📚 PhysioTrack Status – ${today}
-```
-
+// ─── EXPORT ──────────────────────────────────────────────────────────────────
+function renderExport(){
+const mc1d=daysUntil(MC1),orald=daysUntil(ORAL);
+const s=streak();
+const p1d=p1units.filter(u=>state.units[u.id]?.status===“done”).length;
+const p2d=p2units.filter(u=>state.units[u.id]?.status===“done”).length;
+const doneLEs=UNITS.filter(u=>state.units[u.id]?.status===“done”).map(u=>`LE${u.id} (${u.title})`).join(”, “)||”–”;
+const gapLEs=UNITS.filter(u=>(state.units[u.id]?.tags||[]).length>0);
+const warnLEs=UNITS.filter(u=>state.units[u.id]?.score>0&&state.units[u.id]?.score<=2);
+const nextLE=UNITS.find(u=>state.units[u.id]?.status!==“done”);
+const today=new Date().toLocaleDateString(“de-DE”);
+const text=`📚 PhysioTrack Status – ${today}
 ──────────────────────────────
-MC 1-Prüfung (24.05.2026): ${mcDays} Tage
-MC 2-Prüfung (07.07.2026): ${mc2Days} Tage
-Mündliche (~15.08.2026): ${oralDays} Tage
-🔥 Streak: ${streak} Tage
-Phase 1 (MC1): ${p1done}/11 LE fertig
-MC2-Themen: ${mc2done}/${mc2Units.length} LE fertig
-Phase 2 (Mdl.): ${p2done}/17 LE fertig
+MC 1 (24.05.2026): ${mc1d} Tage
+MC 2 (07.07.2026): ${daysUntil(MC2)} Tage
+Mündliche (~15.08.2026): ${orald} Tage
+🔥 Streak: ${s} Tage
+Phase 1 (MC 1): ${p1d}/${p1units.length} LE fertig
+Phase 2 (Mdl.): ${p2d}/${p2units.length} LE fertig
 
 ✅ Fertige LEs: ${doneLEs}
 
 ⚠️ Einheiten mit Lücken:
-${gapLEs.length?gapLEs.map(u=>`  • LE${u.id} ${u.title}: ${data[u.id].tags.join(", ")}`).join(”\n”):”  –”}
+${gapLEs.length?gapLEs.map(u=>`  • LE${u.id} ${u.title}: ${state.units[u.id].tags.join(", ")}`).join(”\n”):”  –”}
 
 ⭐ Unsichere Einheiten (Score ≤ 2):
-${warnLEs.length?warnLEs.map(u=>`  • LE${u.id} ${u.title} (★${data[u.id]?.score}/5)`).join(”\n”):”  –”}
+${warnLEs.length?warnLEs.map(u=>`  • LE${u.id} ${u.title} (★${state.units[u.id].score}/5)`).join(”\n”):”  –”}
 
 ▶ Nächste Einheit: ${nextLE?`LE${nextLE.id} – ${nextLE.title}`:“Alle fertig! 🎉”}
 ──────────────────────────────
-Bitte hilf mir mit den offenen Themen.`; const copy=()=>{navigator.clipboard.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}; return ( <div style={{display:"flex",flexDirection:"column",gap:14}}> <div className="card" style={{border:"1px solid #1d4ed8"}}> <div style={{fontSize:13,fontWeight:600,color:"#60a5fa",marginBottom:8}}>📤 SMART-EXPORT FÜR NEUE CHATS</div> <div style={{fontSize:12,color:"#94a3b8",lineHeight:1.7}}>Kopiere diesen Text und füge ihn am Anfang eines neuen Chats ein — ich weiß sofort wo du stehst.</div> </div> <div style={{background:"#0f172a",border:"1px solid #334155",borderRadius:12,padding:16,fontFamily:"'IBM Plex Mono',monospace",fontSize:12,color:"#94a3b8",whiteSpace:"pre-wrap",lineHeight:1.7,overflowX:"auto"}}> {text} </div> <button onClick={copy} style={{padding:"12px 24px",borderRadius:12,fontWeight:700,fontSize:14,alignSelf:"flex-start", background:copied?"#064e3b":"#164e63",border:`2px solid ${copied?”#10b981”:”#06b6d4”}`,
-color:copied?”#34d399”:”#67e8f9”,transition:“all .2s”}}>
-{copied?“✓ Kopiert!”:“📋 In Zwischenablage kopieren”}
-</button>
-</div>
-);
-})()}
+Bitte hilf mir mit den offenen Themen.`;
 
-```
-  </main>
-</div>
-```
+return `
 
-);
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card" style="border-color:#1d4ed8">
+      <div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">📤 SMART-EXPORT FÜR NEUE CHATS</div>
+      <div style="font-size:12px;color:#94a3b8;line-height:1.7">Kopiere diesen Text und füge ihn am Anfang eines neuen Chats ein.</div>
+    </div>
+    <div class="mono" style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.7;overflow-x:auto">${text}</div>
+    <button onclick="copyExport()" id="copy-btn" style="padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;align-self:flex-start;background:#164e63;border:2px solid #06b6d4;color:#67e8f9;transition:all .2s">
+      📋 In Zwischenablage kopieren
+    </button>
+  </div>
+  <script>window._exportText=${JSON.stringify(text)}<\/script>`;
 }
 
-function clamp(base){return `min(${base}px, 12vw)`;}
+function copyExport(){
+navigator.clipboard.writeText(window._exportText||””).then(()=>{
+const btn=document.getElementById(“copy-btn”);
+if(btn){btn.textContent=“✓ Kopiert!”;btn.style.background=”#064e3b”;btn.style.borderColor=”#10b981”;btn.style.color=”#34d399”;
+setTimeout(()=>{btn.textContent=“📋 In Zwischenablage kopieren”;btn.style.background=”#164e63”;btn.style.borderColor=”#06b6d4”;btn.style.color=”#67e8f9”;},2000);}
+});
+}
 
-ReactDOM.createRoot(document.getElementById(“root”)).render(<App/>);
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function selectUnit(id){
+state.selId=id;
+renderMain();
+if(id){const el=document.getElementById(“detail-panel”);if(el)el.scrollIntoView({behavior:“smooth”,block:“start”});}
+}
+
+function setStatus(id,s){state.units[id].status=s;save();renderMain();}
+function setScore(id,v){state.units[id].score=v;save();renderMain();}
+function setField(id,f,v){state.units[id][f]=v;save();}
+
+function addTag(id){
+const inp=document.getElementById(“tag-input”);
+if(!inp||!inp.value.trim())return;
+state.units[id].tags=[…(state.units[id].tags||[]),inp.value.trim()];
+save();renderMain();
+}
+function removeTag(id,i){
+state.units[id].tags=state.units[id].tags.filter((_,j)=>j!==i);
+save();renderMain();
+}
+
+function markToday(){
+const t=new Date().toISOString().split(“T”)[0];
+if(!state.dates.includes(t)){state.dates=[…state.dates,t];save();updateHeader();}
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+load();
+render();
 </script>
 
 </body>
