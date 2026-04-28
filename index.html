@@ -1,680 +1,800 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PsychSoz Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#F7F4EF;--bg2:#EEEAE1;--bg3:#E0DBD0;--ink:#1A1612;--ink2:#4A443C;--ink3:#7A7068;--acc:#2B4C8C;--acc2:#4A7AC8;--acc-bg:#EEF3FA;--grn:#2A6B3C;--grn-bg:#EAF4EE;--red:#8C2B2B;--red-bg:#F4EAEA;--gld:#B8860B;--gld-bg:#FDF6E3;--pur:#5B3A8C;--pur-bg:#F0EBF9;--r:12px;--sh:0 2px 16px rgba(26,22,18,.08)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
-.site-header{background:var(--ink);color:var(--bg);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--acc2)}
-.logo{font-family:'DM Serif Display',serif;font-size:1.3rem}.logo span{color:var(--acc2)}
-.hdr-r{display:flex;align-items:center;gap:10px}
-.hdr-meta{font-size:.78rem;color:#9A948C}
-.theme-btn{background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:3px 10px;font-size:.75rem;cursor:pointer}
-.main{max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
-.hero{text-align:center;padding:2rem 1rem 1.5rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.15;margin-bottom:.6rem}
-.hero h1 em{color:var(--acc);font-style:italic}
-.hero p{color:var(--ink2);font-size:.93rem;max-width:480px;margin:0 auto 1.5rem}
-.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
-.pill{background:var(--bg2);border:1px solid var(--bg3);border-radius:100px;padding:4px 14px;font-size:.8rem;color:var(--ink2);font-weight:500}
-.nav-tabs{display:flex;gap:5px;margin-bottom:1.5rem;background:var(--bg2);border-radius:var(--r);padding:4px}
-.nav-tab{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:center}
-.nav-tab.active{background:white;color:var(--acc);box-shadow:0 1px 6px rgba(0,0,0,.1)}
-.fl{font-size:.75rem;color:var(--ink3);text-align:center;margin-bottom:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
-.yr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:1.5rem}
-.yr-card{background:var(--bg);border:1.5px solid var(--bg3);border-radius:var(--r);padding:.85rem;text-align:center;cursor:pointer;transition:all .18s}
-.yr-card:hover{border-color:var(--acc2);background:var(--acc-bg);transform:translateY(-2px)}
-.yr-card.sel{border-color:var(--acc);background:var(--acc-bg);box-shadow:0 0 0 2px var(--acc)}
-.yn{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--acc)}.yc{font-size:.7rem;color:var(--ink3);margin-top:2px}
-.all-c{background:var(--ink);border-color:var(--ink)}.all-c:hover{background:var(--ink2)}.all-c.sel{background:var(--acc);border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}.all-c .yn,.all-c .yc{color:white}
-.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:1.5rem}
-.tp-card{background:var(--bg);border:1.5px solid var(--bg3);border-radius:var(--r);padding:.8rem .7rem;text-align:center;cursor:pointer;transition:all .18s}
-.tp-card:hover{border-color:var(--acc2);background:var(--acc-bg);transform:translateY(-2px)}
-.tp-card.sel{border-color:var(--acc);background:var(--acc-bg);box-shadow:0 0 0 2px var(--acc)}
-.all-tp{background:var(--ink);border-color:var(--ink)}.all-tp:hover{background:var(--ink2)}.all-tp.sel{background:var(--acc);border-color:var(--acc)}.all-tp .tcn,.all-tp .tcc,.all-tp .tci{color:white!important}
-.tci{font-size:1.25rem;margin-bottom:3px}.tcnum{font-size:.6rem;color:var(--ink3);letter-spacing:.05em;margin-bottom:2px}.tcn{font-size:.74rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px}.tcc{font-size:.67rem;color:var(--ink3)}
-.start-btn{display:block;width:100%;max-width:280px;margin:0 auto;padding:13px 24px;background:var(--acc);color:white;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .18s;box-shadow:0 4px 16px rgba(43,76,140,.25)}
-.start-btn:hover{background:#1E3A6E;transform:translateY(-1px)}
-.prog-wrap{margin-bottom:1.25rem;animation:fu .3s ease both}
-.prog-top{display:flex;justify-content:space-between;margin-bottom:6px}
-.prog-lbl{font-size:.8rem;color:var(--ink3)}.prog-sc{font-size:.8rem;font-weight:600;color:var(--acc)}
-.prog-track{height:5px;background:var(--bg2);border-radius:100px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:100px;transition:width .4s ease}
-.q-card{background:white;border:1px solid var(--bg3);border-radius:16px;padding:1.5rem;box-shadow:var(--sh);animation:fu .3s ease both;margin-bottom:1rem}
-.q-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem}
-.badge{display:inline-flex;align-items:center;gap:4px;border-radius:100px;padding:3px 11px;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border:1px solid}
-.b-yr{background:var(--gld-bg);color:var(--gld);border-color:#E8D280}
-.b-tp{background:var(--acc-bg);color:var(--acc);border-color:#B8CCE8}
-.q-num{font-size:.7rem;color:var(--ink3);margin-bottom:.4rem;letter-spacing:.06em;text-transform:uppercase}
-.q-text{font-size:1rem;font-weight:500;color:var(--ink);line-height:1.55;margin-bottom:1rem}
-.opts{display:flex;flex-direction:column;gap:7px}
-.opt{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;background:var(--bg);border:1.5px solid var(--bg3);border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;font-size:.87rem;color:var(--ink);line-height:1.5;transition:all .15s;width:100%}
-.opt:hover:not(:disabled){border-color:var(--acc2);background:var(--acc-bg)}
-.ol{flex-shrink:0;width:22px;height:22px;background:var(--bg2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--ink3);transition:all .15s;margin-top:1px}
-.opt:hover:not(:disabled) .ol{background:var(--acc2);color:white}
-.opt.correct{background:var(--grn-bg);border-color:var(--grn);color:var(--grn)}.opt.correct .ol{background:var(--grn);color:white}
-.opt.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}.opt.wrong .ol{background:var(--red);color:white}
-.opt:disabled{cursor:default}
-.exp-box{margin-top:.9rem;padding:13px 15px;background:var(--bg);border-radius:10px;border-left:3px solid var(--acc);font-size:.86rem;color:var(--ink2);line-height:1.65;animation:fu .25s ease both}
-.exp-head{font-weight:600;color:var(--acc);margin-bottom:5px;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em}
-.fc-box{margin-top:.7rem;padding:11px 13px;background:var(--pur-bg);border-radius:10px;border-left:3px solid var(--pur);font-size:.82rem;color:#3A2460;line-height:1.6;animation:fu .3s .1s ease both;opacity:0;animation-fill-mode:both}
-.fc-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--pur);margin-bottom:4px}
-.fc-text{white-space:pre-line}
-.btn-row{display:flex;gap:8px;margin-top:.9rem;flex-wrap:wrap}
-.btn{padding:9px 18px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:500;cursor:pointer;transition:all .15s}
-.btn:hover{background:var(--bg2);border-color:var(--ink3)}
-.btn-p{background:var(--acc);color:white;border-color:var(--acc)}.btn-p:hover{background:#1E3A6E}
-/* FLASHCARD */
-.fc-card{background:white;border:1px solid var(--bg3);border-radius:16px;padding:1.75rem;box-shadow:var(--sh);animation:fu .3s ease both;min-height:240px;display:flex;flex-direction:column}
-.fc-q{font-size:1rem;font-weight:500;color:var(--ink);line-height:1.55;margin-bottom:1.25rem;flex:1}
-.fc-show-btn{padding:11px;border-radius:10px;border:1.5px solid var(--acc);background:var(--acc-bg);color:var(--acc);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;width:100%;text-align:center}
-.fc-show-btn:hover{background:var(--acc);color:white}
-.fc-ans{margin-top:.9rem;padding:13px;background:var(--grn-bg);border-radius:10px;border:1px solid #C0DDAA;animation:fu .2s ease both}
-.fc-ans-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grn);margin-bottom:4px}
-.fc-ans-txt{font-size:.88rem;color:#1A3C25;line-height:1.6;white-space:pre-line}
-.fc-hint{font-size:.8rem;color:var(--ink3);margin-top:.7rem;white-space:pre-line;line-height:1.6}
-.fc-rate{display:flex;gap:7px;margin-top:.9rem}
-.fc-r{flex:1;padding:9px;border-radius:10px;border:1.5px solid;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .18s;text-align:center}
-.fc-hard{border-color:var(--red);color:var(--red);background:var(--red-bg)}.fc-hard:hover{background:var(--red);color:white}
-.fc-ok{border-color:var(--gld);color:var(--gld);background:var(--gld-bg)}.fc-ok:hover{background:var(--gld);color:white}
-.fc-easy{border-color:var(--grn);color:var(--grn);background:var(--grn-bg)}.fc-easy:hover{background:var(--grn);color:white}
-/* SUMMARY */
-.sum-hero{text-align:center;padding:2rem;background:white;border:1px solid var(--bg3);border-radius:16px;margin-bottom:1.25rem;box-shadow:var(--sh);animation:fu .4s ease both}
-.big-sc{font-family:'DM Serif Display',serif;font-size:4rem;color:var(--acc);line-height:1;margin-bottom:.2rem}
-.sc-sub{font-size:.93rem;color:var(--ink3)}
-.grade{display:inline-block;margin-top:.7rem;padding:5px 16px;border-radius:100px;font-size:.8rem;font-weight:600}
-.ga{background:var(--grn-bg);color:var(--grn)}.gb{background:var(--gld-bg);color:var(--gld)}.gc{background:var(--red-bg);color:var(--red)}
-.tp-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:1.25rem}
-.ts{background:white;border:1px solid var(--bg3);border-radius:10px;padding:.8rem 1rem}
-.ts-name{font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:4px}
-.ts-bg{height:5px;background:var(--bg2);border-radius:100px;overflow:hidden;margin-bottom:3px}
-.ts-fill{height:100%;border-radius:100px}
-.ts-lbl{font-size:.68rem;color:var(--ink3)}
-.rev-hd{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.8rem;animation:fu .3s .1s ease both;opacity:0;animation-fill-mode:both}
-.rev-item{background:white;border:1px solid var(--bg3);border-radius:10px;padding:.85rem 1rem;margin-bottom:6px;border-left:4px solid var(--bg3)}
-.rev-item.ok{border-left-color:var(--grn)}.rev-item.fail{border-left-color:var(--red)}
-.ri-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.ri-meta{font-size:.7rem;color:var(--ink3)}.ri-st{font-size:.7rem;font-weight:600}
-.ri-st.ok{color:var(--grn)}.ri-st.fail{color:var(--red)}
-.ri-q{font-size:.87rem;font-weight:500;margin-bottom:4px;line-height:1.4}
-.ri-ans{font-size:.79rem;line-height:1.4}
-.ri-wr{color:var(--red)}.ri-rt{color:var(--grn)}
-/* STATS SCREEN */
-.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:1.25rem}
-.met{background:white;border:1px solid var(--bg3);border-radius:var(--r);padding:.9rem;box-shadow:var(--sh)}
-.met-v{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--acc);line-height:1}
-.met-l{font-size:.76rem;color:var(--ink3);margin-top:2px}
-.tp-prog{display:flex;flex-direction:column;gap:7px}
-.tp-row{background:white;border:1px solid var(--bg3);border-radius:10px;padding:.8rem 1rem}
-.tp-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.tp-nm{font-size:.83rem;font-weight:500;color:var(--ink)}.tp-pct{font-size:.78rem;font-weight:600;color:var(--acc)}
-.tp-bg{height:5px;background:var(--bg2);border-radius:100px;overflow:hidden}
-.tp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:100px;transition:width .6s ease}
-.tp-sub{font-size:.68rem;color:var(--ink3);margin-top:3px}
-/* mode switch */
-.mode-sw{display:flex;background:var(--bg2);border-radius:var(--r);padding:4px;gap:4px;margin-bottom:1.5rem}
-.mode-btn{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:500;cursor:pointer;transition:all .18s}
-.mode-btn.active{background:white;color:var(--acc);box-shadow:0 1px 4px rgba(0,0,0,.1)}
-@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-/* DARK */
-body.dark{--bg:#1A1814;--bg2:#242018;--bg3:#302C24;--ink:#F0EBE2;--ink2:#C4BDB5;--ink3:#847D75;--acc:#6A9AE8;--acc2:#89B4F0;--acc-bg:#1A2540;--grn:#5CAF7A;--grn-bg:#1A3026;--red:#E87878;--red-bg:#3A1A1A;--gld:#D4A832;--gld-bg:#2A2010;--pur:#A88CE8;--pur-bg:#241840;--sh:0 2px 16px rgba(0,0,0,.4)}
-body.dark .q-card,body.dark .fc-card,body.dark .sum-hero,body.dark .met,body.dark .tp-row,body.dark .ts,body.dark .rev-item{background:#242018;border-color:var(--bg3)}
-body.dark .site-header{background:#0E0C0A}
-body.dark .opt{background:var(--bg2);border-color:var(--bg3)}
-body.dark .exp-box{background:var(--bg2)}
-@media(max-width:500px){.main{padding:1rem .85rem 3rem}.q-card,.fc-card{padding:1.1rem}.hero h1{font-size:1.65rem}.tp-grid{grid-template-columns:repeat(2,1fr)}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PhysioTrack – MHH HannibaL</title>
+
+  <!-- ════════════════════════════════════════════════
+       ⚙️  SCHRITT 1: Deine Supabase-Zugangsdaten
+       Aus: supabase.com → Dein Projekt → Settings → API
+  ════════════════════════════════════════════════ -->
+
+  <script>
+    window.SB_URL = "DEINE_SUPABASE_URL";        // z.B. https://abcdef.supabase.co
+    window.SB_KEY = "DEIN_SUPABASE_ANON_KEY";    // beginnt mit "eyJ..."
+  </script>
+
+  <!-- Dependencies via CDN -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#root{height:100%;width:100%}
+    body{background:#070d1c;color:#e2e8f0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+    button{font-family:inherit;cursor:pointer;border:none;outline:none}
+    input,textarea{font-family:inherit;outline:none}
+    .card{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px}
+    .unit-row:hover{background:#162032!important;cursor:pointer}
+    .tab-btn:hover{background:#1a2744!important}
+    .tag{display:inline-flex;align-items:center;gap:4px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:20px;padding:2px 10px;font-size:12px;color:#93c5fd}
+    .cal-day{border-radius:8px;padding:6px;min-height:64px;background:#0f172a;border:1px solid #1e293b;font-size:11px}
+    input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
+    @media(max-width:640px){.hide-mobile{display:none!important}}
+  </style>
+
 </head>
 <body>
-<header class="site-header">
-  <div class="logo">Psych<span>Soz</span></div>
-  <div class="hdr-r">
-    <span class="hdr-meta" id="hdrMeta">Klausurtraining</span>
-    <button class="theme-btn" onclick="toggleDark()" id="themeBtn">🌙 Dark</button>
-  </div>
-</header>
-<main class="main" id="app"></main>
-<script>
-const ALL_Q=[
-{year:"2021",q:"Was trifft auf die Deprivationsthese nach Wilkinson zu?",opts:["Leistung in Sektoren wird gesteigert","Werte und Normen nehmen mit Einkommensungleichheit zu","Nicht die reichsten Bevölkerungen sind am gesündesten, sondern die mit dem kleinsten Sozialgradienten zwischen arm und reich","Sozialgradient wird nicht berücksichtigt"],ans:2,topic:6,exp:"Die Deprivationsthese nach Wilkinson besagt, dass nicht die reichsten Länder die gesündesten sind, sondern jene mit den geringsten Einkommensunterschieden (kleinstem Sozialgradienten). Gesellschaften mit großer Ungleichheit zeigen schlechtere Gesundheitsindikatoren, weil das Gefühl der relativen Benachteiligung selbst krankmacht – psychosozialer Stress entsteht durch Statusvergleiche.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2021",q:"Welcher Test wird verwendet, um MCI (Mild Cognitive Impairment) zu diagnostizieren?",opts:["MoCA (Montreal Cognitive Assessment)","Uhrentest","MMST (Mini-Mental-Status-Test)","Barthel-Index","DemTec"],ans:0,topic:1,exp:"Der MoCA-Test ist das geeignetste Instrument zur Diagnostik von MCI, da er sensitiver ist als der MMST. Er prüft Gedächtnis, Sprache, Aufmerksamkeit, Exekutivfunktionen und visuell-räumliche Fähigkeiten. Der MMST ist zwar bekannter, erkennt MCI aber schlechter – er ist eher für manifeste Demenz geeignet. Der Barthel-Index misst Alltagsfunktionen, nicht Kognition.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Was trifft auf den Begriff Assimilation (nach Piaget) zu?",opts:["Positive Verstärkung von der Mutter","Kind ordnet neue Erfahrungen in bestehende kognitive Schemata ein","Kognitives Schema wird um neue Informationen erweitert","Kind passt die Denkweise an die neue Umgebung an","Neue Objekte werden in bereits bestehendes kognitives Schema integriert (ohne Erweiterung)"],ans:4,topic:12,exp:"Assimilation (nach Piaget) bedeutet, dass neue Erlebnisse in bereits vorhandene kognitive Schemata eingeordnet werden – ohne diese zu verändern. Ein Kind sieht einen Hund und nennt ihn 'Wauau', weil das zu seinem Schema passt. Abzugrenzen ist die Akkommodation: dort wird das Schema selbst erweitert oder verändert. Die korrekte Option legt fest, dass keine Erweiterung stattfindet, was Assimilation von Akkommodation abgrenzt.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2021",q:"Welcher Erziehungsstil ist laut Studien am besten geeignet, chronisch kranke Kinder großzuziehen?",opts:["Autoritärer Stil","Permissiver Stil","Laissez-faire Stil","Autoritativer Stil","Kognitiver Stil"],ans:3,topic:12,exp:"Der autoritative (demokratische) Erziehungsstil gilt als der günstigste für die Entwicklung – besonders bei chronisch kranken Kindern. Er kombiniert hohe Wärme und Unterstützung mit klaren, konsistenten Grenzen und Regeln. Im Gegensatz zum autoritären Stil (streng, wenig Wärme) oder permissiven Stil (viel Wärme, kaum Grenzen) fördert der autoritative Stil Selbstwirksamkeit, Resilienz und Therapieadhärenz.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2021",q:"Anhand welcher Norm wird Körpergewicht zur Beurteilung von Adipositas bei Kindern gemessen?",opts:["Funktionelle Norm","Physiologischer Sollwert","Statistische Norm","Biopsychosoziale Norm"],ans:2,topic:1,exp:"Bei Kindern wird Adipositas anhand der statistischen Norm beurteilt – mithilfe von Perzentilenkurven (z.B. der Kromeyer-Hauschild-Kurven). Kinder gelten ab der 97. Perzentile als adipös und zwischen 90.–97. als übergewichtig. Dies ist ein statistischer Vergleich mit der Referenzpopulation. Beim Erwachsenen nutzt man eher den BMI, der eher einer funktionellen Norm entspricht.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Eine Altenpflegerin (52 J.) arbeitet seit 10 Jahren in einem Demenz-Pflegeheim und entwickelt ein Burnout-Syndrom. Woher könnte das kommen?",opts:["Zunehmende Diskrepanz zwischen Leistungsfähigkeit und Anforderungen","Fehlende positive Anerkennung","Langeweile wegen fehlender Abwechslung","Emotionale Belastung und unerfüllbar hoher Anspruch an die eigene Arbeit","Fehlende Möglichkeit, Arbeitsprozesse selbst zu gestalten"],ans:3,topic:10,exp:"Burnout in der Pflege entsteht häufig durch das Zusammenspiel von hoher emotionaler Belastung und perfektionistischen Ansprüchen an die eigene Arbeit. Gerade in der Demenzpflege ist man täglich mit Leid konfrontiert und kann trotz großem Einsatz nur begrenzt helfen – diese Diskrepanz zwischen Anspruch und tatsächlicher Leistungsmöglichkeit ist ein zentraler Burnout-Faktor.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2021",q:"Was würden Sie einem übergewichtigen Patienten mit DMT2 zur Gewichtsreduktion NICHT empfehlen (was steht nicht in den Adipositas-Leitlinien)?",opts:["Nahezu völlig kohlenhydratfreie Ernährung","Zusätzlicher Energieverbrauch von 1200–1800 kcal/Woche","Selbstbeobachtung bezüglich Essverhalten","Aufbau sozialen Rückhalts","Kontrolle der Mahlzeiten über Protokolle/Tagebücher"],ans:0,topic:13,exp:"Die S3-Leitlinie Adipositas empfiehlt keine extrem kohlenhydratarme (ketogene) Diät als Standardmaßnahme. Zwar kann ein moderates Kaloriendefizit mit verschiedenen Zusammensetzungen erreicht werden, aber eine nahezu vollständige Kohlenhydratelimination ist nicht Teil der offiziellen Leitlinienempfehlung. Empfohlen sind hingegen: erhöhter Energieverbrauch, Selbstmonitoring, soziale Unterstützung und Tagebücher.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2021",q:"Frage zur palliativen Versorgung – Falschaussage gesucht:",opts:["Nach ambulanter Versorgung ist auch eine Versorgung im Hospiz möglich","Der Patient hat die Wahl zwischen ambulanter und stationärer Versorgung","Die Familie muss 10% der Kosten der ambulanten Versorgung selbst tragen","Das ambulante Team arbeitet 24h/7 Tage und kann starke Schmerzmedikamente verabreichen","Der Patient hat das Recht auf ambulante oder stationäre Palliativversorgung"],ans:2,topic:11,exp:"Die SAPV (Spezialisierte Ambulante Palliativversorgung) ist eine GKV-Leistung – Patienten müssen keine Eigenanteile von 10% tragen. Sie ist vollständig durch die Krankenkasse finanziert. Das SAPV-Team ist tatsächlich rund um die Uhr erreichbar und kann hochpotente Schmerztherapie verabreichen.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2021",q:"Herr K. hat Angst, die Erkrankungen seines Vaters zu bekommen. Was würden Sie zur Gesundheitsförderung empfehlen?",opts:["Aufgabe des Rauchens und Vermindern des Alkoholkonsums","Förderung der Gesundheitskompetenz und des Selbstvertrauens","Erstellung eines festen Sportplans","Regelmäßige Kontrolle des Blutdrucks","Cholesterinreduzierende Diät"],ans:1,topic:13,exp:"Gesundheitsförderung nach Ottawa-Charta zielt auf Empowerment – also die Stärkung von Handlungskompetenz und Selbstwirksamkeit. Nicht Risikofaktoren bekämpfen (das wäre Prävention), sondern Ressourcen stärken. Die Förderung von Gesundheitskompetenz (Health Literacy) und Selbstvertrauen befähigt Herrn K., eigenverantwortlich gesundheitsförderliche Entscheidungen zu treffen.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2021",q:"Eine Doktorantin hat die Versuchsbeschreibung für psychometrische Tests weggelassen. Was ist dadurch am stärksten beeinträchtigt?",opts:["Konstruktvalidität","Objektivität","Inhaltsvalidität","Retest-Reliabilität","Ökonomie"],ans:3,topic:2,exp:"Durch das Weglassen standardisierter Versuchsanweisungen ist vor allem die Retest-Reliabilität beeinträchtigt: Wenn Instruktionen nicht einheitlich sind, variieren die Ergebnisse beim Wiederholen des Tests. Anmerkung: Die Objektivität (Durchführungsobjektivität) könnte auch betroffen sein – die Frage ist anfechtbar.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Welche Hypothese wird in der medizinischen Forschung eher nicht aufgestellt?",opts:["Deterministische Hypothese","Nullhypothese","Alternativhypothese","Forschungshypothese","Probabilistische Hypothese"],ans:0,topic:2,exp:"In der medizinischen Forschung werden keine deterministischen Hypothesen aufgestellt, da biologische Systeme von Natur aus variabel und komplex sind. Medizinische Hypothesen sind immer probabilistisch ('X erhöht das Risiko von Y'). Deterministische Aussagen ('Wenn X, dann immer Y') gibt es in der Physik, aber nicht in der Medizin, wo immer Ausnahmen und Confounding-Faktoren existieren.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Was gibt die Effektstärke wieder?",opts:["Cohens d (standardisierte Mittelwertdifferenz)","Hazard Ratio","Relatives Risiko (RR)","Signifikanzniveau Alpha","Cronbachs Alpha"],ans:0,topic:2,exp:"Die Effektstärke (z.B. Cohens d) misst die praktische Bedeutsamkeit eines Befundes – unabhängig vom Stichprobenumfang. Cohens d setzt die Mittelwertdifferenz zweier Gruppen ins Verhältnis zur gepoolten Standardabweichung. Konventionen: d=0,2 = klein, d=0,5 = mittel, d=0,8 = groß. Das Signifikanzniveau sagt nichts über die Größe des Effekts aus.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Was stimmt NICHT in Bezug auf die demographische Entwicklung in Deutschland?",opts:["Die Verzahnung von stationärer und ambulanter Versorgung nimmt ab","Der demographische Wandel entsteht durch Geburtenrate, Sterberate und Wanderungssaldo","Der demographische Wandel hängt mit strukturellen Bedingungen zusammen","Bedeutet in Deutschland zunehmend ältere Bevölkerung","Bedeutet allgemein Änderung der Bevölkerungsstruktur"],ans:0,topic:4,exp:"Die Falschaussage ist A: Die Verzahnung von stationärer und ambulanter Versorgung nimmt tatsächlich ZU, nicht ab. Integrierte Versorgungsformen und sektorenübergreifende Zusammenarbeit werden politisch und gesundheitlich gefördert. Die anderen Aussagen beschreiben den demographischen Wandel korrekt.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2021",q:"Welcher r-Wert beschreibt eine negative, mittelstarke Datenwolke am ehesten?",opts:["-1,2","-0,7","0,8","0,2","0,4"],ans:1,topic:2,exp:"Ein r-Wert von -0,7 beschreibt eine negative, mittelstarke bis starke Korrelation. r liegt immer zwischen -1 und +1 (daher ist -1,2 mathematisch unmöglich). Bei einer Datenwolke, die eine deutlich negative Tendenz zeigt, wäre -0,7 plausibel. r = +0,8 wäre eine starke positive Korrelation.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Was stimmt zum Präventionsparadox?",opts:["Wenn der Gesundheitsminister zur COVID-Impfung aufruft, um Herdenimmunität zu erreichen","Wenn in einer Praxis ein Raum mit Blei für den Strahlenschutz ausgekleidet wird","Schnelltest für alle am Eingang","Eine KK lädt übergewichtige Personen zu Bewegungsprogrammen ein","Diabetiker Typ 2 werden zu einer Schulung geschickt"],ans:0,topic:13,exp:"Das Präventionsparadox (Geoffrey Rose) besagt: Maßnahmen, die der Gesamtbevölkerung nutzen, bringen dem Einzelnen kaum erkennbaren Nutzen. Die COVID-Impfung zur Herdenimmunität ist das Paradebeispiel: Ein Geimpfter schützt sich selbst kaum mehr, aber die Gemeinschaft profitiert enorm. Antwort D (Hochrisikogruppe) wäre eher Hochrisikoprävention.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2021",q:"Ein Glücksspieler spielt weiter, weil er andere im Kasino gewinnen sieht. Welche Urteilsheuristik liegt vor?",opts:["Verfügbarkeitsheuristik","Framing-Heuristik","Repräsentativitätsheuristik","Ankerheuristik","Rekognitionsheuristik"],ans:0,topic:8,exp:"Die Verfügbarkeitsheuristik besagt: Wir beurteilen die Wahrscheinlichkeit von Ereignissen danach, wie leicht uns Beispiele dazu einfallen. Gewinne im Kasino sind sichtbar und einprägsam, Verluste werden übersehen. Deshalb überschätzt der Spieler die Gewinnchancen.",fc:"Motivation: Selbstwirksamkeit (Bandura), Health-Belief-Modell, Heuristiken"},
-{year:"2021",q:"Die Nullhypothese bleibt bestehen, es besteht jedoch ein echter Effekt. Was trifft zu?",opts:["Beta-Fehler (Typ-II-Fehler)","Alpha-Fehler (Typ-I-Fehler)","Gamma-Fehler","Irgendwas-Diskrepanz"],ans:0,topic:2,exp:"Der Beta-Fehler (Typ-II-Fehler) liegt vor, wenn die H0 beibehalten wird, obwohl in Wirklichkeit ein Effekt existiert (H1 wahr ist). Man 'übersieht' also einen echten Effekt. Der Alpha-Fehler (Typ-I-Fehler) ist der umgekehrte Fall: H0 wird abgelehnt, obwohl kein Effekt existiert.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Welche Prävention ist am effektivsten, um Karies bei Kindern vorzubeugen?",opts:["Fluoridierung des Trinkwassers","Regelmäßige Kontrolluntersuchungen einmal im Jahr","Plakate in Einkaufszentren zur Mundhygiene","Verstärkte Aufklärung in Schulen","Vorführung von Maßnahmen"],ans:0,topic:13,exp:"Die Trinkwasserfluoridierung ist eine der effektivsten bevölkerungsweiten Maßnahmen gegen Karies – klassisches Beispiel für universelle Prävention (Präventionsparadox nach Rose). Alle profitieren, auch wenn der individuelle Effekt klein erscheint.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2021",q:"Was spielt bei der Handlungskontrolle des HAPA-Modells eine wichtige Rolle?",opts:["Selbstwirksamkeitserwartung bzgl. Wiederaufnahme nach Rückfall","Selbstbeobachtung","Intention","Bewältigungshandlung","Handlungs-Ergebnis-Erwartung"],ans:1,topic:14,exp:"In der Handlungskontrolle (volitionale Phase) des HAPA-Modells spielt die Selbstbeobachtung eine zentrale Rolle: Man beobachtet das eigene Verhalten, vergleicht es mit der Intention und reguliert entsprechend. Anmerkung: Die Frage ist anfechtbar, da auch Selbstwirksamkeit bzgl. Rückfall zur Handlungskontrolle gehört.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2021",q:"Welche Aussage bezüglich der Abnahme der kognitiven Leistungsfähigkeit im Alter stimmt?",opts:["Zwischen 20. und 60. Lj. gibt es keine Abnahme","Im 30. Lj. nimmt numerisches Verständnis ab","Um das 60. Lj.: Abnahme bei räumlicher Orientierung, Rechenfähigkeiten und Wahrnehmungsgeschwindigkeit","Ab dem 60. Lj.: Abnahme bei verbalen Fähigkeiten und dem verbalen Gedächtnis"],ans:2,topic:12,exp:"Um das 60. Lebensjahr nehmen fluide Fähigkeiten ab: räumliche Orientierung, Wahrnehmungsgeschwindigkeit und Rechenfertigkeiten. Verbale Fähigkeiten und das verbale Gedächtnis (kristalline Intelligenz) bleiben hingegen lange stabil – oft bis ins hohe Alter.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2021",q:"Odds-Ratio = 2,7. Welche Aussage stimmt NICHT?",opts:["Die Referenzgruppe wurde auf 0 normiert","Risiko um 170% erhöht","Risiko 2,7-fach höher","Referenzgruppe ist prävalent für die Erkrankung","Bei 95%-KI von 2,5–2,9 ist das Ergebnis statistisch signifikant"],ans:0,topic:2,exp:"Die Referenzgruppe wird beim Odds-Ratio auf 1 normiert, nicht auf 0. Das OR der Referenzgruppe beträgt immer 1. Ein OR von 2,7 bedeutet: die Chance der Expositionsgruppe ist 2,7-mal so hoch. Die Risikosteigerung: (2,7-1)×100% = 170%.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Richtigaussage zur sekundären Sozialisation:",opts:["Kind im Vorschulalter, das seine Umwelt erlebt","Durch Bezugspersonen in Schule/Kindergarten außerhalb der Familie","Geschwister","Familie"],ans:1,topic:9,exp:"Sekundäre Sozialisation findet außerhalb der Familie statt – in Kindergarten, Schule, Peergruppen und anderen Institutionen. Hier erlernt das Kind gesellschaftliche Normen und soziale Fähigkeiten jenseits des familiären Rahmens. Primäre Sozialisation findet in der Familie statt.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2021",q:"Welche Aussage stimmt zur Entwicklung des Gehirns in der Pubertät?",opts:["Die Neuronendichte nimmt ab; Synapsen die nicht genutzt werden, werden abgebaut","Steigende Stressresistenz im Vergleich zu Kleinkindern","Besserer Umgang mit Therapien als Kinder","Die Myelinisierung der wichtigsten Assoziationsfasern ist beendet","Jugendliche kommen besser klar mit strengen Diäten"],ans:0,topic:12,exp:"In der Pubertät findet sog. Synaptic Pruning statt: Neuronale Verbindungen, die nicht genutzt werden, werden abgebaut ('use it or lose it'). Jugendliche sind NICHT stressresistenter – das limbische System ist überaktiv, während der präfrontale Kortex noch reift.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2021",q:"Welche Ressource trägt eher NICHT zur Resilienz bei?",opts:["Sozialer Rückhalt","Selbstwirksamkeitserwartung","Emotionale Stabilität","Dispositionaler Optimismus","Individuelle Reaktanz"],ans:4,topic:15,exp:"Resilienz wird durch sozialen Rückhalt, Selbstwirksamkeit, emotionale Stabilität und Optimismus gefördert. Reaktanz (Widerstand gegen wahrgenommene Freiheitseinschränkungen) ist kein etablierter Resilienzfaktor und kann sogar kontraproduktiv sein, wenn man Hilfsangebote ablehnt.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2021",q:"Welche Aussage zu Demenzerkrankungen trifft NICHT zu?",opts:["Die Zahl der Frauen über 65 mit Demenz ist nur geringfügig höher als die der Männer","Bei stationär behandelten Über-65-Jährigen haben 20% eine Demenz","Demenz ist ein Syndrom","Pflegekassen stufen den Pflegegrad ein"],ans:3,topic:1,exp:"Den Pflegegrad stuft nicht die Pflegekasse selbst ein, sondern der MDK (Medizinischer Dienst der Krankenversicherung) im Auftrag der Pflegekasse. Die Pflegekasse ist Kostenträger, der MDK das Begutachtungsorgan.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Was ist KEINE Grundlage zur Aufrechterhaltung der geistigen Leistungsfähigkeit?",opts:["Angeborene Intelligenz","Unterhaltsame Freizeitaktivitäten (ohne soziale Komponente)","Sport","Kognitives Training","(Schul-)Bildung"],ans:1,topic:1,exp:"Rein passive, unterhaltsame Freizeitaktivitäten (z.B. passives Fernsehen) sind keine nachgewiesene Grundlage zur Aufrechterhaltung der kognitiven Leistungsfähigkeit. Nachgewiesene protektive Faktoren: Sport, kognitives Training, Bildung und soziale Teilhabe.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Richtigaussage zu Krankenkassen:",opts:["Beiträge nehmen mit dem Alter zu bei GKV","Durch zunehmend ältere Gesellschaft besteht Gefahr einer GKV-Unterfinanzierung","Ein GKV-Versicherter ist verpflichtet, seine Arztrechnungen zu überprüfen"],ans:1,topic:11,exp:"Die GKV basiert auf dem Solidarprinzip – ältere, chronisch kranke Versicherte zahlen nicht mehr als gesunde. Mit der Alterung der Gesellschaft steigen die Gesundheitsausgaben, während die Einzahlenden proportional weniger werden. Dies gefährdet mittelfristig die Finanzierbarkeit.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2021",q:"Falschaussage zu Krankenkassen:",opts:["Die GKV hat die Aufgabe, die ambulante Versorgung aufrechtzuerhalten","GKV nach Kostenerstattungsprinzip","Privatversicherte haben Anspruch auf alle medizinisch notwendigen Leistungen","Kinder und Ehepartner sind bei der GKV kostenlos mitversichert"],ans:1,topic:11,exp:"Die GKV arbeitet nach dem Sachleistungsprinzip, NICHT nach dem Kostenerstattungsprinzip. GKV-Versicherte erhalten Leistungen direkt. Das Kostenerstattungsprinzip gilt für die PKV: dort zahlt der Patient zunächst selbst und bekommt dann erstattet.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2021",q:"Was trifft NICHT zu auf ICD-10 Hyperkinetische Störung (ADHS)?",opts:["Maximal 10% aller Betroffenen brauchen nach der Pubertät eine weitere Therapie","Fehlende Inhibition kann genetisch bedingt sein","Bei Mädchen seltener als bei Jungs","Betroffene werden später eher Nikotin-abhängig","Schwere der Störung auch durch soziale Strukturen bestimmt"],ans:0,topic:1,exp:"Die Aussage ist falsch – es sind tatsächlich viel mehr als 10%. Studien zeigen, dass bei ca. 40–80% der Betroffenen ADHS-Symptome ins Erwachsenenalter fortbestehen. Die anderen Aussagen sind korrekt: genetische Komponente, Geschlechtsunterschied (♂:♀ = 3:1) und erhöhtes Suchtrisiko sind belegt.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Am Ende des Arzt-Patienten-Gespräches wird die Therapie nochmals wiederholt. Welcher Effekt liegt dem zugrunde?",opts:["Recency-Effekt","Prozedurales Gedächtnis","Phonologische Schleife","Visuell-räumliches Notizbuch","Enkodierungsspezifität"],ans:0,topic:5,exp:"Der Recency-Effekt besagt: Das zuletzt Genannte wird am besten erinnert. Durch Wiederholung am Ende des Gesprächs nutzt der Arzt diesen Effekt gezielt. In der Arzt-Patienten-Kommunikation wird dies als 'Zusammenfassung am Schluss' empfohlen.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2021",q:"Frage zur Angststörung – Richtigaussage:",opts:["Angstzustände werden durch Vermeidung, negative Verstärkung und kognitive Dysfunktion aufrechterhalten","Generalisierte Angststörungen sind die häufigsten psychischen Störungen bei Frauen","Männer häufiger betroffen als Frauen","Therapieoptionen der ersten Wahl sind Verhaltenstherapie"],ans:0,topic:1,exp:"Angststörungen werden durch einen Teufelskreis aufrechterhalten: Vermeidungsverhalten verhindert Habituation (negative Verstärkung), dysfunktionale Kognitionen erhalten die Störung aufrecht. Dies ist die Grundlage kognitiv-verhaltenstherapeutischer Interventionen (Exposition).",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Transaktionales Stressmodell nach Lazarus – was trifft zu?",opts:["Psychische und physiologische Stressoren werden unterschieden","Sekundäre Bewertung der eigenen Ressourcen/Leistungsfähigkeit"],ans:1,topic:10,exp:"Im transaktionalen Stressmodell nach Lazarus gibt es primäre Bewertung (ist die Situation bedrohlich?) und sekundäre Bewertung (welche Ressourcen habe ich?). Die sekundäre Bewertung der eigenen Ressourcen und Bewältigungsmöglichkeiten ist entscheidend dafür, ob Stress erlebt wird.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2021",q:"Neugeborene Jungen 2017–2019, Lebenserwartung 78 Jahre. Welche Aussage stimmt?",opts:["Bezeichnet die Lebenserwartung von Jungen unter den Umständen von 2017–2019","Jungen, die in dem Zeitraum geboren wurden, erreichen durchschnittlich ein Sterbealter von 78,6 Jahren","Die Corona-Pandemie beeinflusst diesen Wert nicht","Berücksichtigt zukünftige Sterberaten","Setzt sich zusammen aus Geburtsrate, Sterberate und Migrationsrate"],ans:0,topic:4,exp:"Die Lebenserwartung bei Geburt ist eine hypothetische Kennzahl: Sie beschreibt, wie alt ein heute geborenes Kind werden würde, wenn die aktuellen Sterblichkeitsverhältnisse zeitlebens konstant blieben. Sie basiert auf Periodensterbetafeln und berücksichtigt keine zukünftigen Entwicklungen.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2021",q:"WHO unterteilt Faktoren bei Adhärenz in 5 Gruppen. Welche gehört NICHT dazu?",opts:["Krankheitsspezifische Faktoren","Biogenetische Faktoren","Anforderungen der Therapie","Sozioökonomische Faktoren","Patientenbezogene Faktoren"],ans:1,topic:14,exp:"Das WHO-Adhärenzmodell (2003) unterteilt in 5 Dimensionen: sozioökonomische, gesundheitssystembezogene, therapiebezogene, krankheitsbezogene und patientenbezogene Faktoren. 'Biogenetische Faktoren' ist KEINE eigenständige WHO-Kategorie.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2021",q:"Hazard-Ratio = 1,4 (Diabetes vs. Nicht-Diabetes, schwerer COVID-Verlauf). Falschaussage:",opts:["Risiko für Diabetiker ist um 140% erhöht","Leute mit Diabetes haben niedrigeres Risiko schwer zu erkranken","HR setzt die Chance beider Gruppen ins Verhältnis (Odds)","Schwere Erkrankung als Zielereignis","HR beruht auf Ereignisdatenanalyse"],ans:0,topic:2,exp:"Ein HR von 1,4 bedeutet: das Risiko ist um 40% erhöht (nicht 140%!). (HR-1)×100% = 40%. Außerdem: Das HR setzt nicht Chancen (Odds) ins Verhältnis – das wäre das Odds-Ratio. Das HR ist das Verhältnis von Raten.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2021",q:"Frage zu Adipositas – Falschaussage:",opts:["Intrauterine Unterversorgung kann zu Adipositas führen","Bei 10% der übergewichtigen Einschulungskinder findet man monogenetische Mutation","Mere-Exposure-Effekt","Emotionale Faktoren können zu Heißhunger führen","In Altersspanne 25–39 ist der Anstieg der Adipösen am größten"],ans:1,topic:1,exp:"Monogenetische Mutationen finden sich bei weniger als 1–2% der übergewichtigen Kinder – nicht bei 10%. Die häufigsten Formen der Adipositas sind polygen und durch Umweltfaktoren mitbedingt.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Akuter vs. chronischer Stress und Immunsystem. Was trifft NICHT zu?",opts:["Andauernder Stress → erhöhtes Cortisol und Glucosewerte","Stress kann indirekt über Verhalten zu Krebs führen","Akuter Stress führt zu Runterregulation der natürlichen Immunantwort","Langfristig hohe Stresslevel → Herabregulation des Immunsystems"],ans:2,topic:10,exp:"Akuter Stress führt zu einer HOCHREGULATION bestimmter Immunfunktionen (kurzfristige adaptive Immunantwort). Chronischer Stress hingegen führt zu Immunsuppression. Die Antwort C ist falsch: Es ist die adaptive Immunantwort, die akut hochreguliert wird.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2021",q:"Mann mit 180-Sekunden-Takt am Fließband ist unglücklich. Welches Modell passt?",opts:["Anforderungs-Kontroll-Modell","Gratifikationskrise","Health-Belief","Berufsstagnationsmodell","Leistungs-Diskrepanz-Modell"],ans:0,topic:10,exp:"Das Anforderungs-Kontroll-Modell (Karasek): Hohe Anforderungen + geringer Entscheidungsspielraum (wie beim Fließbandarbeiter mit 180-Sekunden-Takt) führt zu 'high strain' – höchstem Burnout- und Herzerkrankungsrisiko. Das Modell hat die größte empirische Evidenz für Burnout.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2021",q:"Frau berichtet nach Gewichtsverlust über Heißhungerattacken. Falschaussage:",opts:["Hoher Leptinspiegel führt zu Heißhungerattacken","Niedriger Ghrelinspiegel führt zu Heißhungerattacken","Verminderte Adipositas-Signale aus Fettgewebe → vermehrtes Hungergefühl","Hypoglykämie fördert Hunger","Emotionale Stimuli können Sättigungsgefühl außer Kraft setzen"],ans:0,topic:1,exp:"Leptin ist das Sättigungshormon – ein HOHER Leptinspiegel hemmt das Hungergefühl. Ein NIEDRIGER Leptinspiegel (nach Gewichtsverlust, wenn Fettmasse sinkt) führt zu erhöhtem Hunger. Antwort A ist also falsch.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2021",q:"Falschaussage zu SES und Gesundheitsversorgung:",opts:["Es besteht kein Zusammenhang zwischen SES und Inanspruchnahme von Vorsorgeleistungen","Zunahme der Zuzahlungen verringert die Inanspruchnahme bei niedrigem SES","GKV-Versicherte geben an, länger auf einen Termin zu warten"],ans:0,topic:6,exp:"Es besteht ein deutlicher Zusammenhang zwischen sozioökonomischem Status und Inanspruchnahme von Vorsorgeleistungen. Personen mit niedrigem SES nehmen Präventionsangebote weniger in Anspruch. Dies ist ein zentrales Problem gesundheitlicher Ungleichheit.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2025",q:"In der ausführlichen Version des HAPA-Modells: Was gehört zur Handlungskontrolle?",opts:["Intention","Selbstbeobachtung","Bewältigungsplanung","Handlungs-Ergebnis-Erwartung","Selbstwirksamkeitserwartung bzgl. Wiederaufnahme nach Rückfall"],ans:1,topic:14,exp:"Die Handlungskontrolle im HAPA-Modell umfasst: Selbstbeobachtung (Monitoring), Selbstbewertung (Vergleich mit Ziel) und Selbstreaktion (Anpassung). Selbstbeobachtung ist der erste und zentrale Schritt.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2025",q:"Was trifft auf den demographischen Wandel in Deutschland zu?",opts:["Ambulante und stationäre Behandlung sollte getrennt werden","Durch positiven Wanderungssaldo kommt es zu einer jüngeren Gesellschaft","Durch langsamen Rückgang kardiovaskulärer Erkrankungen nimmt die Lebenserwartung langsamer zu","Durch Geburtenrate >2 wird die Gesellschaft jünger","Lebenserwartung hat in den letzten Jahren sehr stark zugenommen"],ans:4,topic:4,exp:"Die Lebenserwartung in Deutschland ist in den letzten Jahrzehnten deutlich angestiegen – durch bessere medizinische Versorgung und verbesserte Lebensumstände. Deutschland hat mit Alterung zu kämpfen, weil Menschen länger leben und die Geburtenrate (~1,5) unter dem Reproduktionsniveau liegt.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2025",q:"Alternativhypothese: Unterschied in Prüfungsleistung bei >6h vs. <6h Schlaf. Wie lautet die Nullhypothese?",opts:["Prüfungsleistungen erhöhen sich bei >6h nur bei guter Schlafqualität","Jene mit >6h erzielen durchschnittlich niedrigere Punktzahl","Jene mit >6h erzielen gleiche oder geringere Punktzahl","Schlafqualität hat keinen Einfluss","Es gibt keinen Unterschied zwischen den beiden Gruppen"],ans:4,topic:2,exp:"Die Nullhypothese ist die logische Verneinung der Alternativhypothese. Da die Alternativhypothese einen 'Unterschied' postuliert (ungerichtet), ist die Nullhypothese: 'Es gibt keinen Unterschied.'",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Was trifft auf die Yerkes-Dodson-Regel zu?",opts:["Linearer Anstieg: je mehr Stress, desto mehr Leistung","Linearer Anstieg: je weniger Stress, desto mehr Leistung","Mittelstarker Stress führt zum Leistungsmaximum","Stress ist für körperliche Arbeit leistungsfördernd, für geistige leistungsmindernd","Hoher Stress fördert bei leichten, hemmt bei schweren Aufgaben die Leistung"],ans:2,topic:10,exp:"Das Yerkes-Dodson-Gesetz beschreibt eine umgekehrte U-Kurve: bei mittlerem Erregungsniveau ist die Leistung am höchsten. Zu wenig Stress → Unterforderung, zu viel Stress → Blockade. Für einfache Aufgaben ist ein höherer Erregungsgrad optimal, für komplexe ein niedrigerer.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2025",q:"In welchem Piaget-Stadium verstehen Kinder das Konzept der Invarianz (Volumen/Masse bleiben trotz Formänderung gleich)?",opts:["Sensomotorisches Stadium","Prä-operationales Stadium","Konkret-operationales Stadium","Post-operationales Stadium","Formal-operationales Stadium"],ans:2,topic:12,exp:"Das Konzept der Invarianz (Konservierung) wird im konkret-operationalen Stadium erworben (ca. 7–11 Jahre). Im prä-operationalen Stadium (2–7 Jahre) scheitern Kinder noch daran – sie fokussieren auf eine Dimension (Zentrierung).",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2025",q:"Altenpflegerin mit Burnout – was ist am ehesten Ursache?",opts:["Fehlende positive Anreize","Langeweile","Hohe emotionale Belastung und unerfüllbare Ansprüche an die eigene Arbeit","Zunehmende Differenz zwischen Arbeitsanforderung und positiven Anreizen","Wenige Möglichkeiten zur Gestaltung der Berufsinhalte"],ans:2,topic:10,exp:"Burnout in der Pflege entsteht häufig durch chronische emotionale Erschöpfung bei gleichzeitig hohen Ansprüchen an sich selbst. Die Kombination aus emotionaler Belastung und dem Gefühl, dem eigenen Anspruch nicht gerecht werden zu können, ist ein Kernfaktor.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2025",q:"Warum ist die grafische Veranschaulichung des Pearson-r wichtig?",opts:["Höhe des Zusammenhangs sehen","Ursache des Zusammenhangs erkennen","Art bzw. Form des Zusammenhangs erkennen","Reliabilität prüfen","Signifikanz sehen"],ans:2,topic:2,exp:"Der Pearson-r erfasst nur lineare Zusammenhänge. Ein gleicher r-Wert kann sehr unterschiedliche Datenmuster beschreiben (Anscombe-Quartett). Die grafische Darstellung zeigt die Form: linear, kurvilinear, mit Ausreißern? Ein r=0 könnte einen perfekten U-förmigen Zusammenhang maskieren.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Welches Attribut gehört zu primären Emotionen?",opts:["Geringe Erblichkeit","Sozialer Auslöser","Spezifische Immunantwort","Spezifische Mimik","Spezifische Alltagsrelevanz"],ans:3,topic:7,exp:"Primäre (Basis-)Emotionen nach Ekman haben eine spezifische, kulturuniverselle Mimik. Sie sind evolutionär konserviert, angeboren und zeigen sich weltweit in allen Kulturen gleich. Sekundäre Emotionen sind sozial erlernt und kulturabhängig.",fc:"Emotionen: Basisemotionen (Ekman), primär vs. sekundär, Mimik, FACS"},
-{year:"2025",q:"Welcher Erziehungsstil ist nachweislich am förderlichsten für eine gesunde Entwicklung?",opts:["Autoritativ-partizipativ","Autoritär","Antiautoritativ-diskursiv","Laissez-faire","Ängstlich-schützend"],ans:0,topic:12,exp:"Der autoritative (partizipative) Erziehungsstil kombiniert hohe emotionale Wärme mit klaren, konsistenten Anforderungen. Dieser Stil fördert Selbstständigkeit, Selbstregulation und soziale Kompetenz.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2025",q:"Ärztin fragt: 'Wie viel Kontrolle über Arbeitssituation?' und 'Wie hoch ist die Belastung?' Welches Modell?",opts:["Anforderungs-Kontroll-Modell","Modell der beruflichen Gratifikationskrisen","Health-Belief-Modell","HAPA","Transaktionales Stressmodell"],ans:0,topic:10,exp:"Das Anforderungs-Kontroll-Modell (Karasek) hat genau zwei Dimensionen: Arbeitsanforderungen und Entscheidungsspielraum. Die zwei Fragen der Ärztin entsprechen exakt diesen beiden Modellachsen.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2025",q:"HAPA-Modell – was passt am besten zur Volitionsphase?",opts:["Zielintention → Handlungsplanung → Handlungsdurchführung","Handlungs-Ergebnis-Erwartung → Zielintention und Verhaltensänderung → Handlungskontrolle","Selbstwirksamkeit bzgl. Rückfall → Handlungskontrolle und Initiation → Handlung","Risikowahrnehmung → Handlungsergebniserwartung und Zielintention → Handlungskontrolle","Handlungsergebniserwartung → Verhaltensintention und Rückfallplanung → Handlungsabbruch"],ans:0,topic:14,exp:"Die Volitionsphase beginnt nach der Bildung einer Zielintention. Sie umfasst: Zielintention → Handlungsplanung (Wann, Wo, Wie?) → Handlungsdurchführung.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2025",q:"§1 SGB V vervollständigen: 'Die Krankenversicherung als Solidargemeinschaft hat die Aufgabe...'",opts:["...die Gesundheit der Versicherten zu erhalten, wiederherzustellen oder zu bessern","...die Gesundheit zu erhalten und insbesondere des medizinischen Personals","...die Bedürfnisse der Solidargemeinschaft zu priorisieren","...die Gesundheit wiederherzustellen und Lebenszufriedenheit zu erhöhen","...die Arbeitsfähigkeit der Bevölkerung zu sichern"],ans:0,topic:11,exp:"§1 SGB V: Die GKV hat als Solidargemeinschaft die Aufgabe, die Gesundheit der Versicherten zu erhalten, wiederherzustellen oder zu verbessern. Der Wortlaut enthält die drei Aspekte: erhalten, wiederherstellen, bessern.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2025",q:"Hypertonien in drei Kategorien: 140/90, 160/100, <180/120. Welcher Norm entspricht das?",opts:["Statistische Norm","Funktionelle Norm","Therapeutische Norm","Kulturelle Norm","Ideal-Norm"],ans:2,topic:1,exp:"Die Klassifikation von Hypertoniestufen entspricht einer therapeutischen Norm: Sie basiert darauf, ab welchem Grenzwert eine Behandlung zur Vermeidung von Komplikationen notwendig ist. Diese Grenzwerte werden von Fachgesellschaften auf Basis von Studiendaten festgelegt.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2025",q:"Forscher ordnet 20 Items nach Korrelation zur Gesamtpunktzahl. Welches Kriterium liegt zugrunde?",opts:["Trennschärfe","Schwierigkeit","Sensitivität","Negativer Prädiktionswert","Reliabilität"],ans:0,topic:2,exp:"Die Trennschärfe (item-total-correlation) gibt an, wie gut ein einzelnes Item mit der Gesamtskala korreliert. Bei der Itemselektion wird die Trennschärfe als zentrales Kriterium verwendet.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Integratives Modell der Emotionsverarbeitung: Welche Aussage stimmt?",opts:["Bewusste Bewertung beeinflusst direkt die subjektive Erfahrung","Bewusste Bewertung beeinflusst direkt den Ausdruck","Bewusste Bewertung beeinflusst direkt das physiologische Muster","Unbewusste Bewertung beeinflusst Wahrnehmung","Bewusste Bewertung beeinflusst die Wahrnehmung"],ans:0,topic:7,exp:"Im integrativen Modell nach Lazarus/Schachter beeinflusst die kognitive (bewusste) Bewertung (appraisal) direkt das subjektive emotionale Erleben. Lazarus betonte: Es ist unsere Bewertung der Situation, die die emotionale Erfahrung bestimmt.",fc:"Emotionen: Basisemotionen (Ekman), primär vs. sekundär, Mimik, FACS"},
-{year:"2025",q:"Patient sagt nach Aufklärung: 'Bin zuversichtlich, Medikamente trotz Zeitmangels öfter einzunehmen.' Welcher HAPA-Aspekt?",opts:["Barrieren der Umwelt durch Zeitmangel","Handlungs-Ergebnis-Erwartung","Selbstwirksamkeitserwartung","Zielintention","Risikowahrnehmung"],ans:2,topic:14,exp:"'Zuversicht, trotz Hindernissen das Verhalten ausführen zu können' ist die Definition der Selbstwirksamkeitserwartung (nach Bandura). Im HAPA-Modell ist die Selbstwirksamkeit entscheidend für die Umsetzung der Intention in Verhalten – besonders bei Barrieren.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2025",q:"Ottawa-Charta – Richtigaussage:",opts:["Gesundheitsförderliche Umwelt schaffen (Setting-Ansatz)","Bezogen auf Risikofaktoren im Alter","Kuration vor Prävention","Rehabilitation vor Kuration","Spezieller Fokus auf Hochrisikopatienten"],ans:0,topic:13,exp:"Die Ottawa-Charta (1986) definiert fünf Handlungsfelder, darunter die Schaffung gesundheitsförderlicher Lebenswelten (Setting-Ansatz). Gesundheitsförderung findet dort statt, wo Menschen leben, lernen und arbeiten.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2025",q:"Frau kommt seit dem 40. Lj. jährlich zum Hautkrebsscreening. Um welche Vorsorge handelt es sich?",opts:["Primär","Primordial","Sekundär","Tertiär","Quartär"],ans:2,topic:13,exp:"Sekundäre Prävention zielt auf Früherkennung bei noch symptomloser Erkrankung – z.B. Screening-Programme. Das Ziel ist die Früherkennung, um die Prognose zu verbessern.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2025",q:"'Stressreaktion ist Resultat der Bewertung der Umwelt und der eigenen Ressourcen.' Welches Modell?",opts:["Allgemeines Anpassungssyndrom","Anforderungs-Kontroll-Modell","Transaktionales Stressmodell nach Lazarus","Homöostasemodell","Stimulustheorie"],ans:2,topic:10,exp:"Das transaktionale Stressmodell nach Lazarus betont die subjektive kognitive Bewertung: primäre Bewertung und sekundäre Bewertung der Ressourcen. Stress entsteht, wenn Anforderungen die wahrgenommenen Ressourcen übersteigen.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2025",q:"RCT: 2 Physio-Maßnahmen nach Bänderdehnung, bewertet wird gesundheitsbezogene Lebensqualität. Was ist die abhängige Variable?",opts:["Physiotherapiemaßnahmen","Bänderdehnung","Alter","Geschlecht","Gesundheitsbezogene Lebensqualität"],ans:4,topic:2,exp:"Die abhängige Variable ist das Merkmal, das gemessen wird. Hier ist die Physiotherapiemaßnahme die unabhängige Variable (Intervention), die gesundheitsbezogene Lebensqualität die abhängige Variable (Outcome).",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Falschaussage zur Einordnung als schwerwiegend chronisch krank:",opts:["Mindestens 1× pro Quartal in ärztlicher Behandlung seit mind. 1 Jahr","GdB von mindestens 60","Kontinuierliche Behandlung nötig, ohne die Verschlimmerung droht","Auftreten der Krankheit in ICF-Klassifikation","Pflegegrad von mindestens III"],ans:3,topic:1,exp:"Das Auftreten in der ICF-Klassifikation ist KEIN Kriterium der deutschen Definition. Die drei Kriterien sind: GdB ≥60, Pflegegrad ≥3, oder lebensbedrohliche Verschlimmerung ohne kontinuierliche Behandlung.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2025",q:"Was gehört NICHT zu den Fennell-Phasen?",opts:["Krise","Aggression","Resolution","Integration","Stabilisierung"],ans:1,topic:15,exp:"Die Fennell-Phasen sind: (1) Krise, (2) Stabilisierung, (3) Resolution, (4) Integration. Aggression ist keine der vier Phasen.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2025",q:"Theory of Mind – welche Aussage trifft zu?",opts:["Die meisten 2,5-Jährigen haben ein Verständnis falscher Vorstellungen","Die meisten 4-Jährigen machen den False-Belief-Fehler","Kinder verstehen Überzeugungen früher als Wünsche","Kinder verstehen sehr früh, dass Menschen verschiedene Wünsche haben","Kinder können bereits früh höhere kognitive Leistungen erbringen"],ans:3,topic:12,exp:"Schon früh (ab ca. 18 Monaten) verstehen Kinder, dass andere Menschen andere Wünsche haben können. Das Verständnis falscher Überzeugungen (False Belief) entwickelt sich erst um das 4.–5. Lebensjahr.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2025",q:"Rollenbildung nach Krappmann – was ist KEINE Grundkompetenz zur Ich-Identität?",opts:["Identitätsdarstellung","Empathie (Role-Taking)","Rollendistanz","Stressbewältigung","Ambiguitätstoleranz"],ans:3,topic:9,exp:"Die vier Grundkompetenzen nach Krappmann: Rollendistanz, Empathie/Role-Taking, Ambiguitätstoleranz, Identitätsdarstellung. 'Stressbewältigung' ist keine der vier Kernkompetenzen.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2025",q:"Was trifft auf Prävention zu (im Vergleich zu Gesundheitsförderung)?",opts:["Empowerment fördern","Personenbezogene Verhaltens- und Krankheitsrisiken verringern","Soziale Fähigkeiten fördern","Soziales Umfeld erweitern","Capacity-Building"],ans:1,topic:13,exp:"Prävention zielt auf die Verringerung von Krankheitsrisiken (pathogenetische Perspektive). Gesundheitsförderung zielt auf Ressourcenstärkung (Empowerment, Capacity-Building) – salutogenetische Perspektive.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2025",q:"Dual Processing Model – was trifft auf exekutive Kontrolle zu?",opts:["Wird durch Verhalten konditioniert","Nicht Existierendes kann nicht kognitiv abgebildet werden","Verantwortlich für Erhalt der Homöostase","Wird stark von Umweltbedingungen beeinflusst","Einfluss eigener Wertvorstellungen"],ans:4,topic:8,exp:"Exekutive Kontrolle (System 2) ermöglicht bewusste, rationale Entscheidungen unter Einfluss von Werten, Zielen und Überzeugungen. Wertvorstellungen sind ein zentrales Element der bewussten Handlungssteuerung.",fc:"Motivation: Selbstwirksamkeit (Bandura), Health-Belief-Modell, Heuristiken"},
-{year:"2025",q:"Was stimmt zum Langzeitgedächtnis NICHT?",opts:["Am besten erinnert man sich an Inhalte aus der Mitte einer Unterhaltung","Neue Inhalte können das Erinnern von alten Inhalten stören","Abruf am besten wenn Hinweisreize bei Enkodierung und Abruf übereinstimmen","Kann sehr langfristig gespeichert werden","Schlafmangel nimmt Einfluss auf die Gedächtnisleistung"],ans:0,topic:5,exp:"Der serielle Positionseffekt zeigt das Gegenteil: Am besten erinnert man sich an Inhalte vom ANFANG (Primacy-Effekt) und vom ENDE (Recency-Effekt). Inhalte aus der MITTE werden am schlechtesten erinnert.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2025",q:"Das Lernen am Modell ist einfacher, wenn...",opts:["...das Modell dem Lernenden ähnlich ist","...das Modell verwandt ist","...das Verhalten verdeckt beobachtet wird","...das Verhalten so einfach ist, dass man es kaum nachahmen muss","...das Modell gegenkonditioniert ist"],ans:0,topic:3,exp:"Beim Beobachtungslernen (Bandura) ist die Ähnlichkeit zwischen Modell und Lernenden ein entscheidender Faktor. Weitere förderliche Faktoren: Modell wird belohnt (stellvertretende Verstärkung), hohe Aufmerksamkeit.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2025",q:"SORCK – wozu passen Verstärkerpläne?",opts:["Stimulus","Organismus","Konsequenz","Kontingenz","Reaktion"],ans:3,topic:3,exp:"Verstärkerpläne beschreiben die zeitliche Regelung (Kontingenz = C), nach der eine Reaktion Konsequenzen hat. Intermittierende Verstärkerpläne (z.B. variable ratio) sind besonders löschungsresistent.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2025",q:"Falschaussage zu Hazard-Ratio 1,4 (KI 1,1–1,8):",opts:["Risiko ist für Risikogruppe 40% erhöht","Querschnittsstudie","Ist statistisch signifikant","Risiko 1,4-fach höher","Ereigniszeitanalyse"],ans:1,topic:2,exp:"Ein HR entsteht aus der Überlebenszeitanalyse (Ereignisdatenanalyse/Cox-Regression) – das ist eine Längsschnittmethode, KEINE Querschnittsstudie.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Was trifft auf den Beta-Fehler zu?",opts:["H1 wird angenommen, obwohl H0 richtig ist","H0 wird angenommen, obwohl H1 richtig ist"],ans:1,topic:2,exp:"Der Beta-Fehler (Typ-II): H0 wird angenommen (kein Effekt), obwohl H1 in der Realität gilt (Effekt existiert). Man 'übersieht' einen echten Effekt.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Frau nach Raubüberfall: erinnert Weg davor und danach, nicht den Tathergang. Worum handelt es sich?",opts:["Dissoziative Amnesie","Retrograde Amnesie","Anterograde Amnesie","Agnosie","Korsakow-Syndrom"],ans:0,topic:5,exp:"Dissoziative Amnesie: selektiver Gedächtnisverlust für das traumatische Ereignis ohne organische Ursache. Erinnerungen davor und danach sind intakt – als psychologischer Schutzmechanismus.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2024",q:"Patient kann nicht 2× wöchentlich schwimmen – Hallenbad geschlossen. Welche HAPA-Komponente?",opts:["Selbstwirksamkeitserwartungen","Komponente der Handlungskontrolle","Ressourcen und Barrieren aus der Umwelt","Handlungs-Ergebnis-Erwartungen","Bewältigungsplan"],ans:2,topic:14,exp:"Das geschlossene Hallenbad ist eine externe Barriere aus der Umwelt. Im HAPA-Modell werden Ressourcen und Barrieren (intern wie extern) als wichtige Faktoren im volitionalen Prozess berücksichtigt.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2024",q:"Was hat den größten Einfluss auf den demographischen Wandel in Deutschland?",opts:["Stagnation der Lebenserwartung","Kompression der Lebenserwartung","Dynamisches Gleichgewicht","Zunahme der Lebenserwartung","Abnahme der Lebenserwartung"],ans:3,topic:4,exp:"Die Zunahme der Lebenserwartung ist der wesentlichste Treiber des demographischen Wandels. Bei gleichzeitig niedriger Geburtenrate (ca. 1,5 Kinder) ergibt sich eine alternde Gesellschaft.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2024",q:"'Teufelskreis der Angst' – was trifft NICHT zu?",opts:["Modell zur Erklärung von Angststörungen","Beschreibt verschiedene körperliche Veränderungen","Kann durch äußere und innere Reize gestartet werden","Beschreibt den Einfluss von Selbstwahrnehmung auf Angst","Vermeidung unterbricht die Angstabwärtsspirale"],ans:4,topic:1,exp:"Im Teufelskreis der Angst ist Vermeidung KEIN Mittel zur Unterbrechung – sie VERSTÄRKT die Angst langfristig (negative Verstärkung). Exposition ist der wirksame Weg zur Unterbrechung.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2024",q:"Welchen Wert kann Hazard-Ratio NICHT annehmen?",opts:["5,0","1,5","0,75","0,08","-1,25"],ans:4,topic:2,exp:"Das Hazard-Ratio kann nur positive Werte annehmen (> 0). Negative Werte sind mathematisch unmöglich. HR = 1: kein Unterschied; HR > 1: erhöhtes Risiko; 0 < HR < 1: reduziertes Risiko.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Definition Selbstwirksamkeitserwartung:",opts:["Überzeugung zu erreichen, was andere erwarten","Dass es eine gute Therapie geben wird","Erwartung eines guten Krankheitsverlaufs","Überzeugung, eine Erkrankung zu bekommen","Überzeugung, ein Verhalten mit eigenen Ressourcen schaffen zu können"],ans:4,topic:8,exp:"Selbstwirksamkeitserwartung (Bandura): die subjektive Überzeugung, ein bestimmtes Verhalten mit den eigenen Ressourcen ausführen zu können – auch angesichts von Hindernissen.",fc:"Motivation: Selbstwirksamkeit (Bandura), Health-Belief-Modell, Heuristiken"},
-{year:"2024",q:"Patient verschiebt Vorsorgetermin wegen Angst vor Prostatakarzinom. Lerntheorie?",opts:["Instrumentelle Konditionierung mit Verstärkerentzug","Klassische Konditionierung der Angst","Modellernen der Hemmung","Operante Konditionierung durch negative Verstärkung","Instrumentelle Konditionierung mit positivem Verstärker"],ans:3,topic:3,exp:"Negative Verstärkung: Das Aufschieben beseitigt kurzfristig die Angst (aversiver Reiz) – dieses Verschwinden verstärkt das Vermeidungsverhalten. Langfristig wird es immer stärker konditioniert.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2024",q:"Itemanalyse – welche Aspekte werden untersucht?",opts:["Sensitivität und Schwierigkeit","Schwierigkeit und Trennschärfe","Trennschärfe und Fairness","Objektivität und Trennschärfe","Trennschärfe und Spezifität"],ans:1,topic:2,exp:"Die Itemanalyse untersucht: (1) Schwierigkeit und (2) Trennschärfe. Diese beiden Kennwerte entscheiden, welche Items für den finalen Test ausgewählt werden.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"RCT zu Adipositas-Therapie – was trifft bei guter klinischer Praxis NICHT zu?",opts:["(erste Option fehlte)","Primärer Endpunkt sollte vor Studiendurchführung definiert werden","Ein-/Ausschlusskriterien werden vorher festgelegt","Stichprobe sollte repräsentativ ausgewählt sein","BMI und Taillenumfang können als unabhängige Variable verwendet werden"],ans:4,topic:2,exp:"In einem RCT zur Therapiewirksamkeit sind BMI und Taillenumfang abhängige Variablen (Outcome-Maße), KEINE unabhängigen Variablen. Die unabhängige Variable ist die Intervention.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Was trifft auf die Entwicklung kognitiver Fähigkeiten über die Lebensspanne zu?",opts:["Zwischen 20. und 60. Lj. kein Abbau","Ab dem 30. Lj. numerische Fähigkeiten ab","Um das 50. Lj. Maximum der kognitiven Fähigkeiten","Ab dem 60. Lj. verbale Fähigkeiten und verbales Gedächtnis ab","Um das 60. Lj. räumliche Orientierung, Wahrnehmungsgeschwindigkeit und Rechenfähigkeiten ab"],ans:4,topic:12,exp:"Fluide Fähigkeiten (räumliche Orientierung, Verarbeitungsgeschwindigkeit, Rechnen) beginnen um das 60. Lj. deutlich abzunehmen. Kristalline Intelligenz (Wortschatz, Wissen, verbale Fähigkeiten) bleibt viel länger stabil.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Lebensqualität von Krebskranken – was stimmt?",opts:["EORTC vergleicht Krebskranke mit Allgemeinbevölkerung","SF-36 erfasst allgemein die Lebensqualität","Krebsspezifische Fragebögen erlauben Rückschlüsse auf Gesamtbevölkerung","Generische Fragebögen haben krebsspezifische Antworten","Patient-Reported-Outcome für Medikamentenentwicklung"],ans:1,topic:15,exp:"Der SF-36 ist ein generischer Fragebogen für gesundheitsbezogene Lebensqualität – nicht krankheitsspezifisch. Er kann auf alle Bevölkerungsgruppen angewendet werden. Der EORTC QLQ-C30 dagegen ist krebsspezifisch.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2024",q:"Frau W. mit COPD plant nach Verschlechterung, mit dem Rauchen aufzuhören. Prävention?",opts:["Primordiale Prävention","Primäre Prävention","Sekundäre Prävention","Tertiäre Prävention","Quartäre Prävention"],ans:3,topic:13,exp:"Tertiäre Prävention zielt auf die Verhinderung der Verschlimmerung einer bereits bestehenden Erkrankung. Da Frau W. bereits seit 8 Jahren an COPD erkrankt ist, ist der Rauchstopp jetzt tertiäre Prävention.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2024",q:"Was trifft NICHT zu auf kognitive Fähigkeiten von Kindern in Armut?",opts:["Entwickeln eher arterielle Hypertonie im Erwachsenenalter","Niedriger Bildungsstand der Eltern → verringerte kognitive Fähigkeiten","Kognitive Defizite sind ab dem 7. Lebensjahr zu sehen","Armut hat keinen Einfluss auf kognitive Fähigkeiten","Je länger in Armut, desto geringer das Arbeitsgedächtnis"],ans:2,topic:12,exp:"Kognitive Defizite bei Kindern in Armut zeigen sich schon ab dem 7. MONAT (nicht 7. Jahr) – durch chronischen Stress, fehlende Stimulation und mangelnde Ernährung.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Was trifft auf die fetale Programmierung NICHT zu?",opts:["Kann durch Noxen ausgelöst werden","Ist nur von kurzer Dauer und hat keinen Einfluss auf spätere Leistungsfähigkeit","Sensible Phasen haben zu verschiedenen Zeitpunkten ihre Maxima","Anpassung des Fetus an intrauterines Milieu","Ist ein Determinant des späteren Erkrankungsrisikos"],ans:1,topic:12,exp:"Fetale Programmierung hat LANGFRISTIGE Auswirkungen – sie ist gerade NICHT von kurzer Dauer. Noxen in sensiblen Phasen können die Organentwicklung dauerhaft verändern (Barker-Hypothese/DOHaD).",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Was ist KEINE Art der klassischen Konditionierung?",opts:["Verzögerte Konditionierung","Spurenkonditionierung","Simultane Konditionierung","Beschleunigte Konditionierung","Rückwärtskonditionierung"],ans:3,topic:3,exp:"'Beschleunigte Konditionierung' ist kein etablierter Begriff. Die klassischen Typen: Verzögerte Konditionierung, Spurenkonditionierung, Simultane Konditionierung, Rückwärtskonditionierung.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2024",q:"Wie hat die WHO 1946 'Gesundheit' definiert?",opts:["Zustand vollständigen psychischen, sozialen und körperlichen Wohlbefindens und NICHT NUR die Abwesenheit von Krankheit","Zustand vollständigen psychischen, soziologischen und körperlichen Wohlbefindens und nicht die Abwesenheit","Zustand psychischen, sozialen und körperlichen Wohlbefindens und nicht nur die Abwesenheit","Zustand psychischen, sozialen und körperlichen Wohlbefindens und nicht die Abwesenheit","Zustand psychischen, sozialen und körperlichen Wohlbefindens und die Abwesenheit"],ans:0,topic:1,exp:"Die WHO-Definition von 1946: 'Gesundheit ist ein Zustand des vollständigen körperlichen, geistigen und sozialen Wohlbefindens und nicht nur das Fehlen von Krankheit oder Gebrechen.' Wichtig: 'vollständig' und 'nicht NUR'.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2024",q:"Kollegin sagt '20% hat schon einmal eine Depression erlitten.' Welcher Begriff?",opts:["Lebenszeitinzidenz","Lebenszeitprävalenz","Kumulative Prävalenz","Inanspruchnahmeprävalenz","Klassifizierungs-Prävalenz"],ans:1,topic:2,exp:"Lebenszeitprävalenz: Anteil der Personen, die im Laufe ihres Lebens mindestens einmal an einer Erkrankung litten. 'Schon einmal' → Lebenszeitprävalenz.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Doktorantin lässt Versuchsanweisungen weg. Was ist am stärksten beeinträchtigt?",opts:["Objektivität","Inhaltsvalidität","Retest-Reliabilität","Ökonomie","Konstruktvalidität"],ans:0,topic:2,exp:"Durchführungsobjektivität ist verletzt wenn Testbedingungen nicht standardisiert sind. Wenn Instruktionen fehlen, hängt das Ergebnis von der Versuchsleiterin ab.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Welches Kriterium wird für 'Persönlichkeit' NICHT herangezogen?",opts:["Transsituative Konsistenz","Zeitstabilität","Genetische Faktoren","Psychische Faktoren","Typische Verhaltensweisen"],ans:2,topic:9,exp:"Persönlichkeit wird definiert durch zeitliche Stabilität, transsituative Konsistenz und typische Verhaltensweisen. Genetische Faktoren sind Einflussgrößen, aber kein definierendes Kriterium.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2024",q:"Theory of Mind – was ist NICHT richtig?",opts:["1,5-Jährige verstehen Unterschiede zwischen Wünschen","Mit 1,5 Jahren ist die ToM komplett ausgeprägt","False Belief vorhanden → ToM nicht vollständig entwickelt","2-Jährige verstehen, dass andere anders fühlen können","(weitere Option)"],ans:1,topic:12,exp:"Die ToM ist mit 1,5 Jahren definitiv NICHT vollständig ausgeprägt. Das Verständnis falscher Überzeugungen (False Belief) entwickelt sich erst um das 4.–5. Lebensjahr.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Was beschreibt Assimilation (nach Piaget) am ehesten?",opts:["Kind liest Buch und vertieft sich in den Inhalt","Kind liest Buch und integriert Tiere in bekannte Schemata","Kind liest Buch und erstellt neue Gruppen für die Tiere","Kind merkt sich sofort alle Tiere","Kind versetzt sich in Charaktere ein"],ans:1,topic:12,exp:"Assimilation: neue Informationen werden in vorhandene Schemata eingeordnet, ohne das Schema zu verändern. Das Kind ordnet neue Tiere im Bilderbuch in sein vorhandenes Schema ein.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Effektstärke – was wird ins Verhältnis gesetzt?",opts:["Differenz Mittelwerte zur Summe aller Mittelwerte","Varianz zur Standardabweichung","Standardabweichung zum Konfidenzintervall","Beide Standardabweichungen zueinander","Differenz der Mittelwerte zur Standardabweichung"],ans:4,topic:2,exp:"Cohens d = (M1 - M2) / SD_pooled. Differenz der Mittelwerte dividiert durch die gepoolte Standardabweichung. Konventionen: d=0,2 klein, d=0,5 mittel, d=0,8 groß.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Patientin: 'Wenn mein Test negativ war – bin ich wirklich nicht erkrankt?' Welcher Wert?",opts:["Sensitivität","Positiver Prädiktionswert","Spezifität","Negativer Prädiktionswert","Objektive Spezifität"],ans:3,topic:2,exp:"Der negative prädiktive Wert (NPV): Wenn ein Test negativ ist – wie wahrscheinlich ist tatsächliche Nicht-Erkrankung? NPV = Richtig Negative / (Richtig Negative + Falsch Negative).",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Odds-Ratio = 4 (Frauen vs. Männer, Depression), KI 1,9–5,9. Welche Aussage stimmt?",opts:["Chance an Depressionen zu erkranken ist für Frauen 4× höher als für Männer","Auf eine erkrankte Frau kommen vier erkrankte Männer","OR von vier ist statistisch nicht signifikant","Männer haben als Vergleichsgruppe einen Wert von 0","Chance bei Frauen 4 SD erhöht"],ans:0,topic:2,exp:"OR = 4: Die Chance der Frauen zu erkranken ist 4-mal höher als die der Männer (Referenzgruppe OR=1). KI 1,9–5,9 schließt die 1 nicht ein → statistisch signifikant.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Anteil der Krebspatienten, die psychischen Distress erleben:",opts:["5–10%","10–20%","50–65%","Jeder Krebspatient","Keiner"],ans:2,topic:15,exp:"Ca. 50–65% der Krebspatientinnen erleben psychischen Distress. Daher ist psychoonkologische Versorgung integraler Bestandteil der Krebstherapie.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2024",q:"Demenzerkrankungen – welche Aussage stimmt NICHT?",opts:["MCI ist ein Risikofaktor/Vorstufe","Degenerative Demenzen entstehen aus Delir und sind reversibel","Demenzen führen zu Beeinträchtigungen im Alltag","Demenzen müssen durch Verschlechterung des Grundzustandes abgrenzbar sein"],ans:1,topic:1,exp:"Degenerative Demenzen (Alzheimer etc.) entstehen NICHT aus einem Delir und sind NICHT reversibel. Ein Delir ist eine akute, oft reversible Verwirrtheit. Degenerative Demenzen sind chronisch-progredient.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2024",q:"Zusammenhang Vulnerabilität und Schweregrad bei Risikowahrnehmung?",opts:["Addition","Subtraktion","Multiplikation","Division","Potenzierung"],ans:2,topic:8,exp:"Im Health-Belief-Modell wird die Risikowahrnehmung durch wahrgenommene Vulnerabilität × Schweregrad bestimmt (Multiplikation). Wenn eine der Dimensionen Null ist, wird keine Handlung ausgelöst.",fc:"Motivation: Selbstwirksamkeit (Bandura), Health-Belief-Modell, Heuristiken"},
-{year:"2024",q:"Pfleger: anstrengende Arbeit, geringe Aufstiegschancen, wünscht Wertschätzung. Welches Modell?",opts:["Gratifikationskrise","Anforderungs-Kontrollmodell","HAPA","Leistungs-Diskrepanz-Modell","Berufsstagnationsmodell"],ans:0,topic:10,exp:"Das Gratifikationskrisenmodell (Siegrist): hohe Verausgabung bei geringer Belohnung (Geld, Anerkennung, Aufstieg). Der Pfleger verausgabt sich und erhält wenig zurück → Gratifikationskrise.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2024",q:"Was beschreibt am ehesten den volitionalen Prozess im HAPA-Modell?",opts:["Handlungsergebniserwartung → Zielintention und Handlungsplan → Handlungsveränderung","Zielintention → Handlungsplan → Handlungsveränderung","Selbstwirksamkeit bzgl. Rückfall und Handlungs-Ergebnis-Erwartung","(weitere Option)"],ans:1,topic:14,exp:"Der volitionale Prozess: Zielintention → Handlungsplanung (Wann? Wo? Wie?) → Handlungsdurchführung. Die Handlungsplanung (Implementation Intentions) ist das Kernelement.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2024",q:"Was trifft auf soziale Ungleichheit zu?",opts:["Nur Problem des globalen Südens","Indikatoren: Bildung, Beruf und Familie","Tritt erst in höherem Alter auf","Männer haben höhere Lebenserwartung als Frauen","Bezieht sich auf körperliche UND psychische Erkrankungen"],ans:4,topic:6,exp:"Soziale Ungleichheit beeinflusst sowohl körperliche als auch psychische Gesundheit – über den sozialen Gradienten. Gilt in allen westlichen Industrieländern. Die meritokratische Triade: Bildung, Beruf, Einkommen (nicht Familie).",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2024",q:"Welche Aussage zum deutschen Gesundheitssystem stimmt NICHT?",opts:["Versicherungsgrenze: unter der muss man sich GKV versichern","Bundesgesundheitsministerium legt GKV-Leistungen fest","Versicherungspflicht für alle","Mittelweg zwischen staatlichem und marktwirtschaftlichem System","Beiträge sind einkommensabhängig"],ans:1,topic:11,exp:"Die GKV-Leistungen werden NICHT vom Bundesgesundheitsministerium festgelegt, sondern vom G-BA (Gemeinsamer Bundesausschuss).",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2024",q:"Sachleistungsprinzip GKV – Richtigaussage:",opts:["Kassenbeiträge sind risikoabhängig","Arbeitgeber zahlen volle Kassenbeiträge","Versicherte müssen 30% tragen","Kosten werden aus Steuern finanziert","Versicherte müssen nicht in Vorleistung gehen"],ans:4,topic:11,exp:"Das Sachleistungsprinzip der GKV: Versicherte erhalten Leistungen direkt, da die Kasse direkt mit dem Leistungserbringer abrechnet. Versicherte müssen NICHT in Vorleistung gehen.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2024",q:"Alte Lehrerin mit ehemals gestochener Schrift, jetzt dement und unleserlich. Welcher Gedächtnisanteil gestört?",opts:["Arbeitsgedächtnis","Deklaratives Gedächtnis","Episodisches Gedächtnis","Semantisches Gedächtnis","Prozedurales Gedächtnis"],ans:4,topic:5,exp:"Das prozedurale Gedächtnis speichert Fertigkeiten und motorische Abläufe – z.B. Schreiben. Schreiben ist eine erlernte, automatisierte Fertigkeit, die im prozeduralen Gedächtnis gespeichert ist.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2024",q:"Frauen mit niedrigster beruflicher Qualifikation nehmen Zervixkarzinom-Screening weniger in Anspruch. Was zeigt die Grafik?",opts:["Frauen mit niedrigster Qualifikation nehmen Screening weniger in Anspruch","Kein Unterschied zwischen den Gruppen","Frauen gehen mit der Zeit seltener zum Arzt","Frauen mit hoher Qualifikation erkranken häufiger","Das Screening ist eine effektive Maßnahme"],ans:0,topic:6,exp:"Klassische Darstellung gesundheitlicher Ungleichheit: Frauen mit niedrigerem SES nehmen Präventionsangebote seltener wahr, obwohl alle GKV-Versicherten Anspruch haben.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2024",q:"Ottawa-Charta – Richtigaussage:",opts:["Rehabilitation vor Prävention","Kuration vor Prävention","Entwicklung einer gesundheitsförderlichen Gesamtpolitik","Fokus auf Hochrisikopatienten","Fokus auf persönlichen Kompetenzen"],ans:2,topic:13,exp:"Die Ottawa-Charta beinhaltet als einen ihrer fünf Handlungsbereiche die 'Entwicklung einer gesundheitsfördernden Gesamtpolitik' (healthy public policy): Gesundheit muss in alle Politikbereiche einbezogen werden.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2024",q:"Beta-Fehler – welche Aussage stimmt?",opts:["Geht um Wahrscheinlichkeit der Alternativhypothese","Geht um Wahrscheinlichkeit der Nullhypothese","H0 wird angenommen, obwohl H1 gilt","H1 wird angenommen, obwohl H0 gilt"],ans:2,topic:2,exp:"Beta-Fehler (Typ-II): H0 wird angenommen (kein Effekt), obwohl H1 in der Realität gilt. Man 'übersieht' einen echten Effekt. Dies passiert bei zu kleinen Stichproben.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2024",q:"Was ist kein Bestandteil des AAS (Allgemeines Anpassungssyndrom) nach Selye?",opts:["Widerstand","Coping","Alarmreaktion","Erschöpfungsstadium","Physiologische Reaktion"],ans:1,topic:10,exp:"Das AAS besteht aus: Alarmreaktion, Widerstandsphase und Erschöpfungsstadium. 'Coping' ist ein Konzept aus Lazarus' psychologischem Modell, KEIN Bestandteil des biologischen AAS.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2024",q:"Transaktionales Stressmodell nach Lazarus:",opts:["Sekundäre Bewertung als Determinante der Stressreaktion","In 3 Phasen","Physiologische und psychische Stressoren werden unterschieden","Beschreibung mit Krise, Widerstandsphase und Erschöpfung"],ans:0,topic:10,exp:"Die sekundäre Bewertung der Ressourcen ist im Lazarus-Modell entscheidend: 'Kann ich damit umgehen?' Wenn Anforderungen die Ressourcen übersteigen, entsteht Stress.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2024",q:"Erziehungsstil mit Zuwendung, Liebe, klaren Grenzen und Regeln:",opts:["Vernachlässigend","Autoritär","Permissiv","Laissez-faire","Autoritativ"],ans:4,topic:12,exp:"Der autoritative Erziehungsstil (Baumrind) kombiniert hohe Wärme mit klaren Regeln. Er wird als günstigster Erziehungsstil angesehen.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2024",q:"Lebenserwartung Jungen 2017–2019. Welche Aussage stimmt?",opts:["Durchschnittliches Sterbealter von Jungen 2017–2019","Unabhängig von Grippeepidemien","Anzahl an Jahren mit den 2017–2019 geltenden Bedingungen","Geburtenrate, Mortalität und Immigration enthalten","Respektiert zukünftige Entwicklung"],ans:2,topic:4,exp:"Die Lebenserwartung bei Geburt ist hypothetisch: sie gibt an, wie viele Lebensjahre ein heute geborenes Kind hätte, wenn die aktuellen Sterblichkeitsverhältnisse konstant blieben. Sie berücksichtigt KEINE zukünftigen Veränderungen.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2024",q:"Was trifft auf Gesundheitsförderung zu?",opts:["Förderung von personalen und sozialen Ressourcen","Personengebundene Risikofaktoren minimieren","Hauptsächlich Maßnahmen im mittleren Lebensalter","Pathogenetische Sicht auf Erkrankungen","Maßnahmen für individuelle Verhaltensänderung"],ans:0,topic:13,exp:"Gesundheitsförderung (Ottawa-Charta): salutogenetische Perspektive – Stärkung von Ressourcen, Empowerment. Prävention ist pathogenetisch (Risiken reduzieren). Die Förderung personaler und sozialer Ressourcen steht im Mittelpunkt.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2023",q:"'20% der Menschen hat schon einmal eine Depression erlitten.' Welcher epidemiologische Begriff?",opts:["Lebenszeitinzidenz","Lebenszeitprävalenz","Kumulative Prävalenz","Inanspruchnahmeprävalenz"],ans:1,topic:2,exp:"Lebenszeitprävalenz: Anteil von Personen, die mindestens einmal in ihrem Leben erkrankt waren. Inzidenz misst neue Erkrankungsfälle, Prävalenz den Anteil Erkrankter. 'Schon einmal' → Lebenszeitprävalenz.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Welche Aussage zur Lebenserwartung in Deutschland trifft zu?",opts:["Lebenserwartung = durchschnittliches Sterbealter","Frauen haben geringere Lebenserwartung","Unbeeinflusst von Mortalitätsschwankungen","Deutschland in Europa Spitzenposition","Berechnet aus altersspezifischen Sterberaten einer gewählten Periode"],ans:4,topic:4,exp:"Lebenserwartung wird aus Periodensterbetafeln berechnet: aktuelle altersspezifische Sterberaten werden verwendet. Deutschland hat KEINE Spitzenposition in Europa. Frauen leben im Schnitt länger als Männer.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2023",q:"Was beschreibt KEINE Form der Eigenwahrnehmung?",opts:["Propriozeption","Interozeption","Introzeption","Nozizeption","Viszerozeption"],ans:2,topic:1,exp:"Introzeption (mit 't') ist kein etablierter medizinischer Begriff. Propriozeption = Körperlagewahrnehmung; Interozeption = innere Körperzustände; Nozizeption = Schmerzwahrnehmung; Viszerozeption = Eingeweidewahrnehmung.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2023",q:"Was beschreibt die Assimilation nach Piaget?",opts:["Kind passt sich der Umwelt an","Integration in bestehende Schemata","Ordnet neues Objekt in bestehendes Schema ein","Kind erweitert kognitive Schemata"],ans:2,topic:12,exp:"Assimilation: neue Erfahrungen werden in vorhandene Schemata eingeordnet – ohne das Schema zu verändern. 'Neues Objekt in bestehendes Schema einordnen' trifft das Konzept am besten.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2023",q:"Was ist KEINE Basisemotion nach Ekman?",opts:["Zorn/Wut","Ekel","Neid","Freude","Trauer"],ans:2,topic:7,exp:"Die sechs Basisemotionen nach Ekman: Freude, Trauer, Wut/Zorn, Ekel, Überraschung, Angst. Neid ist KEINE Basisemotion – sie ist kulturell geprägt und setzt kognitive Bewertungsprozesse voraus.",fc:"Emotionen: Basisemotionen (Ekman), primär vs. sekundär, Mimik, FACS"},
-{year:"2023",q:"Welches Modell kann auf einen Fließbandarbeiter angewendet werden?",opts:["HAPA","Gratifikationskrise","Stressmodell nach Lazarus","Health-Belief-Modell","Anforderungs-Kontroll-Modell"],ans:4,topic:10,exp:"Der Fließbandarbeiter ist das Paradebeispiel für das Anforderungs-Kontroll-Modell: hohe Anforderungen + minimaler Entscheidungsspielraum ('high strain') – höchstes Burnout- und kardiovaskuläres Risiko.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2023",q:"Was beschreibt die Effektstärke?",opts:["Cohens d","Signifikanz-Alpha","Cronbachs Alpha","Hazard-Ratio","Relatives Risiko"],ans:0,topic:2,exp:"Cohens d ist das gebräuchlichste Maß der Effektstärke. Es standardisiert die Mittelwertdifferenz durch die Standardabweichung. Cronbachs Alpha misst Reliabilität, Alpha ist Irrtumswahrscheinlichkeit.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Was wird in die Phase der Adoleszenz nach Erikson geordnet?",opts:["Identität vs. Identitätsdiffusion","Intimität vs. Isolation","Intimität vs. Solidarität","Autonomie vs. Scham und Zweifel","Verstärkte Eltern-Kind-Konflikte"],ans:0,topic:9,exp:"Eriksons Phase 5 (Adoleszenz, 12–18 Jahre) = Identität vs. Identitätsdiffusion. Phase 6 = Intimität vs. Isolation. Phase 2 = Autonomie vs. Scham und Zweifel.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2023",q:"Seefahrer (2500€) will in die Angestelltenkrankenkasse. Was stimmt?",opts:["Muss sich bei der Seefahrer-Krankenkasse versichern","Durch Kontrahierungszwang muss ihn jede GKV annehmen","Wegen Berufsrisiko zahlt er mehr","Keine Versicherungspflicht, muss sich privat versichern","Seeleute sind über Arbeitgeber versichert"],ans:1,topic:11,exp:"In der GKV gilt der Kontrahierungszwang: Jede GKV muss jeden aufnahmepflichtigen Berechtigten aufnehmen – unabhängig von Gesundheitszustand oder Berufsrisiko. GKV-Beiträge sind einkommensabhängig, nicht risikoabhängig.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2023",q:"Bei welchem Alter gibt es starke Verschlechterungen in allen kognitiven Bereichen?",opts:["50","60","70","80","90"],ans:3,topic:12,exp:"Stärkere Verschlechterungen in allen kognitiven Bereichen treten ab dem 80. Lebensjahr auf. Fluide Intelligenz nimmt früher ab (~60), kristalline bleibt länger stabil. Ab 80+ sind umfassendere Abbauprozesse zu beobachten.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2023",q:"Wie wird die GKV finanziert?",opts:["Einkommensunabhängige Beiträge","Einkommensabhängige Beiträge von AG und AN + Steuerzuschuss","Einkommensabhängig und bei Mangel durch Steuern","Risikostrukturausgleich"],ans:1,topic:11,exp:"Die GKV wird finanziert durch: einkommensabhängige Beiträge (paritätisch von AG und AN) + Bundeszuschuss (Steuermittel). Der Morbi-RSA gleicht Risikunterschiede ZWISCHEN verschiedenen Kassen aus.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2023",q:"Was gehört NICHT zum impliziten Gedächtnis?",opts:["Episodisches Gedächtnis","Priming","Konditionierung","Prozedurales Gedächtnis","Gewohnheiten"],ans:0,topic:5,exp:"Das episodische Gedächtnis ist Teil des EXPLIZITEN (deklarativen) Gedächtnisses. Implizites Gedächtnis umfasst: prozedurales Gedächtnis, Priming, Konditionierung und Gewohnheiten.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2023",q:"Selbstwirksamkeitserwartung – was stimmt?",opts:["Überzeugung, Verhaltensänderung mit eigenen Ressourcen zu schaffen","Wahrscheinlichkeit, eine Krankheit zu bekommen","Andere erwarten, dass man etwas schafft","Vertrauen, dass ein Medikament wirkt","Überzeugung, dass keine unüberwindbaren Hürden gegenüberstehen"],ans:0,topic:8,exp:"Selbstwirksamkeitserwartung (Bandura): die Überzeugung, eine Verhaltensänderung mit den eigenen Fähigkeiten und Ressourcen ausführen zu können. Zentral in der Gesundheitspsychologie.",fc:"Motivation: Selbstwirksamkeit (Bandura), Health-Belief-Modell, Heuristiken"},
-{year:"2023",q:"Was ist kein Teil der Gesundheitsförderung?",opts:["Hochrisikoprävention führt Personen zu individueller Prävention","Einfluss auf personenbezogenes Verhalten und Risiko","Capacity-Building, Empowerment und Setting-Ansatz sind zentrale Maßnahmen der Prävention"],ans:2,topic:13,exp:"Capacity-Building, Empowerment und Setting-Ansatz sind Konzepte der GESUNDHEITSFÖRDERUNG (Ottawa-Charta), NICHT der Prävention. Diese Unterscheidung ist prüfungsrelevant.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2023",q:"Welche Aussage zu evidenzbasierten Leitlinien trifft NICHT zu?",opts:["Gut aufgebaute Beobachtungsstudien haben das gleiche Gewicht wie RCTs","Metaanalysen basieren auf randomisierten Studien","Evidenzklassen bestimmen Empfehlungsgrad","Klinische Erfahrungen werden einbezogen","Metaanalyse wird im Forest Plot dargestellt"],ans:0,topic:2,exp:"Beobachtungsstudien haben einen NIEDRIGEREN Rang als RCTs in der Evidenzhierarchie. RCTs sind der Goldstandard. Metaanalysen von RCTs haben den höchsten Evidenzlevel.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Welche sozialen Indikatoren bilden die meritokratische Triade?",opts:["Familienstand, Alter, Einkommen","Schulausbildung, Einkommen, berufliche Position","Nationalität, Geschlecht, Einkommen","Beruf, Arbeitslosigkeit","Migration"],ans:1,topic:6,exp:"Die meritokratische Triade: Bildung (Schulabschluss), Einkommen und berufliche Position/Status. Diese drei Dimensionen korrelieren stark und bestimmen in meritokratischen Gesellschaften wesentlich die Gesundheitschancen.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2023",q:"Falschaussage zur kassenärztlichen Bundesvereinigung (KBV):",opts:["Legt Fallpauschalen/DRGs fest","Stellt Bedarfsplan für ambulante Versorgung auf","Ist politische Berufsvertretung von Ärzten","Interessenvertretung gegenüber Krankenkassen","Muss Versorgung gewährleisten"],ans:0,topic:11,exp:"DRGs werden vom InEK entwickelt und G-BA reguliert – NICHT von der KBV. Die KBV ist zuständig für ambulante ärztliche Versorgung: Sicherstellung, Bedarfsplanung, Honorarverhandlungen.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2023",q:"Person mit Risikofaktoren, aber noch keine Krankheit. Risikofaktoren sollen reduziert werden. Prävention?",opts:["Primordial","Primär","Sekundär","Tertiär","Quartär"],ans:1,topic:13,exp:"Primäre Prävention richtet sich an Menschen mit Risikofaktoren, aber ohne Erkrankung. Ziel: Entstehung von Krankheit verhindern. Primordialprävention geht noch früher: Verhinderung der Entstehung von Risikofaktoren.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2023",q:"Patricia-Fennell-Phasen – was trifft NICHT zu?",opts:["Vier Phasen, die immer in gleicher Reihenfolge durchlaufen werden","Zweite Phase ist Stabilisationsphase","Interventionen können Selbstwirksamkeit erhöhen","Vier Phasen beschreiben Veränderung des Selbst","Vierte Phase: Integration von altem Selbst und neuen Erkenntnissen"],ans:0,topic:15,exp:"Die Fennell-Phasen sind NICHT zwingend streng sequentiell. Patienten können zwischen Phasen wechseln oder Phasen wiederholen. Die vier Phasen: Krise, Stabilisierung, Resolution, Integration.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2023",q:"Mann geht wegen Angst nicht zur Vorsorge. Die Angst wächst. Lerntheorie?",opts:["Positive Verstärkung durch operante Konditionierung","Modelllernen","Instrumentelle Konditionierung durch Verstärkerentzug","Klassische Konditionierung führt zu Angst","Negative Verstärkung durch operante Konditionierung"],ans:4,topic:3,exp:"Negative Verstärkung: Vermeidungsverhalten beseitigt kurzfristig die Angst. Die kurzfristige Linderung verstärkt das Vermeidungsverhalten langfristig. Kernprinzip der Aufrechterhaltung von Angststörungen.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2023",q:"Nach Raubüberfall keine Erinnerungen an das Ereignis, davor/danach intakt, keine organischen Ursachen:",opts:["Anterograde Amnesie","Dissoziative Amnesie","Agnosie","Retrograde Amnesie","Korsakow-Syndrom"],ans:1,topic:5,exp:"Dissoziative Amnesie: selektiver Gedächtnisverlust für das traumatische Ereignis ohne organische Ursache. Erinnerungen davor und danach sind intakt – psychologischer Schutzmechanismus.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2023",q:"Was ist die unwahrscheinlichste Folge des demographischen Alterns?",opts:["Mehr Ein-Personenhaushalte","Stärkere Belastung der ambulanten Versorgung","Kürzung von GKV-Leistungen","Anstieg der Kosten zur Gesunderhaltung","Multimorbidität nimmt ab"],ans:4,topic:4,exp:"Multimorbidität nimmt mit demographischem Wandel DEFINITIV ZU. Alle anderen Folgen (mehr Einzelhaushalte, höhere Kosten, GKV-Belastung) sind plausible Konsequenzen der Bevölkerungsalterung.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2023",q:"Was ist kein Bestandteil des AAS nach Selye?",opts:["Widerstand","Coping","Alarmreaktion","Erschöpfungsstadium","Physiologische Reaktion"],ans:1,topic:10,exp:"Das AAS (Selye): Alarmreaktion, Widerstandsphase und Erschöpfungsstadium. 'Coping' ist ein Konzept aus dem psychologischen Lazarus-Modell – kein Bestandteil des biologischen AAS.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2023",q:"Lazarus-Stressmodell – was passt?",opts:["Bewertung anhand eigener Ressourcen (sekundäre Bewertung)"],ans:0,topic:10,exp:"Die sekundäre Bewertung: Einschätzung der eigenen Ressourcen ('Kann ich damit umgehen?'). Entscheidend für Stresserleben – wenn Ressourcen ausreichend bewertet werden, entsteht weniger Stress.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2023",q:"Was ist der Beta-Fehler?",opts:["H0 gilt, aber H1 wird angenommen","H1 gilt, aber H0 wird angenommen","Fehler durch Stichprobe"],ans:1,topic:2,exp:"Beta-Fehler (Typ-II): H1 gilt in Wirklichkeit (Effekt existiert), aber H0 wird angenommen. Man verpasst einen echten Effekt. Power = 1 - Beta.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"SORKC – falsche Zuordnung finden:",opts:["'Wenn Chef Stress macht, kriege ich Rückenschmerzen' (Stimulus)","'Weil Nacken verspannt, sind Rückenschmerzen schlimmer' (Organismus)","'Wenn ich mir anmerken lasse, dass Rücken wehtut...' (Konsequenz)","'Wenn Rückenschmerzen, übernimmt Kollegin Aufgaben' (Reaktion)","'Kollegin verbreitet immer dann Hektik wenn ich Schmerzen habe' (Kontingenz)"],ans:3,topic:3,exp:"Antwort D ist falsch zugeordnet: 'Kollegin übernimmt Aufgaben' ist eine KONSEQUENZ (Reaktion der Umwelt), keine Reaktion (R = Verhalten des Patienten selbst).",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2023",q:"ADHS-Test mit 89% Sensitivität – was sagt das aus?",opts:["Test erfasst ADHS-Erkrankte mit 89% richtig","Spezifität beträgt 11%","Positiver Prädiktionswert beträgt 11%","ADHS kann mit 89% ausgeschlossen werden"],ans:0,topic:2,exp:"Sensitivität = Anteil der wirklich Erkrankten, die korrekt als erkrankt identifiziert werden. 89% Sensitivität: Von 100 ADHS-Kindern werden 89 richtig erkannt, 11 übersehen.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Eine Konsequenz steigender Ungleichheit laut Wilkinson:",opts:["Hilflosigkeit durch abnehmende politische Beteiligung","Hilflosigkeit durch zunehmende Gratifikationskrisen","Burnout in mittleren Schichten","Abnahme des sozialen Zusammenhalts und Zunahme sozialer Distanz","Zunahme der ehrenamtlichen Beteiligung"],ans:3,topic:6,exp:"Nach Wilkinson führt steigende Einkommensungleichheit zu: Erosion des sozialen Zusammenhalts, zunehmendem Misstrauen und sozialer Distanz.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2023",q:"Falschaussage zum r-Wert (Korrelationskoeffizient):",opts:["Hoher r-Wert ist notwendige Bedingung für Kausalität","Wert liegt zwischen -1 und +1","Linearer Zusammenhang bei +1 perfekt","Aus der Höhe ergibt sich die Form des Zusammenhangs"],ans:0,topic:2,exp:"Korrelation impliziert keine Kausalität! Außerdem erfasst r nur lineare Zusammenhänge – er gibt die Form (kurvilinear etc.) nicht an.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Falschaussage zur Sozialisation nach Hurrelmann:",opts:["Primäre Sozialisation: Umgang mit Gleichaltrigen sehr wichtig","Persönlichkeitsentwicklung: Zusammenspiel aus innerer und äußerer Realität","Innere Realität sind körperliche und psychische Grundstrukturen","Erfolgreiche Sozialisation führt zu stabiler Entwicklung"],ans:0,topic:9,exp:"Primäre Sozialisation findet in der Familie statt – NICHT primär mit Gleichaltrigen. Peers gehören zur sekundären Sozialisation.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2023",q:"Psychoonkologie – Falschaussage:",opts:["Brustkrebspatientinnen wünschen sich Infos zu Sexualität","Psychologische Hilfe sollte immer angeboten werden","Patienten brauchen IMMER psychische Therapie","Psychische Lage sollte früh untersucht werden","Patienten bei Bewältigungsstrategien unterstützen"],ans:2,topic:15,exp:"Nicht ALLE Krebspatienten brauchen zwingend psychische Therapie. Screening ist Pflicht, Inanspruchnahme freiwillig. Ca. 50% erleben Distress, nicht alle benötigen Therapie.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2023",q:"Unter welchen Umständen in der Kindheit kann man später Risikosituationen erfolgreich meistern?",opts:["Restriktiver Erziehungsstil","Beobachten kritischer Situationen","Erleben von Hochrisikosituationen","Aufwachsen in sicherer, gefestigter Umgebung"],ans:3,topic:15,exp:"Resilienz wird gefördert durch sicheres Bindungsumfeld, stabile emotionale Beziehungen und vorhersehbare Umwelt.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2023",q:"Falschaussage zu Change-Talk:",opts:["Vorteile des Status quo","Nachteile des Status quo","Veränderungsbezogene Aussagen","Vorteile einer Veränderung","Zuversichtlichkeit bzgl. Veränderung"],ans:0,topic:14,exp:"Change-Talk umfasst: Nachteile des Status quo, Vorteile einer Veränderung, Optimismus, Absicht zur Veränderung. 'Vorteile des Status quo' ist KEIN Change-Talk – das ist Sustain-Talk.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2023",q:"Hazard-Ratio 2,7 (KI 2,4–2,9), Versterben nach Herzinfarkt. Welche Aussage stimmt?",opts:["Sterberisiko Faktor 2,7 höher als Referenzgruppe","Wahrscheinlichkeit 170% höher","Nicht signifikant","Berechnet aus Anteilen","Querschnittsanalyse"],ans:0,topic:2,exp:"HR 2,7: das Risiko ist 2,7-fach höher (alternativ: 170% erhöht). KI 2,4–2,9 schließt die 1 nicht ein → signifikant. Beide Formulierungen sind korrekt.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"Arbeitgeber bietet Yogastunden an. Was ist das nach Ottawa-Charta?",opts:["Intersektionalität","Setting-Ansatz","Partizipation","Tertiäre Prävention","Empowerment"],ans:1,topic:13,exp:"Der Setting-Ansatz: Gesundheitsförderung am Arbeitsplatz (ein klassisches Setting). Betriebliches Gesundheitsmanagement ist ein Kernelement des Setting-Ansatzes der Ottawa-Charta.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2023",q:"Parkinson-RCT: Wirkung auf Motorik und Lebensqualität. Alter/Geschlecht/Baseline als Kovariaten. Abhängige Variable?",opts:["Motorik","Medikament und Placebo","Anzahl der Probanden","Alter der Probanden","Methode der Randomisierung"],ans:0,topic:2,exp:"Die Motorik (und Lebensqualität) ist die abhängige Variable (Outcome). Das Medikament ist die unabhängige Variable (Intervention). Alter und Geschlecht sind Kovariablen.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"HAPA – was passt zum volitionalen Prozess?",opts:["Zielintention → Handlungsplanung → Umsetzung","Selbstwirksamkeit bzgl. Wiederaufnahme nach Rückfall","Selbstwirksamkeit bzgl. Aufrechterhaltung"],ans:0,topic:14,exp:"Der volitionale Prozess: Zielintention → Handlungsplanung (wann, wo, wie?) → Handlungsdurchführung. Implementation Intentions sind ein zentrales Werkzeug.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2023",q:"Studie über 10 Jahre mit 800 Typ-1-Diabeteskindern. Welches Studiendesign?",opts:["Querschnitt","Fall-Kontroll-Studie","Längsschnitt","Ein-Gruppen-Prä-Post-Studie"],ans:2,topic:2,exp:"Dieselben Personen über 10 Jahre verfolgt → Längsschnittstudie. Querschnitt = einmalige Messung. Fall-Kontroll = Erkrankte vs. Nicht-Erkrankte retrospektiv.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2023",q:"HAPA – was hat direkten Einfluss auf Rückfall?",opts:["Zielintention und Selbstwirksamkeit","Selbstwirksamkeit und Bewältigungsplanung","(weitere Optionen)"],ans:1,topic:14,exp:"Im HAPA: Selbstwirksamkeit bzgl. Rückfallbewältigung und Bewältigungsplanung sind die direkten Prädiktoren für den Umgang mit Rückfällen.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2023",q:"Was ist Habituation?",opts:["Selektive Aufmerksamkeit bei mehreren Reizen","Reaktionsabschwächung bei wiederholter Reizdarbietung"],ans:1,topic:3,exp:"Habituation: Bei wiederholter Darbietung desselben Reizes nimmt die Reaktion ab oder bleibt aus. Der Organismus 'gewöhnt sich' – dient der Filterung irrelevanter Reize.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2022",q:"Was ist NICHT Teil des SMART-Prinzips?",opts:["Spezifisch","Messbar","Terminierbar","Autonom","Relevant"],ans:3,topic:14,exp:"SMART = Spezifisch, Messbar, Attraktiv/Achievable, Realistisch/Relevant, Terminiert. 'Autonom' ist kein Bestandteil.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2022",q:"Wofür steht das R im SORKC-Modell?",opts:["Relevanz","Reaktion","Reiz","Randomisierung","Real"],ans:1,topic:3,exp:"SORKC: S=Stimulus, O=Organismus, R=Reaktion (Verhalten), K=Konsequenz, C=Kontingenz. Das Modell ist das Grundschema der Verhaltensanalyse.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2022",q:"Dennis (8) hat ADHS. Welcher Fakt ist belegt?",opts:["Genetische Prädisposition ist ausgeschlossen","Hauptsymptome: Hyperkinetik, Aufmerksamkeitsprobleme und Impulsivität","Neuropsychologisch keine Unterschiede zu Gesunden","Nicht mit dissozialem Verhalten assoziiert","Überdurchschnittlich gut bei Intelligenztests"],ans:1,topic:1,exp:"Die drei Kernsymptome der ADHS: Aufmerksamkeitsdefizit, Hyperaktivität und Impulsivität. ADHS hat hohe Heritabilität, neuropsychologische Unterschiede sind nachgewiesen.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2022",q:"Welche ist KEINE sofortige Stressreaktion?",opts:["Entspannung der Darmmuskulatur","Zunahme der roten Blutkörperchen aus der Milz","Katecholamine werden ausgeschüttet","Verschlechterung des Immunsystems","Puls und Blutdruck steigen"],ans:3,topic:10,exp:"Immunsuppression ist eine CHRONISCHE Folge von Dauerstress, KEINE sofortige Reaktion. Sofortige Reaktionen (fight or flight): Katecholamine, Puls/Blutdruck steigen, Darmmuskulatur entspannt.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2022",q:"Auswirkungen von Kindheitsarmut auf das Erwachsenenleben:",opts:["Keine Auswirkungen auf Kurzzeitgedächtnis","Auswirkungen auf Arbeitsgedächtnis und Handlungsplanung","Erhöhtes Krebsrisiko im mittleren Alter","Weniger Unaufmerksamkeit","Führt zu malignen Erkrankungen im mittleren Alter"],ans:1,topic:6,exp:"Kindheitsarmut hat nachgewiesene Auswirkungen auf Arbeitsgedächtnis und exekutive Funktionen (Handlungsplanung). Chronischer Stress beeinflusst die Entwicklung des präfrontalen Kortex.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2022",q:"Frau mit depressiver Symptomatik. Was kann NICHT zur Diagnose verwendet werden?",opts:["BDI","Symptomatik nach ICD-10","Messung der Serotoninkonzentration","Klinische Anamnese nach Fragebögen","Klinisches Interview z.B. DIPS"],ans:2,topic:1,exp:"Serotonin kann nicht als valider Biomarker für Depression dienen – es gibt keinen verlässlichen Bluttest. Diagnose: klinisches Interview, Fragebögen (BDI), ICD-10-Kriterien.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2022",q:"Was ist der Altenquotient?",opts:["Anzahl über 65-Jähriger auf 20- bis 64-Jährige","Anzahl über 65-Jähriger auf alle unter 65-Jährigen","Anzahl der 65–85-Jährigen auf die Jüngeren","Anzahl der unter 20-Jährigen auf über 20-Jährige","Anzahl der über 85-Jährigen durch über 65-Jährige"],ans:0,topic:4,exp:"Altenquotient = Verhältnis der Bevölkerung 65+ zur erwerbsfähigen Bevölkerung (20–64 Jahre). Ein steigender Altenquotient bedeutet mehr Leistungsempfänger pro Einzahler.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2022",q:"Was gehört NICHT zur Ottawa-Charta?",opts:["Intersektoralität","Prävention vor Kuration","Empowerment","Partizipation","Verhältnisprävention vor Verhaltensprävention"],ans:4,topic:13,exp:"'Verhältnisprävention vor Verhaltensprävention' ist kein explizites Prinzip der Ottawa-Charta. Die fünf Handlungsfelder: Gesamtpolitik, Lebenswelten, Gemeinschaftsaktionen, persönliche Kompetenzen, Neuorientierung der Gesundheitsdienste.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2022",q:"Pearson-r = 0,45 (Stress und Blutdruck). Was ist ableitbar?",opts:["Stress verursacht hohen Blutdruck","Bei 45% führt Stress zu Hypertonus","Bei 55% kein Zusammenhang","Mittelgradige Assoziation zwischen Stress und Blutdruck","Etwa die Hälfte hat durch Stress Hypertonie bekommen"],ans:3,topic:2,exp:"r=0,45 zeigt eine mittelstarke positive Korrelation. Korrelation ≠ Kausalität. r² = 0,2 → ca. 20% der Varianz des Blutdrucks werden durch Stress erklärt.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Was trifft auf das Kostenerstattungsprinzip der PKV zu?",opts:["Abrechnung für Ärzte einfacher als GKV","Die Kosten sind für den Versicherten transparent","Vorauszahlung nur bei stationärem Aufenthalt","PKV prüft Rechnung","Versicherte brauchen keine finanziellen Rücklagen"],ans:1,topic:11,exp:"Beim Kostenerstattungsprinzip zahlen Versicherte zunächst selbst → Kosten sind transparent. Versicherte müssen in der Lage sein, Rechnungen vorzustrecken.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2022",q:"Welche Aussage passt zur Primärprävention?",opts:["Spricht Menschen mit Risikofaktoren an, die noch nicht erkrankt sind","Körperlich bewegen bei Diabetes mellitus","Schulung bei CF","Änderung der städtischen Umgebung"],ans:0,topic:13,exp:"Primärprävention richtet sich an noch nicht erkrankte Personen mit Risikofaktoren, um Entstehung von Krankheit zu verhindern.",fc:"Prävention: Primär/Sekundär/Tertiär, Ottawa-Charta, Präventionsparadox"},
-{year:"2022",q:"Entwicklung der Gedächtniskondition in Deutschland in den letzten 10 Jahren?",opts:["Unter 60-Jährige: verminderte Aufmerksamkeit wegen Smartphones","Menschen ohne Schulabschluss: schlechtere kognitive Leistung","Keine Verschlechterung in allen Gruppen","Allgemeine Verbesserung der Kognition in allen Bildungsgruppen","Abiturienten: schlechtere kognitive Leistung"],ans:3,topic:12,exp:"Studien zeigen, dass die kognitive Leistungsfähigkeit in Deutschland insgesamt zugenommen hat (Flynn-Effekt). Verbesserte Bildung und kognitive Stimulation tragen dazu bei.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2022",q:"Studie: Gedächtnisleistung verbessert sich signifikant, α = 1%. Was ist richtig?",opts:["Nullhypothese bewahrheitet sich zu 1%","Nullhypothese bewahrheitet sich zu 99%","Wenn H0 wahr, würden bei 1 von 100 Studien gleiche oder extremere Werte entstehen","Nullhypothese bewahrheitet sich zu 1%","Alternativhypothese bewahrheitet sich zu 99%"],ans:2,topic:2,exp:"α = 1% bedeutet: Wenn H0 wahr wäre, würden bei 1 von 100 Studien gleiche oder extremere Ergebnisse entstehen. p-Wert ist NICHT die Wahrscheinlichkeit, dass H0 wahr ist.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Zuordnung von Gewicht bzgl. Adipositas bei Kindern basiert auf:",opts:["Statistische Norm","Funktionelle Norm","Physiologische Sollwerte","Vitalkapazität","Individuelle Entwicklung"],ans:0,topic:1,exp:"Bei Kindern wird Adipositas anhand der statistischen Norm (Perzentilkurven) definiert. Kinder über der 97. Perzentile gelten als adipös. Statistischer Vergleich mit der Referenzpopulation.",fc:"Gesundheit & Krankheit: WHO-Definition, Klassifikationssysteme, Diagnose"},
-{year:"2022",q:"80-jährige Heimbewohnerin: noch selbstständig Strümpfe anziehen, Zähne putzen, Wasser einschenken. Welches Gedächtnis?",opts:["Priming","Arbeitsgedächtnis","Semantisches Gedächtnis","Episodisches Gedächtnis","Prozedurales Gedächtnis"],ans:4,topic:5,exp:"Das prozedurale Gedächtnis für Fertigkeiten wird geprüft: Alltagsfertigkeiten wie Ankleiden sind automatisierte Fähigkeiten. Bei Demenz bleibt das prozedurale Gedächtnis oft länger intakt.",fc:"Gedächtnis: Episodisch, Semantisch, Prozedural, Priming, Amnesieformen"},
-{year:"2022",q:"Patient mit Pankreas-Karzinom palliativ. Was trifft NICHT zu?",opts:["Recht auf palliative Versorgung","Ambulanter Dienst 24/7, kann hochpotente Schmerztherapie","Patient/Angehörige müssen 10% selbst zahlen","Kann nach ambulant auch stationär versorgt werden","SAPV wahrt Autonomie des Patienten"],ans:2,topic:11,exp:"SAPV ist vollständig GKV-finanziert – keine 10%-Zuzahlung. SAPV ist 24/7, umfasst starke Schmerztherapie, kann in Hospiz übergehen.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2022",q:"Mia (13) bekommt Zöliakie-Diagnose. Was trifft auf ihre Entwicklungsstufe zu?",opts:["Verlust Neuronendichte und Abbau ungenutzter Synapsen","Myelinisierung der Kommisurenfasern abgeschlossen","Führt Diät besonders konsequent durch","Weniger stressanfällig als jüngere Kinder","Setzt Therapie konsequenter um"],ans:0,topic:12,exp:"In der Pubertät findet Synaptic Pruning statt: Nicht genutzte Synapsen werden abgebaut ('use it or lose it'). Jugendliche sind NICHT weniger stressanfällig – limbisches System ist überaktiv.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2022",q:"Psychoonkologische Therapie – was gehört NICHT dazu?",opts:["Bewältigung kindheitlicher Traumata","Psychoedukation","KVT","Paar- und Sexualberatung","Entspannungsverfahren"],ans:0,topic:15,exp:"Bearbeitung kindheitlicher Traumata ist tiefenpsychologisches Konzept – kein Standardelement der Psychoonkologie. Psychoonkologie umfasst: Psychoedukation, KVT, Entspannungsverfahren, Paar- und Sexualberatung.",fc:"Krankheitsbewältigung: Fennell-Phasen, Resilienz, Psychoonkologie, HRQoL"},
-{year:"2022",q:"Eltern geben bei quengeligem Kind nach. Lerntheorie?",opts:["Klassisches Konditionieren","Konditionierung durch positiven Verstärker","Konditionierung durch negativen Verstärker","Bestrafung","Autoritativer Erziehungsstil"],ans:2,topic:3,exp:"Negative Verstärkung: Nachgeben beseitigt den aversiven Reiz (Quengeln) – verstärkt das Nachgeben. Kind lernt: Quengeln führt zum Erfolg. Klassisches Beispiel für dysfunktionale Eltern-Kind-Interaktion.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2022",q:"Falschaussage zum kindlichen Krankheitsverständnis (Kindergartenkind):",opts:["Finalistische Erklärungen","Versteht Therapie und Chronizität der Erkrankung","Sieht Therapie als Heilung","Zufällige Ursache-Wirkungs-Erklärungen","Moralische Selbstzuweisung der Krankheit"],ans:1,topic:12,exp:"Kindergartenkinder (prä-operationales Stadium) verstehen NICHT die Chronizität. Sie denken in finalistischen Begriffen, haben zufällige Kausalzuschreibungen, sehen Therapie als einmalige Heilung.",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2022",q:"Patientin mit Panikstörung. Welche Konsequenz ist am ehesten ein negativer Verstärker?",opts:["Angstreduktion durch Besuch in der Notaufnahme","Meckern der Ärztin bei wiederholtem Kommen","Fürsorgliche Reaktion des Ehemanns","Unangemessen erwachsenes Verhalten der Kinder","Beschwerde des Arbeitgebers"],ans:0,topic:3,exp:"Negativer Verstärker: Besuch in der Notaufnahme beseitigt die Angst (aversiver Reiz) → Verhalten wird verstärkt. Fürsorgliche Reaktion des Mannes wäre ein positiver Verstärker.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2022",q:"Welche Beschreibung passt am besten auf den volitionalen Prozess im HAPA-Modell?",opts:["Übergang von Zielintention zu Handlungsplanung zur Handlungsdurchführung","Selbstwirksamkeit bezüglich Verhaltensänderung","Selbstwirksamkeit bezüglich Aufrechterhaltung","Risikowahrnehmung → Selbstwirksamkeit → Handlungsplanung","Zielintention → Aufrechterhaltung → Bewältigungsplanung"],ans:0,topic:14,exp:"Volitionaler Prozess: Zielintention → Handlungsplanung (Implementation Intentions: wann, wo, wie?) → Handlungsdurchführung. Handlungsplanung überbrückt die Lücke zwischen Intention und Verhalten.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2022",q:"'Ergebniswaage' in motivierender Gesprächsführung – welcher HAPA-Teil?",opts:["Selbstwirksamkeit bezogen auf das Verhalten","Selbst eingeschätzte Handlungskompetenz","Selbstwirksamkeit bzgl. Rückfallbewältigung","Ergebniserwartung/Handlungs-Ergebnis-Erwartung"],ans:3,topic:14,exp:"Die 'Ergebniswaage' (Abwägen von Vor- und Nachteilen) entspricht der Handlungs-Ergebnis-Erwartung im HAPA: Was passiert, wenn ich das Verhalten zeige? Zentral in der motivationalen Phase.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2022",q:"Welche psychologischen Prozesse spielen bei der Handlungskontrolle im HAPA eine Rolle?",opts:["Selbstbeobachtung","Selbstwirksamkeit bzgl. Wiederaufnahme nach Rückfall","Intention","Verhaltens- und Bewältigungsplanung","Handlungs-Ergebnis-Erwartung"],ans:0,topic:14,exp:"Handlungskontrolle: Selbstbeobachtung (Monitoring), Selbstbewertung (Vergleich mit Ziel) und Selbstreaktion. Selbstbeobachtung ist der erste fundamentale Schritt.",fc:"Adhärenz: HAPA-Modell (Schwarzer), SMART, Change-Talk, Motivierende GF"},
-{year:"2022",q:"Typ-II-Diabetes-Studie (verhaltensmedizinisch vs. Metformin vs. Kontrolle). Was trifft NICHT zu?",opts:["Studie ist doppelt verblindet","Groß angelegte Studien zur Sekundärprävention","Zeigt, dass Verhaltensänderung hilft","Längsschnitt-Studien","Parameter: Nüchternglukose, HbA1c, Körpergewicht"],ans:0,topic:2,exp:"Eine doppelblinde Studie ist bei Verhaltensinterventionen unmöglich – Teilnehmende wissen, ob sie eine Verhaltensmaßnahme oder Medikament bekommen. Doppelblindheit funktioniert nur bei Medikamentenstudien.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Was gehört NICHT zur kognitiven Therapie bei Angststörungen?",opts:["Psychoedukation","Systematische Desensibilisierung","Ausarbeitung mit SORCK","Systematische Konfrontation mit unbewussten Traumata","Verhaltensanalyse"],ans:3,topic:3,exp:"'Konfrontation mit unbewussten Traumata' ist Psychoanalyse/Tiefenpsychologie – kein KVT-Element. KVT bei Angst: Psychoedukation, Verhaltensanalyse, Exposition (Desensibilisierung), kognitive Umstrukturierung.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2022",q:"Was ist sekundäre Sozialisation?",opts:["Erkunden der Umwelt in den ersten drei Lebensjahren","Lernen im Umfeld der Geschwister","Interaktion außerhalb der Familie in Kindergarten, Schule","Lernen im Umfeld der Familie","In ersten Lebenswochen durch nahe Angehörige"],ans:2,topic:9,exp:"Sekundäre Sozialisation findet in Kindergarten, Schule, Peergruppen statt. Primäre Sozialisation findet in der Familie statt.",fc:"Sozialisation: Primär/Sekundär, Hurrelmann, Erikson-Phasen, Krappmann"},
-{year:"2022",q:"Was stimmt zu Depressionspatientinnen nach Henry?",opts:["Cortisol-Spiegel steigt","ACTH geht runter","Testosteron geht runter","Herzfrequenz steigt","Noradrenalin und Adrenalin steigen stark"],ans:0,topic:10,exp:"Bei Depression: überaktivierte HPA-Achse → erhöhter CRH → erhöhter ACTH → erhöhtes Cortisol. Chronisch erhöhtes Cortisol ist ein replizierter Befund bei Major Depression.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2022",q:"Wer entscheidet, welche Leistungen von der GKV finanziert werden?",opts:["Kassenärztliche Vereinigung (KV)","Gemeinsamer Bundesausschuss (G-BA)","Deutsche Krankenhausgesellschaft","Spitzenverband GKV","Bundesärztekammer"],ans:1,topic:11,exp:"Der G-BA ist das höchste Beschlussgremium der gemeinsamen Selbstverwaltung. Er entscheidet, welche Leistungen in der GKV erstattet werden.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2022",q:"Odds-Ratio 2 für Herzinfarkt bei Männern, Frauen als Referenz. Was stimmt NICHT?",opts:["Frauen sind bei OR=1","Männer haben doppelte Chance zu erkranken","95%-KI von 0,7–2,8 ist statistisch signifikant","Männer haben 100% höhere Chance","Ergebnis beruht auf Querschnittsdaten"],ans:2,topic:2,exp:"KI 0,7–2,8 schließt die 1 ein → Ergebnis ist NICHT statistisch signifikant. OR=2 = doppelte Chance = 100% höhere Chance. Frauen OR=1.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Wie stellt man Ergebnisse aus mehreren RCTs am besten dar?",opts:["Forest Plot","Box Plot","Violin Plot","Punktwolke","Kaplan-Meier-Kurve"],ans:0,topic:2,exp:"Der Forest Plot ist die Standarddarstellung für Metaanalysen: zeigt Einzelstudien mit KI und Gesamtergebnis (Diamant).",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Was trifft zur Theorie der relativen Deprivation von Wilkinson NICHT zu?",opts:["Normen und Werte nehmen mit Ungleichheit ab","Gini-Koeffizient wird in Studien verwendet","Mit steigender Ungleichheit steigen Leistungsfähigkeit und Produktivität","Ungleichheit → Abnahme des sozialen Zusammenhalts","Nicht reichste, sondern gleichste Gesellschaften sind gesündeste"],ans:2,topic:6,exp:"Wilkinsons These: steigende Ungleichheit SCHADET der gesellschaftlichen Produktivität. Ungleichheit ist kein Leistungsanreiz für die Gesellschaft, sondern ein Gesundheitsrisikofaktor.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"},
-{year:"2022",q:"Was stimmt NICHT zur KV in Deutschland?",opts:["PKV-Beitrag ist einkommensunabhängig","Subsidiaritätsprinzip = GKV erhält Finanzzuschuss vom Bund","Irgendwas über SGB V","GKV beruht auf Subsidiaritätsprinzip"],ans:1,topic:11,exp:"Das Subsidiaritätsprinzip bedeutet: Übergeordnete Ebenen springen nur ein, wenn Untergeordnete eine Aufgabe nicht erfüllen können – NICHT, dass der Staat automatisch Zuschüsse zahlt.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2022",q:"Kaplan-Meier-Kurven: Überlebenswahrscheinlichkeit nach HI (höherer Bildungsabschluss 85%, niedrigerer 76% nach 5J).",opts:["Ist eine Ereignisdatenanalyse","Basiert auf Schätzung durch Hazard-Ratio","Basiert auf Schätzung durch Odds-Ratio","Ist eine Querschnittsstudie","Frauen überleben nicht länger als Männer"],ans:0,topic:2,exp:"Kaplan-Meier-Kurven sind Methoden der Überlebenszeitanalyse (Ereignisdatenanalyse). Nicht-parametrische Methode für Längsschnittdaten. Sie beruhen nicht auf HR-Schätzungen.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2022",q:"Was trifft zum Modell des demographischen Wandels zu?",opts:["Sinkende Lebenserwartung","Zuwanderung erhöht Altersdurchschnitt","Biographische Planungsunsicherheit und Änderungen im Rollenverständnis sorgen für Alterung","Früheres Versterben von multimorbiden Menschen","Sinkender Altenquotient"],ans:2,topic:4,exp:"Biographische Planungsunsicherheit und veränderte Rollenbilder (Frauen in Berufstätigkeit, spätere Familiengründung) tragen zur niedrigen Geburtenrate und Alterung bei. Zuwanderung verjüngt tendenziell.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2022",q:"Frau Meyer (58 J.) im Altenpflegeheim: gestiegene Anforderungen, fühlt sich schlecht bezahlt und nicht wertgeschätzt. Welches Modell?",opts:["Modell der beruflichen Gratifikationskrisen","Anforderungs-Kontrollmodell","Leistungs-Diskrepanz-Modell","Berufsstagnationsmodell"],ans:0,topic:10,exp:"Gratifikationskrisenmodell (Siegrist): hohe Verausgabung + geringe Belohnung (schlechte Bezahlung, fehlende Wertschätzung) = Gratifikationskrise.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2022",q:"Falschaussage zum Coping-Stress-Modell nach Lazarus:",opts:["Sekundäre Bewertung: Analyse verfügbarer Ressourcen","Primäre Bewertung unterscheidet nur zwischen gefährlich, relevant und positiv","Art des Copings hauptsächlich von objektiven Krankheitsausprägungen abhängig","Sekundäre Bewertung → bei mangelnden Ressourcen → Stress","Coping kann problemorientiert und emotionsorientiert sein"],ans:2,topic:10,exp:"Im Lazarus-Modell ist Coping NICHT von objektiven Ausprägungen abhängig, sondern von der SUBJEKTIVEN Bewertung. Das ist die Kernthese: Stress entsteht in der subjektiven Person-Umwelt-Transaktion.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2022",q:"Was trifft NICHT auf Mikroexpressionen zu?",opts:["Gelernt durch Spiegelneurone in früher Kindheit","Bilden primäre Emotionen ab","Können kaum unterdrückt werden","Sind nur einen Bruchteil von Sekunden lang","FACS erkennt Mikroexpressionen"],ans:0,topic:7,exp:"Mikroexpressionen sind NICHT durch Spiegelneurone erlernt – sie sind angeboren und evolutionär konserviert. Sie treten kulturuniversell auf.",fc:"Emotionen: Basisemotionen (Ekman), primär vs. sekundär, Mimik, FACS"},
-{year:"2022",q:"Was führt in den letzten 10 Jahren häufig zu Herz-Kreislauf-Erkrankungen?",opts:["Mehr sitzende Tätigkeiten","Steigende Arbeitslosigkeit","Mehr körperliche Arbeit","Mehr Belastung durch Home-Office","Gesunkene Kantinen-Subventionierungen"],ans:0,topic:10,exp:"Zunehmende sitzende Tätigkeiten (Sedentarismus) sind ein gut belegter Risikofaktor für kardiovaskuläre Erkrankungen. Lange Sitzzeiten sind unabhängig von Freizeitsport ein eigenständiger Risikofaktor.",fc:"Stress: Lazarus (primar/sekundäre Bewertung), AAS (Selye), Karasek, Siegrist"},
-{year:"2022",q:"Was beschreibt fetale Programmierung?",opts:["Genetische Manipulation des Fetus","Veränderte Organfunktion durch Medikamente","In sensiblen intrauterinen Phasen kommt es zu Milieuänderung und langfristigen Defiziten","Sauerstoffmangel bei der Geburt","Veränderte Organfunktion durch Strahlenschädigung"],ans:2,topic:12,exp:"Fetale Programmierung (Barker, DOHaD): In sensiblen Entwicklungsphasen führen Milieuveränderungen zu dauerhaften Anpassungen. Diese können das spätere Erkrankungsrisiko erhöhen (Adipositas, Diabetes, Hypertonie).",fc:"Entwicklungspsychologie: Piaget, Erziehungsstile, Pubertät, ToM, Armut"},
-{year:"2025",q:"Ein Patient hat im Hypertonie-Test ein negatives Ergebnis. Er fragt, wie hoch die Wahrscheinlichkeit ist, dass er tatsächlich nicht erkrankt ist. Worüber erteilen Sie ihm Auskunft?",opts:["Positiver prädiktiver Wert","Negativer prädiktiver Wert","Sensitivität","Spezifität","Objektivität"],ans:1,topic:2,exp:"Der negative prädiktive Wert (NPV) beantwortet genau diese Frage: Wie wahrscheinlich ist es, dass eine Person mit negativem Testergebnis tatsächlich nicht erkrankt ist? NPV = Richtig Negative / (Richtig Negative + Falsch Negative). Er hängt stark von der Prävalenz der Erkrankung in der Bevölkerung ab – bei seltenen Erkrankungen ist der NPV bei gleichem Test höher. Abzugrenzen: Sensitivität = wie viele Kranke werden erkannt; Spezifität = wie viele Gesunde werden korrekt als gesund erkannt.",fc:"Methoden: Gütekriterien, Statistik (α/β-Fehler, OR, HR, r), Studiendesign"},
-{year:"2025",q:"Was bewirkt Pluralität im deutschen Krankenkassensystem?",opts:["Versicherte können Krankenhaus frei wählen","Kassen versuchen Zusatzbeiträge gering zu halten (Wettbewerb)","Ärzte können sich niederlassen wo sie wollen","Patienten handeln Verträge mit Behandlern selbst aus","Anzahl der Pflegeeinrichtungen erhöht sich"],ans:1,topic:11,exp:"Pluralität im GKV-System bedeutet: Es gibt viele verschiedene Krankenkassen, zwischen denen Versicherte wählen können. Dies erzeugt Wettbewerb – Kassen versuchen attraktiv zu sein, indem sie Zusatzbeiträge niedrig halten und Zusatzleistungen anbieten. Das ist das Kernelement des wettbewerblichen Kassensystems, das seit den 1990er Jahren in Deutschland besteht. Die freie Krankenhauswahl (Antwort A) besteht für GKV-Versicherte eingeschränkt und ist kein Ergebnis der Pluralität der Kassen.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2025",q:"Wer legt die Kassenleistungen der GKV fest?",opts:["G-BA (Gemeinsamer Bundesausschuss)","KV (Kassenärztliche Vereinigung)","Bundesgesundheitsministerium","Spitzenverband der GKV","Bundesärztekammer"],ans:0,topic:11,exp:"Der G-BA (Gemeinsamer Bundesausschuss) ist das höchste Beschlussgremium der gemeinsamen Selbstverwaltung im deutschen Gesundheitswesen. Er entscheidet, welche Leistungen die GKV finanziert, welche Qualitätsstandards gelten und wie die Versorgung strukturiert ist. Er besteht aus Vertretern der Leistungserbringer (Ärzte, Krankenhäuser) und der Krankenkassen. Das Bundesgesundheitsministerium gibt den gesetzlichen Rahmen vor, entscheidet aber nicht über den konkreten Leistungskatalog.",fc:"Gesundheitssystem: GKV/PKV, G-BA, KBV, Sach-/Kostenerstattung, SAPV"},
-{year:"2025",q:"Um Stress zu reduzieren, geben Eltern bei Konflikten mit Kindern immer häufiger nach, um eine Eskalation zu vermeiden. Welches Lernmodell passt am ehesten auf das Verhalten der Eltern?",opts:["Positive Verstärkung","Negative Verstärkung","Aversiver Konflikt","Wegfall der Bestrafung","Klassische Konditionierung"],ans:1,topic:3,exp:"Negative Verstärkung: Das Nachgeben der Eltern beseitigt den aversiven Reiz (das Quengeln/Stress). Dieses Wegfallen des unangenehmen Reizes verstärkt das Nachgeben-Verhalten der Eltern. Gleichzeitig wird das Kind positiv verstärkt: Quengeln führt zum Erfolg. Beides zusammen ist ein klassisches Beispiel für die Entstehung dysfunktionaler Eltern-Kind-Interaktionsmuster durch operante Konditionierung. Negative Verstärkung bedeutet NICHT Bestrafung – es ist die Stärkung eines Verhaltens durch Entfernung eines aversiven Reizes.",fc:"Lernen: Klassische/Operante Konditionierung, Beobachtungslernen (Bandura)"},
-{year:"2025",q:"Was trifft auf den demografischen Wandel am ehesten zu?",opts:["Verlangsamter Rückgang kardiovaskulärer Sterberaten verhindert starken Anstieg der Lebenserwartung","Weiterhin hohe kardiovaskuläre Sterberaten sorgen dafür, dass Lebenserwartung im Vergleich zu westeuropäischen Nachbarländern weniger stark ansteigt","Lebenserwartung ist in den letzten Jahren stark angestiegen","Deutschland hat durch hohe Gesundheitsausgaben eine der höchsten Lebenserwartungen in Europa"],ans:2,topic:4,exp:"Die Lebenserwartung in Deutschland ist in den letzten Jahrzehnten tatsächlich stark angestiegen – durch Rückgang kardiovaskulärer Sterblichkeit, bessere medizinische Versorgung und verbesserte Lebensbedingungen. Deutschland hat jedoch trotz hoher Gesundheitsausgaben keine Spitzenposition in Europa (Platz eher im Mittelfeld). Die anderen Optionen sind sachlich falsch: Kardiovaskuläre Sterberaten sind in Deutschland stark zurückgegangen, was die Lebenserwartung erhöht hat.",fc:"Demografie: Lebenserwartung, Altenquotient, Geburtenrate, Wanderungssaldo"},
-{year:"2025",q:"Welche Aussage zur gesundheitlichen Ungleichheit trifft am meisten zu?",opts:["Arbeitslose Menschen haben eine geringere Lebenserwartung als Arbeitstätige","Soziale Ungleichheit findet sich vor allem im Kindesalter","Aufgrund des grundsätzlichen Wohlstandes in Deutschland greifen Maßnahmen gegen Ungleichheit für sozial Schwächere nicht"],ans:0,topic:6,exp:"Arbeitslosigkeit ist ein starker Risikofaktor für eine geringere Lebenserwartung. Dies ist gut belegt: Arbeitslose haben im Durchschnitt eine um mehrere Jahre kürzere Lebenserwartung als Erwerbstätige. Die Ursachen sind multifaktoriell: schlechterer Zugang zu Gesundheitsversorgung, psychosozialer Stress, schlechtere Ernährung und höhere Prävalenz von Risikoverhalten. Soziale Ungleichheit besteht über alle Altersgruppen und wirkt ein Leben lang – nicht nur im Kindesalter.",fc:"Soz. Ungleichheit: Sozialgradient, meritokr. Triade, Wilkinson-Deprivation"}
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#06b6d4;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em">Lade PhysioTrack…</div></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+// ── Supabase ──────────────────────────────────────────────────────────────────
+const sb = supabase.createClient(window.SB_URL, window.SB_KEY);
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+const MC_EXAM   = new Date("2026-05-24");
+const MC2_EXAM  = new Date("2026-07-07");
+const ORAL_EXAM = new Date("2026-08-15");
+
+const UNITS = [
+  {id:1, phase:1,title:"Blut",rev:false,topics:["Blutbestandteile & Hämatopoese","Blutgruppen (AB0, Rhesus)","Hämostase & Gerinnung","Blutbild (Hb, Hk, MCV)","Plasmapuffer"]},
+  {id:2, phase:1,title:"Herz 1 – EKG / Dipol",rev:false,topics:["Erregungsausbreitung (SA→AV→His)","AP Herzmuskel vs. Schrittmacher","EKG-Ableitungen (Einthoven, Goldberger)","P-QRS-T, Lagetypen, Achse","Dipol-Konzept"]},
+  {id:3, phase:1,title:"Herz 2",rev:false,topics:["Herzzyklus & Phasen","Druck-Volumen-Diagramm","HMV, Schlagvolumen, EF","Frank-Starling-Mechanismus","Koronardurchblutung"]},
+  {id:4, phase:1,title:"Kreislauf 1 – Strömung",rev:false,topics:["Hagen-Poiseuille-Gesetz","Laminare vs. turbulente Strömung","Laplace-Gesetz","Windkesselfunktion der Aorta"]},
+  {id:5, phase:1,title:"Kreislauf 2",rev:false,topics:["Blutdruckregulation (kurz/mittel/lang)","Barorezeptoren & RAAS","Starling-Kräfte","Schock-Formen & Kompensation"]},
+  {id:6, phase:1,title:"Atmung",rev:false,topics:["Lungenvolumina & -kapazitäten","Compliance, Resistance, Atemarbeit","Gasaustausch & V/Q-Verhältnis","Hb-Dissoziationskurve","Atemregulation"]},
+  {id:7, phase:1,title:"Salz-Wasser-Haushalt",rev:false,mc2:true,topics:["Körperwasser-Kompartimente","GFR & Clearance (Kreatinin, Inulin)","Na⁺/K⁺-Regulation, ADH, Aldosteron","Konzentrierungs- & Verdünnungsleistung"]},
+  {id:8, phase:1,title:"Säuren-Basen / Energieumsatz",rev:false,topics:["Henderson-Hasselbalch-Gleichung","Puffersysteme","Metabolische/respiratorische Störungen","Kompensationsmechanismen","Ergometrie, O₂-Schuld, Laktat"]},
+  {id:9, phase:1,title:"Generalwdh. I",rev:true,topics:["Blut, Herz 1+2 – MC-Fragen & Lücken"]},
+  {id:10,phase:1,title:"Generalwdh. II",rev:true,topics:["Kreislauf, Atmung – MC-Fragen"]},
+  {id:11,phase:1,title:"Generalwdh. III (Finale)",rev:true,topics:["Alle 8 MC-Themen – Schwachstellen"]},
+  {id:12,phase:2,title:"Nerv 1",rev:false,topics:["Ruhemembranpotenzial & Nernst-Gleichung","Ionenkanäle, Ohm, Leitfähigkeit","Aktionspotenzial: Phasen & Refraktärzeit","Empfindungsschwellen"]},
+  {id:13,phase:2,title:"Nerv 2",rev:false,topics:["Nervenleitgeschwindigkeit (NLG)","Elektroneurographie & EMG","N. ulnaris & N. medianus","Saltatorische Leitung"]},
+  {id:14,phase:2,title:"Mechanik / Wärme",rev:false,topics:["Hebelgesetze & Drehmoment","Muskelkraft bei variablem Kraftarm","Wärmekapazität & Verdunstung","Schwitzen & Konvektion"]},
+  {id:15,phase:2,title:"Muskel 1",rev:false,topics:["Kraft-Geschwindigkeits-Beziehung (Hill)","Kurve der Unterstützungsmaxima","Muskelarbeit & -leistung","Glatte Muskulatur & Transmitter"]},
+  {id:16,phase:2,title:"Muskel 2",rev:false,topics:["Isometrische Kontraktion & Kraft-Länge","Einzelzuckung → Superposition → Tetanus","Querbrückenzyklus & Ca²⁺","Motorische Einheit"]},
+  {id:17,phase:2,title:"Auffrischung Phase 1",rev:true,topics:["Herz, Kreislauf, Atmung – mündliches Niveau"]},
+  {id:18,phase:2,title:"Akustik",rev:false,mc2:true,topics:["Schallwellen: Longitudinal/Transversal","Schallintensität & Schalldruckpegel (dB)","Resonanz, Reflexion, stehende Wellen","Doppler-Effekt"]},
+  {id:19,phase:2,title:"Ohr",rev:false,mc2:true,topics:["Anatomie Außen-/Mittel-/Innenohr","Impedanzanpassung","Cochlea, Wanderwelle, Haarzellen","Audiometrie & Schwerhörigkeit"]},
+  {id:20,phase:2,title:"Optik / Auge",rev:false,mc2:true,topics:["Brechung & Linsengleichung","Akkommodation & Refraktionsfehler","Phototransduktion (Stäbchen/Zapfen)","Gesichtsfeld & Farbsehen"]},
+  {id:21,phase:2,title:"ZNS",rev:false,mc2:true,topics:["Reflexe, Babinski-Zeichen","Renshaw- & autogene Hemmung","Muskelspindel & γ-Innervation","Sinnesphysiologie & Nozizeption","Pupillenreflex"]},
+  {id:22,phase:2,title:"Bildgebende Diagnostik",rev:false,mc2:true,topics:["CT & Hounsfield-Einheiten, Fenstertechnik","MRT: T1/T2-Relaxation, Spin-Echo","Ultraschall: B-Mode, M-Mode, Piezo"]},
+  {id:23,phase:2,title:"Blut + SWH + SBH (Vertiefung)",rev:true,topics:["Klinische Fälle & Querverbindungen","Mündliche Simulation"]},
+  {id:24,phase:2,title:"GenWdh: Nerv, Muskel, Mechanik",rev:true,topics:[]},
+  {id:25,phase:2,title:"GenWdh: Herz, Kreislauf, Atmung",rev:true,topics:[]},
+  {id:26,phase:2,title:"GenWdh: ZNS, Sinne, Bildgebung",rev:true,topics:[]},
+  {id:27,phase:2,title:"Prüfungssimulation I",rev:true,topics:["Mündliche Fragen laut üben"]},
+  {id:28,phase:2,title:"Prüfungssimulation II",rev:true,topics:["Alle ⚠️-Themen, letzte Lücken"]},
 ];
 
-const TOPICS={1:"Gesundheit & Krankheit",2:"Methoden",3:"Lernen",4:"Demografie",5:"Gedächtnis",6:"Soz. Ungleichheit",7:"Emotionen",8:"Motivation",9:"Sozialisation",10:"Stress",11:"Gesundheitssystem",12:"Entwicklungspsychologie",13:"Prävention",14:"Adhärenz",15:"Krankheitsbewältigung"};
-const TI={1:"🏥",2:"📊",3:"🧠",4:"👥",5:"💾",6:"⚖️",7:"😊",8:"💪",9:"🌱",10:"😰",11:"🏛️",12:"👶",13:"🛡️",14:"💊",15:"🤝"};
-const YEARS=[...new Set(ALL_Q.map(q=>q.year))].sort();
+const STATUSES = ["open","working","done","gaps"];
+const S_LABEL  = {open:"Offen",working:"In Arbeit",done:"Fertig",gaps:"Lücken"};
+const S_COLOR  = {open:"#334155",working:"#d97706",done:"#059669",gaps:"#dc2626"};
+const S_ICON   = {open:"○",working:"◑",done:"●",gaps:"⚠"};
 
-
-let S={
-  screen:'start',
-  yearFilter:'all',
-  topicFilter:'all',
-  filterMode:'year',
-  quizMode:'quiz',
-  questions:[],
-  current:0,
-  answered:false,
-  score:0,
-  userAnswers:[],
-  fcRevealed:false,
-  stats:loadStats()
+const mkDefault = () => {
+  const d = {};
+  UNITS.forEach(u => { d[u.id] = {status:"open",score:0,planned:"",completed:"",tags:[],notes:""}; });
+  return d;
 };
 
-function loadStats(){
-  try{return JSON.parse(localStorage.getItem('ps_stats')||'{}')}catch(e){return{}}
-}
-function saveStats(){
-  try{localStorage.setItem('ps_stats',JSON.stringify(S.stats))}catch(e){}
-}
-function getProgress(){
-  try{return JSON.parse(localStorage.getItem('ps_progress')||'{}')}catch(e){return{}}
-}
-function saveProgress(data){
-  try{localStorage.setItem('ps_progress',JSON.stringify(data))}catch(e){}
-}
+const daysUntil = d => Math.ceil((new Date(d) - new Date()) / 86400000);
 
+const calcStreak = dates => {
+  if (!dates.length) return 0;
+  const sorted = [...new Set(dates)].sort().reverse();
+  const cur = new Date(); cur.setHours(0,0,0,0);
+  let count = 0;
+  for (let i = 0; i < 90; i++) {
+    const s = cur.toISOString().split("T")[0];
+    if (sorted.includes(s)) { count++; cur.setDate(cur.getDate()-1); }
+    else if (i === 0) cur.setDate(cur.getDate()-1);
+    else break;
+  }
+  return count;
+};
 
-function getFiltered(){
-  let qs=ALL_Q;
-  if(S.filterMode==='year'&&S.yearFilter!=='all') qs=qs.filter(q=>q.year===S.yearFilter);
-  else if(S.filterMode==='topic'&&S.topicFilter!=='all') qs=qs.filter(q=>q.topic===parseInt(S.topicFilter));
-  return qs;
-}
-function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function toggleDark(){document.body.classList.toggle('dark');document.getElementById('themeBtn').textContent=document.body.classList.contains('dark')?'☀️ Hell':'🌙 Dark';}
-function setMeta(t){document.getElementById('hdrMeta').textContent=t;}
+const fmt = s => {
+  const h = String(Math.floor(s/3600)).padStart(2,"0");
+  const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
+  return `${h}:${m}:${String(s%60).padStart(2,"0")}`;
+};
 
-function startQuiz(){
-  S.questions=shuffle(getFiltered());
-  S.current=0;S.answered=false;S.score=0;S.userAnswers=[];S.screen='quiz';S.fcRevealed=false;
-  render();
-}
-function startFlash(){
-  S.questions=shuffle(getFiltered());
-  S.current=0;S.fcRevealed=false;S.screen='flash';
-  render();
-}
-function nextQ(){S.current++;S.answered=false;S.fcRevealed=false;render();}
-function backToStart(){S.screen='start';render();}
-function showSummary(){
-  // record stats per topic
-  S.userAnswers.forEach(ua=>{
-    const t=String(ua.q.topic);
-    if(!S.stats[t]) S.stats[t]={correct:0,total:0};
-    S.stats[t].total++;
-    if(ua.isCorrect) S.stats[t].correct++;
-  });
-  saveStats();
-  S.screen='summary';render();
-}
-function selectYear(y){S.yearFilter=y;render();}
-function selectTopic(t){S.topicFilter=t;render();}
-function setFilterMode(m){S.filterMode=m;render();}
-function setQuizMode(m){S.quizMode=m;render();}
-function resetStats(){if(confirm('Statistiken wirklich zurücksetzen?')){S.stats={};saveStats();render();}}
-
-
-function render(){
-  const app=document.getElementById('app');
-  if(S.screen==='start'){setMeta('Klausurtraining');renderStart(app);}
-  else if(S.screen==='quiz'){setMeta('Frage '+(S.current+1)+'/'+S.questions.length);renderQuiz(app);}
-  else if(S.screen==='flash'){setMeta('Karteikarte '+(S.current+1)+'/'+S.questions.length);renderFlash(app);}
-  else if(S.screen==='summary'){setMeta('Ergebnis');renderSummary(app);}
-  else if(S.screen==='stats'){setMeta('Statistiken');renderStats(app);}
-}
-
-function renderStart(app){
-  const counts={};
-  YEARS.forEach(y=>counts[y]=ALL_Q.filter(q=>q.year===y).length);
-  const tCounts={};
-  Object.keys(TOPICS).forEach(t=>tCounts[t]=ALL_Q.filter(q=>q.topic===parseInt(t)).length);
-  const f=getFiltered();
-  const isYear=S.filterMode==='year';
-  const isQuiz=S.quizMode==='quiz';
-
-  app.innerHTML=`
-  <div style="animation:fu .4s ease both">
-  <div class="hero">
-    <h1>Psychologie &amp; Soziologie<br><em>Klausurtraining</em></h1>
-    <p>Alle Altfragen aus 5 Jahrgängen – mit Erklärungen und Karteikarten.</p>
-    <div class="pills">
-      <span class="pill">📚 ${ALL_Q.length} Fragen</span>
-      <span class="pill">📅 5 Jahrgänge</span>
-      <span class="pill">💡 Mit Erklärungen</span>
-    </div>
-  </div>
-
-  <div class="mode-sw">
-    <button class="mode-btn ${isYear?'active':''}" onclick="setFilterMode('year')">📅 Jahrgang</button>
-    <button class="mode-btn ${!isYear?'active':''}" onclick="setFilterMode('topic')">🏷️ Thema</button>
-  </div>
-
-  ${isYear?`
-    <p class="fl">Jahrgang</p>
-    <div class="yr-grid">
-      <div class="yr-card all-c ${S.yearFilter==='all'?'sel':''}" onclick="selectYear('all')">
-        <div class="yn">Alle</div><div class="yc">${ALL_Q.length} Fragen</div>
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function Ring({pct,size=100,stroke=10,color="#06b6d4",label,sub}) {
+  const r=(size-stroke)/2, circ=2*Math.PI*r, dash=(pct/100)*circ;
+  return (
+    <div style={{position:"relative",width:size,height:size,flexShrink:0}}>
+      <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e293b" strokeWidth={stroke}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color}
+          strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+          style={{transition:"stroke-dasharray .6s ease"}}/>
+      </svg>
+      <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+        <span style={{fontSize:size>80?17:12,fontWeight:700,color:"#f1f5f9",fontFamily:"'IBM Plex Mono',monospace"}}>{label}</span>
+        {sub&&<span style={{fontSize:10,color:"#64748b",marginTop:1}}>{sub}</span>}
       </div>
-      ${YEARS.map(y=>`<div class="yr-card ${S.yearFilter===y?'sel':''}" onclick="selectYear('${y}')">
-        <div class="yn">${y}</div><div class="yc">${counts[y]} Fragen</div>
-      </div>`).join('')}
     </div>
-  `:`
-    <p class="fl">Thema</p>
-    <div class="tp-grid">
-      <div class="tp-card all-tp ${S.topicFilter==='all'?'sel':''}" onclick="selectTopic('all')">
-        <div class="tci">📚</div><div class="tcn">Alle Themen</div><div class="tcc">${ALL_Q.length} Fragen</div>
+  );
+}
+
+function Stars({score,onChange}) {
+  return (
+    <div style={{display:"flex",gap:2}}>
+      {[1,2,3,4,5].map(i=>(
+        <span key={i} onClick={e=>{e.stopPropagation();onChange(i===score?0:i)}}
+          style={{cursor:"pointer",fontSize:15,color:i<=score?"#f59e0b":"#334155",transition:"color .15s",userSelect:"none"}}>★</span>
+      ))}
+    </div>
+  );
+}
+
+function Pill({icon,label,bg,border,color}) {
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,background:bg,border:`1px solid ${border}`,fontSize:12,fontWeight:600,color,whiteSpace:"nowrap"}}>
+      {icon} {label}
+    </div>
+  );
+}
+
+function Label({children}) {
+  return <div style={{fontSize:10,fontWeight:700,color:"#475569",letterSpacing:".12em",marginBottom:5}}>{children}</div>;
+}
+
+function StatusDot({s}) {
+  return <div style={{width:9,height:9,borderRadius:"50%",background:S_COLOR[s],flexShrink:0}}/>;
+}
+
+function SyncDot({status}) {
+  const cfg = {idle:{c:"#334155",t:"Gespeichert"},saving:{c:"#f59e0b",t:"Speichert…"},error:{c:"#ef4444",t:"Fehler"}};
+  const {c,t} = cfg[status]||cfg.idle;
+  return <div style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:c}}><div style={{width:7,height:7,borderRadius:"50%",background:c,animation:status==="saving"?"pulse 1s infinite":""}}/>  {t}</div>;
+}
+
+// ── Login Screen ──────────────────────────────────────────────────────────────
+function LoginScreen() {
+  const [email,setEmail] = useState("");
+  const [sent,setSent]   = useState(false);
+  const [err,setErr]     = useState("");
+  const [loading,setLoading] = useState(false);
+
+  const send = async () => {
+    if (!email.includes("@")) return setErr("Bitte eine gültige E-Mail eingeben.");
+    setLoading(true); setErr("");
+    const {error} = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.href }
+    });
+    setLoading(false);
+    if (error) setErr(error.message);
+    else setSent(true);
+  };
+
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,background:"#070d1c"}}>
+      <div style={{width:"100%",maxWidth:400}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <div style={{width:60,height:60,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,margin:"0 auto 16px"}}>⚕</div>
+          <div style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:600,fontSize:22,color:"#f1f5f9",letterSpacing:".05em"}}>PhysioTrack</div>
+          <div style={{fontSize:13,color:"#475569",marginTop:4}}>MHH · HannibaL 2025/26</div>
+        </div>
+
+        <div className="card" style={{padding:24}}>
+          {!sent ? (
+            <>
+              <div style={{fontSize:14,color:"#94a3b8",marginBottom:20,textAlign:"center",lineHeight:1.6}}>
+                Melde dich mit deiner E-Mail an. Du bekommst einen Magic Link — kein Passwort nötig.
+              </div>
+              <Label>E-MAIL</Label>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)}
+                onKeyDown={e=>e.key==="Enter"&&send()}
+                placeholder="name@email.de"
+                style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:10,padding:"12px 14px",color:"#e2e8f0",fontSize:14,marginBottom:12}}/>
+              {err && <div style={{color:"#ef4444",fontSize:12,marginBottom:10}}>{err}</div>}
+              <button onClick={send} disabled={loading}
+                style={{width:"100%",padding:"12px",borderRadius:10,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",color:"#fff",fontWeight:700,fontSize:14,opacity:loading?.6:1}}>
+                {loading?"Sende Link…":"Magic Link senden ✉"}
+              </button>
+            </>
+          ) : (
+            <div style={{textAlign:"center",padding:"20px 0"}}>
+              <div style={{fontSize:40,marginBottom:12}}>✉</div>
+              <div style={{fontWeight:600,fontSize:16,marginBottom:8}}>Link gesendet!</div>
+              <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.7}}>Schau in dein Postfach ({email}) und klicke auf den Link. Du wirst automatisch eingeloggt.</div>
+            </div>
+          )}
+        </div>
       </div>
-      ${Object.keys(TOPICS).map(t=>`<div class="tp-card ${S.topicFilter===t?'sel':''}" onclick="selectTopic('${t}')">
-        <div class="tci">${TI[t]}</div>
-        <div class="tcnum">${String(t).padStart(2,'0')}</div>
-        <div class="tcn">${TOPICS[t]}</div>
-        <div class="tcc">${tCounts[t]} Fragen</div>
-      </div>`).join('')}
     </div>
-  `}
-
-  <div class="mode-sw" style="margin-bottom:1rem">
-    <button class="mode-btn ${isQuiz?'active':''}" onclick="setQuizMode('quiz')">🎯 Quiz</button>
-    <button class="mode-btn ${!isQuiz?'active':''}" onclick="setQuizMode('flash')">🃏 Karteikarten</button>
-  </div>
-
-  <button class="start-btn" onclick="${isQuiz?'startQuiz()':'startFlash()'}">
-    ${f.length} ${isQuiz?'Fragen starten →':'Karteikarten starten →'}
-  </button>
-  <p style="text-align:center;margin-top:.75rem"><button class="btn btn-sm" onclick="S.screen='stats';render()" style="font-size:.8rem;padding:6px 14px">📈 Meine Statistik</button></p>
-  </div>`;
+  );
 }
 
-function renderQuiz(app){
-  const q=S.questions[S.current];
-  const prog=(S.current/S.questions.length*100).toFixed(1);
-  app.innerHTML=`
-  <div class="prog-wrap">
-    <div class="prog-top">
-      <span class="prog-lbl">Frage ${S.current+1} von ${S.questions.length}</span>
-      <span class="prog-sc">✓ ${S.score} richtig</span>
-    </div>
-    <div class="prog-track"><div class="prog-fill" style="width:${prog}%"></div></div>
-  </div>
-  <div class="q-card">
-    <div class="q-badges">
-      <span class="badge b-yr">📅 ${q.year}</span>
-      <span class="badge b-tp">${TI[q.topic]} ${TOPICS[q.topic]}</span>
-    </div>
-    <div class="q-num">Frage ${S.current+1}</div>
-    <div class="q-text">${esc(q.q)}</div>
-    <div class="opts">
-      ${q.opts.map((o,i)=>`<button class="opt" id="opt${i}" onclick="choose(${i})">
-        <span class="ol">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span>
-      </button>`).join('')}
-    </div>
-    <div id="exp-area"></div>
-    <div class="btn-row" id="btn-area"></div>
-  </div>`;
-}
+// ── Main App ──────────────────────────────────────────────────────────────────
+function App() {
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [tab, setTab]     = useState("dashboard");
+  const [data, setData]   = useState(null);
+  const [dates, setDates] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [sync, setSync]   = useState("idle");
+  const [sel, setSel]     = useState(null);
+  const [tagInput, setTagInput] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [timerMode, setTimerMode] = useState("study");
+  const timerRef = useRef(null);
+  const saveTimer = useRef(null);
 
-function choose(idx){
-  if(S.answered)return;
-  S.answered=true;
-  const q=S.questions[S.current];
-  const c=q.ans;
-  const ok=idx===c;
-  if(ok) S.score++;
-  S.userAnswers.push({q,chosen:idx,correct:c,isCorrect:ok});
-  document.querySelectorAll('.opt').forEach((b,i)=>{
-    b.disabled=true;
-    if(i===c) b.classList.add('correct');
-    if(i===idx&&!ok) b.classList.add('wrong');
-  });
-  let fcHtml='';
-  if(q.fc) fcHtml=`<div class="fc-box"><div class="fc-head">🃏 Merkkarte</div><div class="fc-text">${esc(q.fc)}</div></div>`;
-  document.getElementById('exp-area').innerHTML=`
-    <div class="exp-box">
-      <div class="exp-head">${ok?'✓ Richtig!':'✗ Falsch – Richtige Antwort: '+String.fromCharCode(65+c)}</div>
-      ${!ok?`<p style="color:var(--grn);margin-bottom:6px;font-size:.85rem"><strong>${String.fromCharCode(65+c)})</strong> ${esc(q.opts[c])}</p>`:''}
-      <p>${esc(q.exp)}</p>
-    </div>${fcHtml}`;
-  const btns=document.getElementById('btn-area');
-  if(S.current<S.questions.length-1)
-    btns.innerHTML=`<button class="btn btn-p" onclick="nextQ()">Nächste Frage →</button><button class="btn" onclick="backToStart()">Abbrechen</button>`;
-  else
-    btns.innerHTML=`<button class="btn btn-p" onclick="showSummary()">Ergebnis ansehen →</button>`;
-}
+  // Auth
+  useEffect(() => {
+    sb.auth.getSession().then(({data:{session}}) => { setSession(session); setAuthLoading(false); });
+    const {data:{subscription}} = sb.auth.onAuthStateChange((_,s) => { setSession(s); setAuthLoading(false); });
+    return () => subscription.unsubscribe();
+  }, []);
 
-function renderFlash(app){
-  const q=S.questions[S.current];
-  const prog=(S.current/S.questions.length*100).toFixed(1);
-  app.innerHTML=`
-  <div class="prog-wrap">
-    <div class="prog-top">
-      <span class="prog-lbl">Karte ${S.current+1} von ${S.questions.length}</span>
-      <span class="prog-sc">${S.current} gesehen</span>
-    </div>
-    <div class="prog-track"><div class="prog-fill" style="width:${prog}%"></div></div>
-  </div>
-  <div class="fc-card">
-    <div class="q-badges">
-      <span class="badge b-yr">📅 ${q.year}</span>
-      <span class="badge b-tp">${TI[q.topic]} ${TOPICS[q.topic]}</span>
-    </div>
-    <div class="fc-q">${esc(q.q)}</div>
-    ${!S.fcRevealed?`
-      <button class="fc-show-btn" onclick="revealFlash()">Antwort anzeigen →</button>
-    `:`
-      <div class="fc-ans">
-        <div class="fc-ans-lbl">✓ Richtige Antwort</div>
-        <div class="fc-ans-txt">${esc(String.fromCharCode(65+q.ans)+') '+q.opts[q.ans])}</div>
+  // Load data
+  useEffect(() => {
+    if (!session) return;
+    (async () => {
+      const {data:row} = await sb.from("physio_data").select("*").eq("user_id",session.user.id).single();
+      if (row) { setData(row.unit_data||mkDefault()); setDates(row.streak_dates||[]); }
+      else { setData(mkDefault()); setDates([]); }
+      setLoaded(true);
+    })();
+  }, [session]);
+
+  // Save (debounced)
+  const persist = useCallback(async (d, s) => {
+    if (!session) return;
+    setSync("saving");
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const {error} = await sb.from("physio_data").upsert({
+        user_id: session.user.id, unit_data: d, streak_dates: s, updated_at: new Date().toISOString()
+      }, {onConflict:"user_id"});
+      setSync(error ? "error" : "idle");
+    }, 800);
+  }, [session]);
+
+  const upd = (id, patch) => {
+    const nd = {...data,[id]:{...data[id],...patch}};
+    setData(nd); persist(nd, dates);
+  };
+
+  const markToday = () => {
+    const t = new Date().toISOString().split("T")[0];
+    if (dates.includes(t)) return;
+    const nd = [...dates,t]; setDates(nd); persist(data,nd);
+  };
+
+  const logout = () => sb.auth.signOut();
+
+  // Timer
+  useEffect(() => {
+    if (running) { timerRef.current = setInterval(()=>setTimer(t=>t+1),1000); }
+    else clearInterval(timerRef.current);
+    return ()=>clearInterval(timerRef.current);
+  }, [running]);
+
+  if (authLoading) return (
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"#06b6d4",fontFamily:"'IBM Plex Mono',monospace"}}>Verbinde…</div>
+  );
+  if (!session) return <LoginScreen/>;
+  if (!loaded)  return (
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"#06b6d4",fontFamily:"'IBM Plex Mono',monospace"}}>Lade Daten…</div>
+  );
+
+  // Derived
+  const mcDays   = daysUntil(MC_EXAM);
+  const mc2Days  = daysUntil(MC2_EXAM);
+  const oralDays = daysUntil(ORAL_EXAM);
+  const streak   = calcStreak(dates);
+  const p1       = UNITS.filter(u=>u.phase===1);
+  const p2       = UNITS.filter(u=>u.phase===2);
+  const mc2Units = UNITS.filter(u=>u.mc2);
+  const p1done   = p1.filter(u=>data[u.id]?.status==="done").length;
+  const mc2done  = mc2Units.filter(u=>data[u.id]?.status==="done").length;
+  const p2done   = p2.filter(u=>data[u.id]?.status==="done").length;
+  const totalDone= p1done+p2done;
+  const allTags  = Object.entries(data).flatMap(([id,d])=>(d.tags||[]).map(tag=>({tag,id:+id,title:UNITS.find(u=>u.id===+id)?.title||""})));
+  const mcColor  = mcDays<7?"#ef4444":mcDays<28?"#f59e0b":"#10b981";
+
+  const TABS = [
+    {id:"dashboard",icon:"▦",label:"Dashboard"},
+    {id:"lehrplan", icon:"≡", label:"Lehrplan"},
+    {id:"kalender", icon:"⊞",label:"Kalender"},
+    {id:"radar",    icon:"◎",label:"Radar"},
+    {id:"timer",    icon:"◷",label:"Timer"},
+    {id:"export",   icon:"↑", label:"Export"},
+  ];
+
+  return (
+    <div style={{minHeight:"100vh",background:"#070d1c",color:"#e2e8f0",fontFamily:"'IBM Plex Sans',system-ui,sans-serif"}}>
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        .unit-row:hover{background:#162032!important}
+        .tab-btn:hover{background:#1a2744!important}
+      `}</style>
+
+```
+  {/* Header */}
+  <header style={{background:"#0a1628",borderBottom:"1px solid #1e293b",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100,gap:8}}>
+    <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{width:34,height:34,background:"linear-gradient(135deg,#0e7490,#1d4ed8)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}>⚕</div>
+      <div className="hide-mobile">
+        <div style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:600,fontSize:14,color:"#f1f5f9",letterSpacing:".05em"}}>PhysioTrack</div>
+        <div style={{fontSize:10,color:"#475569"}}>MHH · HannibaL 2025/26</div>
       </div>
-      ${q.fc?`<div class="fc-hint">${esc(q.fc)}</div>`:''}
-      <div class="fc-rate">
-        <button class="fc-r fc-hard" onclick="rateFlash('hard')">😰 Schwer</button>
-        <button class="fc-r fc-ok" onclick="rateFlash('ok')">🤔 Ok</button>
-        <button class="fc-r fc-easy" onclick="rateFlash('easy')">✓ Gewusst</button>
+    </div>
+    <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
+      <SyncDot status={sync}/>
+      <Pill icon="🔥" label={`${streak}`} bg="#431407" border="#9a3412" color="#fed7aa"/>
+      <Pill icon="⏱" label={`MC1 ${mcDays}d`} bg={mcDays<7?"#450a0a":mcDays<28?"#431407":"#052e16"} border={mcColor} color={mcColor}/>
+      <Pill icon="📋" label={`MC2 ${mc2Days}d`} bg={mc2Days<7?"#450a0a":mc2Days<28?"#431407":"#052e16"} border={mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"} color={mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"}/>
+      <Pill icon="🎓" label={`${oralDays}d`} bg="#1e1b4b" border="#4338ca" color="#a5b4fc"/>
+      <button onClick={logout} style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#64748b",padding:"4px 8px",fontSize:11}}>Logout</button>
+    </div>
+  </header>
+
+  {/* Nav */}
+  <nav style={{display:"flex",gap:2,padding:"6px 12px",background:"#090f1e",borderBottom:"1px solid #1e293b",overflowX:"auto"}}>
+    {TABS.map(t=>(
+      <button key={t.id} className="tab-btn" onClick={()=>setTab(t.id)}
+        style={{padding:"6px 12px",borderRadius:8,background:tab===t.id?"#1e3a5f":"transparent",
+          color:tab===t.id?"#38bdf8":"#64748b",fontWeight:tab===t.id?600:400,
+          fontSize:12,display:"flex",gap:5,alignItems:"center",whiteSpace:"nowrap",
+          borderBottom:tab===t.id?"2px solid #0ea5e9":"2px solid transparent",transition:"all .15s"}}>
+        <span style={{fontFamily:"'IBM Plex Mono',monospace"}}>{t.icon}</span>
+        <span className="hide-mobile">{t.label}</span>
+      </button>
+    ))}
+  </nav>
+
+  {/* Main */}
+  <main style={{padding:"16px",maxWidth:900,margin:"0 auto"}}>
+
+    {/* ── DASHBOARD ── */}
+    {tab==="dashboard" && (
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+          {[
+            {pct:Math.round((p1done/p1.length)*100),label:`${p1done}/${p1.length}`,sub:"MC 1 – 24.05.",color:"#06b6d4",days:mcDays,dayColor:mcColor},
+            {pct:Math.round((mc2done/mc2Units.length)*100),label:`${mc2done}/${mc2Units.length}`,sub:"MC 2 – 07.07.",color:"#f59e0b",days:mc2Days,dayColor:mc2Days<7?"#ef4444":mc2Days<28?"#f59e0b":"#10b981"},
+            {pct:Math.round((p2done/p2.length)*100),label:`${p2done}/${p2.length}`,sub:"Phase 2 – Mdl.",color:"#8b5cf6",days:oralDays,dayColor:"#a5b4fc"},
+            {pct:Math.round((totalDone/UNITS.length)*100),label:`${totalDone}/${UNITS.length}`,sub:"Gesamt",color:"#10b981",days:null},
+          ].map((r,i)=>(
+            <div key={i} className="card" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:12}}>
+              <Ring pct={r.pct} size={90} label={r.label} sub={r.sub} color={r.color}/>
+              <div style={{fontSize:11,color:"#64748b",textAlign:"center"}}>
+                {r.days!=null?<><span style={{color:r.dayColor,fontWeight:600}}>{r.days}d</span></>:<span style={{color:"#10b981",fontWeight:600}}>{r.pct}%</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Ampel */}
+        <div className="card">
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>PRÜFUNGS-AMPEL</div>
+          {[
+            {label:"MC 1 – Prüfung (24.05.2026)",done:p1done,total:p1.length,days:mcDays,color:"#06b6d4"},
+            {label:"MC 2 – Prüfung (07.07.2026)",done:mc2done,total:mc2Units.length,days:mc2Days,color:"#f59e0b"},
+            {label:"Mündliche (~15.08.2026)",done:totalDone,total:UNITS.length,days:oralDays,color:"#8b5cf6"},
+          ].map((a,i)=>{
+            const pct=Math.round((a.done/a.total)*100);
+            const ampel=a.days<7?"🔴":a.days<28?"🟡":"🟢";
+            return (
+              <div key={i} style={{background:"#1e293b",borderRadius:10,padding:12,marginBottom:i===0?8:0}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <div style={{fontSize:12,fontWeight:600}}>{ampel} {a.label}</div>
+                  <div style={{fontSize:12,fontFamily:"'IBM Plex Mono',monospace",color:a.color}}>{a.done}/{a.total}</div>
+                </div>
+                <div style={{background:"#0f172a",borderRadius:6,height:8,overflow:"hidden"}}>
+                  <div style={{height:"100%",background:a.color,width:`${pct}%`,transition:"width .6s",borderRadius:6}}/>
+                </div>
+                <div style={{fontSize:11,color:"#475569",marginTop:4}}>Noch {a.total-a.done} LE · {a.days} Tage verbleibend</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Streak */}
+        <div className="card">
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>🔥 LERN-STREAK – LETZTE 30 TAGE</div>
+          <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
+            {Array.from({length:30},(_,i)=>{
+              const d=new Date(); d.setDate(d.getDate()-(29-i));
+              const s=d.toISOString().split("T")[0];
+              const studied=dates.includes(s);
+              const isToday=i===29;
+              return (
+                <div key={i} title={s} style={{width:26,height:26,borderRadius:6,
+                  background:studied?"#0e7490":"#1e293b",
+                  border:`1px solid ${isToday?"#06b6d4":studied?"#0284c7":"#334155"}`,
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  fontSize:9,color:studied?"#67e8f9":"#334155",fontFamily:"'IBM Plex Mono',monospace"}}>
+                  {d.getDate()}
+                </div>
+              );
+            })}
+          </div>
+          <button onClick={markToday} style={{marginTop:10,padding:"6px 14px",background:"#164e63",border:"1px solid #0e7490",borderRadius:8,color:"#67e8f9",fontSize:12,fontWeight:600}}>
+            Heute als gelernt markieren
+          </button>
+        </div>
+
+        {/* Lücken */}
+        {allTags.length>0&&(
+          <div className="card">
+            <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>⚠ OFFENE LÜCKEN ({allTags.length})</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              {allTags.slice(0,10).map((t,i)=>(
+                <span key={i} className="tag">⚡ {t.tag} <span style={{color:"#475569",fontSize:10}}>({t.title})</span></span>
+              ))}
+              {allTags.length>10&&<span style={{color:"#475569",fontSize:12,alignSelf:"center"}}>+{allTags.length-10} → Radar</span>}
+            </div>
+          </div>
+        )}
+
+        {/* Nächste LEs */}
+        <div className="card">
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>▶ NÄCHSTE LERNEINHEITEN</div>
+          {UNITS.filter(u=>data[u.id]?.status!=="done").slice(0,5).map(u=>(
+            <div key={u.id} onClick={()=>{setSel(u.id);setTab("lehrplan");}} className="unit-row"
+              style={{display:"flex",alignItems:"center",gap:10,padding:"8px 8px",borderRadius:8,borderBottom:"1px solid #1e293b",cursor:"pointer",transition:"all .15s"}}>
+              <StatusDot s={data[u.id]?.status||"open"}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:13,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  <span style={{color:"#475569",fontFamily:"'IBM Plex Mono',monospace",fontSize:11}}>LE{String(u.id).padStart(2,"0")} </span>{u.title}
+                </div>
+                {data[u.id]?.planned&&<div style={{fontSize:11,color:"#475569"}}>📅 {data[u.id].planned}</div>}
+              </div>
+              <Stars score={data[u.id]?.score||0} onChange={v=>upd(u.id,{score:v})}/>
+            </div>
+          ))}
+        </div>
       </div>
-    `}
-  </div>
-  <div class="btn-row" style="margin-top:.5rem">
-    <button class="btn" onclick="backToStart()">← Zurück</button>
-  </div>`;
-}
+    )}
 
-function revealFlash(){S.fcRevealed=true;render();}
-function rateFlash(r){
-  const t=String(S.questions[S.current].topic);
-  if(!S.stats[t]) S.stats[t]={correct:0,total:0};
-  S.stats[t].total++;
-  if(r==='easy') S.stats[t].correct++;
-  saveStats();
-  if(S.current<S.questions.length-1){S.current++;S.fcRevealed=false;render();}
-  else{alert('Alle Karteikarten durch! 🎉');backToStart();}
-}
+    {/* ── LEHRPLAN ── */}
+    {tab==="lehrplan" && (
+      <div style={{display:"grid",gridTemplateColumns:sel?"1fr 1.3fr":"1fr",gap:14}}>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          {[1,2].map(phase=>(
+            <div key={phase}>
+              <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",margin:"14px 0 6px",borderBottom:"1px solid #1e293b",paddingBottom:4}}>
+                {phase===1?"PHASE 1 – MC 1 (24.05.2026)":"PHASE 2 – MC 2 (07.07.) & MÜNDLICHE (15.08.2026)"}
+              </div>
+              {UNITS.filter(u=>u.phase===phase).map(u=>{
+                const d=data[u.id]; const isActive=sel===u.id;
+                return (
+                  <div key={u.id} className="unit-row" onClick={()=>setSel(isActive?null:u.id)}
+                    style={{display:"flex",alignItems:"center",gap:8,padding:"9px 10px",borderRadius:10,
+                      background:isActive?"#1e3a5f":"#0f172a",
+                      border:`1px solid ${isActive?"#1d4ed8":u.mc2?"#78350f":"#1e293b"}`,
+                      marginBottom:4,transition:"all .15s"}}>
+                    <StatusDot s={d?.status||"open"}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:13,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        <span style={{color:"#475569",fontFamily:"'IBM Plex Mono',monospace",fontSize:11}}>LE{String(u.id).padStart(2,"0")} </span>
+                        {u.title}
+                        {u.rev&&<span style={{fontSize:10,color:"#7c3aed",background:"#2e1065",padding:"1px 5px",borderRadius:4,marginLeft:5}}>WDH</span>}
+                        {u.mc2&&<span style={{fontSize:10,color:"#f59e0b",background:"#431407",padding:"1px 5px",borderRadius:4,marginLeft:5}}>MC2</span>}
+                      </div>
+                      {d?.planned&&<div style={{fontSize:11,color:"#475569"}}>📅 {d.planned}</div>}
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
+                      <Stars score={d?.score||0} onChange={v=>upd(u.id,{score:v})}/>
+                      {(d?.tags||[]).length>0&&<span style={{fontSize:10,color:"#ef4444"}}>⚠ {d.tags.length}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
 
-function renderSummary(app){
-  const pct=Math.round(S.score/S.questions.length*100);
-  const [gc,gl]=pct>=75?['ga','🎉 Sehr gut!']:pct>=50?['gb','👍 Gut gemacht!']:['gc','📖 Weiter üben!'];
-  // per-topic stats from this session
-  const sessTopic={};
-  S.userAnswers.forEach(ua=>{
-    const t=String(ua.q.topic);
-    if(!sessTopic[t]) sessTopic[t]={c:0,n:0};
-    sessTopic[t].n++;
-    if(ua.isCorrect) sessTopic[t].c++;
-  });
-  const topicHtml=Object.keys(sessTopic).map(t=>{
-    const {c,n}=sessTopic[t];
-    const p=Math.round(c/n*100);
-    const col=p>=75?'#2A6B3C':p>=50?'#B8860B':'#8C2B2B';
-    return `<div class="ts">
-      <div class="ts-name">${TI[t]} ${TOPICS[t]}</div>
-      <div class="ts-bg"><div class="ts-fill" style="width:${p}%;background:${col}"></div></div>
-      <div class="ts-lbl">${c}/${n} (${p}%)</div>
-    </div>`;
-  }).join('');
+        {/* Detail */}
+        {sel&&(()=>{
+          const u=UNITS.find(x=>x.id===sel); const d=data[sel];
+          return (
+            <div className="card" style={{position:"sticky",top:76,alignSelf:"start",maxHeight:"calc(100vh - 100px)",overflowY:"auto"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
+                <div>
+                  <div style={{fontSize:11,color:"#475569",fontFamily:"'IBM Plex Mono',monospace"}}>LERNEINHEIT {sel}</div>
+                  <div style={{fontSize:16,fontWeight:700,color:"#f1f5f9",lineHeight:1.3}}>{u.title}</div>
+                </div>
+                <button onClick={()=>setSel(null)} style={{background:"none",color:"#475569",fontSize:18,padding:4,flexShrink:0}}>✕</button>
+              </div>
 
-  app.innerHTML=`
-  <div class="sum-hero">
-    <div style="font-size:.8rem;color:var(--ink3);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.08em">Dein Ergebnis</div>
-    <div class="big-sc">${S.score}<span style="font-size:2rem;color:var(--ink3)">/${S.questions.length}</span></div>
-    <div class="sc-sub">${pct}% richtig</div>
-    <div class="grade ${gc}">${gl}</div>
-  </div>
-  <div class="btn-row" style="margin-bottom:1.5rem">
-    <button class="btn btn-p" onclick="startQuiz()">Nochmal</button>
-    <button class="btn" onclick="backToStart()">Andere Auswahl</button>
-    <button class="btn" onclick="S.screen='stats';render()">📈 Statistik</button>
-  </div>
-  ${topicHtml?`<h2 class="rev-hd">Nach Thema</h2><div class="tp-stats" style="margin-bottom:1.5rem">${topicHtml}</div>`:''}
-  <h2 class="rev-hd">Alle Antworten</h2>
-  ${S.userAnswers.map((ua,i)=>`
-    <div class="rev-item ${ua.isCorrect?'ok':'fail'}">
-      <div class="ri-top">
-        <span class="ri-meta">${ua.q.year} · ${TI[ua.q.topic]} ${TOPICS[ua.q.topic]}</span>
-        <span class="ri-st ${ua.isCorrect?'ok':'fail'}">${ua.isCorrect?'✓ Richtig':'✗ Falsch'}</span>
+              <div style={{marginBottom:14}}>
+                <Label>STATUS</Label>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                  {STATUSES.map(s=>(
+                    <button key={s} onClick={()=>upd(sel,{status:s})}
+                      style={{padding:"4px 10px",borderRadius:20,fontSize:11,fontWeight:600,
+                        background:d.status===s?S_COLOR[s]+"33":"transparent",
+                        border:`1px solid ${d.status===s?S_COLOR[s]:"#334155"}`,
+                        color:d.status===s?S_COLOR[s]:"#64748b"}}>
+                      {S_ICON[s]} {S_LABEL[s]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{marginBottom:14}}>
+                <Label>SELBSTEINSCHÄTZUNG</Label>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <Stars score={d.score||0} onChange={v=>upd(sel,{score:v})}/>
+                  <span style={{fontSize:12,color:"#475569"}}>{["–","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score||0]}</span>
+                </div>
+              </div>
+
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+                {[["GEPLANT","planned",""],["ERLEDIGT AM","completed","done"]].map(([lbl,key,setStatus])=>(
+                  <div key={key}>
+                    <Label>{lbl}</Label>
+                    <input type="date" value={d[key]||""} onChange={e=>upd(sel,{[key]:e.target.value,...(setStatus?{status:setStatus}:{})})}
+                      style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"6px 8px",color:"#e2e8f0",fontSize:12}}/>
+                  </div>
+                ))}
+              </div>
+
+              {u.topics.length>0&&(
+                <div style={{marginBottom:14}}>
+                  <Label>KERNTHEMEN</Label>
+                  <ul style={{margin:0,paddingLeft:16}}>
+                    {u.topics.map((t,i)=><li key={i} style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>{t}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              <div style={{marginBottom:14}}>
+                <Label>LÜCKEN-TAGS</Label>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:6}}>
+                  {(d.tags||[]).map((tag,i)=>(
+                    <span key={i} className="tag">{tag}
+                      <span onClick={()=>upd(sel,{tags:d.tags.filter((_,j)=>j!==i)})} style={{cursor:"pointer",color:"#ef4444",marginLeft:2}}>✕</span>
+                    </span>
+                  ))}
+                </div>
+                <div style={{display:"flex",gap:6}}>
+                  <input value={tagInput} onChange={e=>setTagInput(e.target.value)}
+                    onKeyDown={e=>{if(e.key==="Enter"&&tagInput.trim()){upd(sel,{tags:[...(d.tags||[]),tagInput.trim()]});setTagInput("");}}}
+                    placeholder="Stichwort + Enter …"
+                    style={{flex:1,background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"6px 8px",color:"#e2e8f0",fontSize:12}}/>
+                  <button onClick={()=>{if(tagInput.trim()){upd(sel,{tags:[...(d.tags||[]),tagInput.trim()]});setTagInput("");}}}
+                    style={{padding:"6px 10px",background:"#1e3a5f",border:"1px solid #1d4ed8",borderRadius:8,color:"#60a5fa",fontSize:13}}>+</button>
+                </div>
+              </div>
+
+              <div>
+                <Label>NOTIZEN</Label>
+                <textarea value={d.notes||""} onChange={e=>upd(sel,{notes:e.target.value})} rows={3}
+                  placeholder="Eigene Notizen…"
+                  style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"8px",color:"#e2e8f0",fontSize:12,resize:"vertical"}}/>
+              </div>
+            </div>
+          );
+        })()}
       </div>
-      <div class="ri-q">${esc(ua.q.q)}</div>
-      ${!ua.isCorrect?`<div class="ri-ans ri-wr">Deine Antwort: ${String.fromCharCode(65+ua.chosen)}) ${esc(ua.q.opts[ua.chosen])}</div>`:''}
-      <div class="ri-ans ri-rt">Richtig: ${String.fromCharCode(65+ua.correct)}) ${esc(ua.q.opts[ua.correct])}</div>
-    </div>`).join('')}`;
+    )}
+
+    {/* ── KALENDER ── */}
+    {tab==="kalender" && (() => {
+      const [month, setMonth] = useState(new Date().getMonth());
+      const [year, setYear]   = useState(new Date().getFullYear());
+      const first = new Date(year,month,1), last = new Date(year,month+1,0);
+      const startDay = (first.getDay()||7)-1, totalDays = last.getDate();
+      const planned = {};
+      Object.entries(data).forEach(([id,d])=>{
+        if(d.planned){if(!planned[d.planned])planned[d.planned]=[];planned[d.planned].push({id:+id,title:UNITS.find(u=>u.id===+id)?.title||"",status:d.status});}
+      });
+      const cells=[];
+      for(let i=0;i<startDay;i++)cells.push(null);
+      for(let d=1;d<=totalDays;d++)cells.push(d);
+      const mNames=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+      return (
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+            <button onClick={()=>{if(month===0){setMonth(11);setYear(y=>y-1);}else setMonth(m=>m-1);}}
+              style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#94a3b8",padding:"5px 12px",fontSize:16}}>‹</button>
+            <div style={{fontWeight:700,fontSize:15,flex:1,textAlign:"center"}}>{mNames[month]} {year}</div>
+            <button onClick={()=>{if(month===11){setMonth(0);setYear(y=>y+1);}else setMonth(m=>m+1);}}
+              style={{background:"#1e293b",border:"1px solid #334155",borderRadius:8,color:"#94a3b8",padding:"5px 12px",fontSize:16}}>›</button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
+            {["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>(
+              <div key={d} style={{textAlign:"center",fontSize:10,color:"#475569",fontWeight:700,padding:"4px 0"}}>{d}</div>
+            ))}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
+            {cells.map((d,i)=>{
+              if(!d)return <div key={i}/>;
+              const s=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+              const us=planned[s]||[], isToday=s===new Date().toISOString().split("T")[0];
+              return (
+                <div key={i} className="cal-day" style={{borderColor:isToday?"#06b6d4":us.length?"#1d4ed8":"#1e293b",background:isToday?"#0c4a6e":"#0f172a"}}>
+                  <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:11,fontWeight:isToday?700:400,color:isToday?"#67e8f9":"#64748b",marginBottom:2}}>{d}</div>
+                  {us.map((u,j)=>(
+                    <div key={j} style={{fontSize:9,padding:"1px 3px",borderRadius:3,marginBottom:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+                      background:S_COLOR[u.status]+"22",color:S_COLOR[u.status],border:`1px solid ${S_COLOR[u.status]}44`}}>
+                      LE{u.id} {u.title.substring(0,8)}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    })()}
+
+    {/* ── RADAR ── */}
+    {tab==="radar" && (
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div className="card">
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:4}}>◎ WIEDERHOLUNGS-RADAR</div>
+          <div style={{fontSize:12,color:"#64748b"}}>Alle Lücken auf einen Blick. Klicke ✕ um ein Tag zu entfernen.</div>
+        </div>
+        {UNITS.filter(u=>(data[u.id]?.tags||[]).length>0||data[u.id]?.status==="gaps").map(u=>(
+          <div key={u.id} className="card">
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontWeight:600,fontSize:14}}>LE {u.id} – {u.title}</div>
+              <Stars score={data[u.id]?.score||0} onChange={v=>upd(u.id,{score:v})}/>
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+              {(data[u.id]?.tags||[]).map((tag,i)=>(
+                <span key={i} className="tag" onClick={()=>upd(u.id,{tags:data[u.id].tags.filter((_,j)=>j!==i)})} style={{cursor:"pointer"}}>
+                  {tag} <span style={{color:"#ef4444"}}>✕</span>
+                </span>
+              ))}
+            </div>
+            {data[u.id]?.notes&&<div style={{fontSize:12,color:"#64748b",fontStyle:"italic",borderLeft:"2px solid #334155",paddingLeft:8}}>{data[u.id].notes}</div>}
+          </div>
+        ))}
+        {allTags.length===0&&(
+          <div className="card" style={{textAlign:"center",padding:40,color:"#475569"}}>
+            <div style={{fontSize:36,marginBottom:8}}>✓</div>
+            <div style={{fontWeight:600}}>Keine Lücken eingetragen</div>
+            <div style={{fontSize:12,marginTop:4}}>Füge im Lehrplan Lücken-Tags hinzu</div>
+          </div>
+        )}
+        {allTags.length>0&&(
+          <div className="card" style={{border:"1px solid #1d4ed8"}}>
+            <div style={{fontSize:12,fontWeight:600,color:"#60a5fa",marginBottom:10}}>📋 WOCHENEND-CHECKLISTE</div>
+            {[...new Set(allTags.map(t=>t.title))].map((title,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",borderBottom:"1px solid #1e293b",fontSize:13}}>
+                <span style={{color:"#334155"}}>☐</span> {title}
+                <span style={{fontSize:11,color:"#475569"}}>({allTags.filter(t=>t.title===title).length} Lücken)</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* ── TIMER ── */}
+    {tab==="timer" && (
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+        <div className="card" style={{width:"100%",textAlign:"center",padding:32}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".15em",marginBottom:14}}>
+            {timerMode==="study"?"⚡ LERNPHASE":"☕ PAUSE"}
+          </div>
+          <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:clamp(48,10),fontWeight:600,
+            color:timerMode==="study"?"#06b6d4":"#10b981",letterSpacing:".05em",lineHeight:1}}>
+            {fmt(timer)}
+          </div>
+          <div style={{fontSize:12,color:"#475569",marginTop:8}}>
+            {timerMode==="study"?"Ziel: 3h Lerneinheit":"Empfohlen: 15 Min"}
+          </div>
+          <div style={{marginTop:14,background:"#1e293b",borderRadius:8,height:6,overflow:"hidden"}}>
+            <div style={{height:"100%",background:timerMode==="study"?(timer>=10800?"#10b981":"#06b6d4"):"#10b981",
+              width:`${Math.min(timer/(timerMode==="study"?10800:900)*100,100)}%`,transition:"width 1s",borderRadius:6}}/>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
+          <button onClick={()=>{setRunning(!running);if(!running)markToday();}}
+            style={{padding:"11px 28px",borderRadius:12,fontWeight:700,fontSize:15,
+              background:running?"#7f1d1d":"#164e63",border:`2px solid ${running?"#ef4444":"#06b6d4"}`,
+              color:running?"#fca5a5":"#67e8f9"}}>
+            {running?"⏸ Pause":"▶ Start"}
+          </button>
+          <button onClick={()=>{setRunning(false);setTimer(0);}}
+            style={{padding:"11px 18px",borderRadius:12,fontWeight:600,fontSize:14,background:"#1e293b",border:"1px solid #334155",color:"#64748b"}}>
+            ↺ Reset
+          </button>
+          <button onClick={()=>{setTimerMode(m=>m==="study"?"break":"study");setTimer(0);setRunning(false);}}
+            style={{padding:"11px 18px",borderRadius:12,fontWeight:600,fontSize:14,background:"#1e293b",border:"1px solid #334155",color:"#64748b"}}>
+            {timerMode==="study"?"☕ Pause-Modus":"⚡ Lern-Modus"}
+          </button>
+        </div>
+        <div className="card" style={{width:"100%"}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#475569",letterSpacing:".1em",marginBottom:10}}>SCHNELL-TIMER</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {[["1,5h Zusammenfassung",5400],["1h Fragen üben",3600],["30min Wiederholung",1800],["15min Pause",900]].map(([l,s])=>(
+              <button key={l} onClick={()=>{setTimer(s);setRunning(false);}}
+                style={{padding:"6px 12px",borderRadius:8,background:"#1e293b",border:"1px solid #334155",color:"#94a3b8",fontSize:12}}>{l}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* ── EXPORT ── */}
+    {tab==="export" && (() => {
+      const [copied,setCopied]=useState(false);
+      const today=new Date().toLocaleDateString("de-DE");
+      const doneLEs=UNITS.filter(u=>data[u.id]?.status==="done").map(u=>`LE${u.id} (${u.title})`).join(", ")||"–";
+      const gapLEs=UNITS.filter(u=>(data[u.id]?.tags||[]).length>0);
+      const nextLE=UNITS.find(u=>data[u.id]?.status!=="done");
+      const warnLEs=UNITS.filter(u=>data[u.id]?.score>0&&data[u.id]?.score<=2);
+      const text=`📚 PhysioTrack Status – ${today}
+```
+
+──────────────────────────────
+MC 1-Prüfung (24.05.2026): ${mcDays} Tage
+MC 2-Prüfung (07.07.2026): ${mc2Days} Tage
+Mündliche (~15.08.2026): ${oralDays} Tage
+🔥 Streak: ${streak} Tage
+Phase 1 (MC1): ${p1done}/11 LE fertig
+MC2-Themen: ${mc2done}/${mc2Units.length} LE fertig
+Phase 2 (Mdl.): ${p2done}/17 LE fertig
+
+✅ Fertige LEs: ${doneLEs}
+
+⚠️ Einheiten mit Lücken:
+${gapLEs.length?gapLEs.map(u=>`  • LE${u.id} ${u.title}: ${data[u.id].tags.join(", ")}`).join(”\n”):”  –”}
+
+⭐ Unsichere Einheiten (Score ≤ 2):
+${warnLEs.length?warnLEs.map(u=>`  • LE${u.id} ${u.title} (★${data[u.id]?.score}/5)`).join(”\n”):”  –”}
+
+▶ Nächste Einheit: ${nextLE?`LE${nextLE.id} – ${nextLE.title}`:“Alle fertig! 🎉”}
+──────────────────────────────
+Bitte hilf mir mit den offenen Themen.`; const copy=()=>{navigator.clipboard.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}; return ( <div style={{display:"flex",flexDirection:"column",gap:14}}> <div className="card" style={{border:"1px solid #1d4ed8"}}> <div style={{fontSize:13,fontWeight:600,color:"#60a5fa",marginBottom:8}}>📤 SMART-EXPORT FÜR NEUE CHATS</div> <div style={{fontSize:12,color:"#94a3b8",lineHeight:1.7}}>Kopiere diesen Text und füge ihn am Anfang eines neuen Chats ein — ich weiß sofort wo du stehst.</div> </div> <div style={{background:"#0f172a",border:"1px solid #334155",borderRadius:12,padding:16,fontFamily:"'IBM Plex Mono',monospace",fontSize:12,color:"#94a3b8",whiteSpace:"pre-wrap",lineHeight:1.7,overflowX:"auto"}}> {text} </div> <button onClick={copy} style={{padding:"12px 24px",borderRadius:12,fontWeight:700,fontSize:14,alignSelf:"flex-start", background:copied?"#064e3b":"#164e63",border:`2px solid ${copied?”#10b981”:”#06b6d4”}`,
+color:copied?”#34d399”:”#67e8f9”,transition:“all .2s”}}>
+{copied?“✓ Kopiert!”:“📋 In Zwischenablage kopieren”}
+</button>
+</div>
+);
+})()}
+
+```
+  </main>
+</div>
+```
+
+);
 }
 
-function renderStats(app){
-  const stats=S.stats;
-  const tTotal=Object.values(stats).reduce((a,v)=>a+v.total,0);
-  const tCorrect=Object.values(stats).reduce((a,v)=>a+v.correct,0);
-  const pct=tTotal>0?Math.round(tCorrect/tTotal*100):0;
-  app.innerHTML=`
-  <div style="animation:fu .3s ease both">
-  <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1rem">📈 Meine Statistik</h2>
-  <div class="st-grid">
-    <div class="met"><div class="met-v">${tTotal}</div><div class="met-l">Fragen gesamt</div></div>
-    <div class="met"><div class="met-v">${tCorrect}</div><div class="met-l">Richtig</div></div>
-    <div class="met"><div class="met-v">${pct}%</div><div class="met-l">Trefferquote</div></div>
-    <div class="met"><div class="met-v">${Object.keys(stats).length}</div><div class="met-l">Themen geübt</div></div>
-  </div>
-  <h3 style="font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.7rem">Fortschritt pro Thema</h3>
-  <div class="tp-prog">
-  ${Object.keys(TOPICS).map(t=>{
-    const d=stats[t]||{correct:0,total:0};
-    const p=d.total>0?Math.round(d.correct/d.total*100):0;
-    const col=p>=75?'var(--grn)':p>=50?'var(--gld)':'var(--red)';
-    return `<div class="tp-row">
-      <div class="tp-hd"><span class="tp-nm">${TI[t]} ${TOPICS[t]}</span><span class="tp-pct">${p}%</span></div>
-      <div class="tp-bg"><div class="tp-fill" style="width:${p}%;background:${col}"></div></div>
-      <div class="tp-sub">${d.correct}/${d.total} Fragen</div>
-    </div>`;
-  }).join('')}
-  </div>
-  <div class="btn-row" style="margin-top:1.5rem">
-    <button class="btn" onclick="backToStart()">← Zurück</button>
-    <button class="btn" onclick="resetStats()" style="color:var(--red)">Zurücksetzen</button>
-  </div>
-  </div>`;
-}
+function clamp(base){return `min(${base}px, 12vw)`;}
 
-render();
-
+ReactDOM.createRoot(document.getElementById(“root”)).render(<App/>);
 </script>
+
 </body>
 </html>
