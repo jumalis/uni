@@ -83,14 +83,15 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4)}
 <div id="login-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px">
   <div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:24px;width:100%;max-width:380px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-weight:700;font-size:16px">☁ Sync aktivieren</div>
-      <button id="modal-close" style="color:#475569;font-size:22px;padding:4px;min-width:44px;min-height:44px">✕</button>
+      <div style="font-weight:700;font-size:16px">&#9729; Sync aktivieren</div>
+      <button id="modal-close" style="color:#475569;font-size:22px;padding:4px;min-width:44px;min-height:44px">&#10005;</button>
     </div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6">Melde dich an um Daten auf iPhone, iPad und Mac zu synchronisieren. Kein Passwort – nur ein Magic Link per E-Mail.</div>
-    <div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:6px">E-MAIL</div>
-    <input id="modal-email" type="email" placeholder="name@email.de" style="width:100%;margin-bottom:12px;font-size:14px">
-    <button id="modal-send" style="width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,#0e7490,#1d4ed8);color:#fff;font-weight:700;font-size:14px;min-height:50px">Magic Link senden ✉</button>
-    <div id="modal-msg" style="margin-top:10px;font-size:12px;text-align:center;min-height:18px"></div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:24px;line-height:1.6">Melde dich mit deinem GitHub-Account an um Daten auf iPhone, iPad und Mac zu synchronisieren.</div>
+    <button id="modal-send" style="width:100%;padding:15px;border-radius:10px;background:#24292e;color:#fff;font-weight:700;font-size:15px;min-height:54px;display:flex;align-items:center;justify-content:center;gap:10px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Mit GitHub anmelden
+    </button>
+    <div id="modal-msg" style="margin-top:10px;font-size:12px;text-align:center;min-height:18px;color:#ef4444"></div>
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid #1e293b;text-align:center">
       <button id="modal-skip" style="color:#475569;font-size:13px;text-decoration:underline;min-height:44px">Ohne Sync weiter (nur lokal)</button>
     </div>
@@ -783,25 +784,26 @@ function hideLogin(){
 }
 document.addEventListener("click",function(e){
   var el=e.target.closest("[data-a='login']");
-  if(el&&!SBU){ showLogin(); return; }
+  if(el){ if(SBU){ if(confirm("Ausloggen?")){ SBC.auth.signOut().then(function(){ SBU=null; setSS("local"); updateHdr(); }); } } else { showLogin(); } return; }
   if(e.target.id==="modal-close"||e.target.id==="modal-skip"){ hideLogin(); return; }
   if(e.target.id==="modal-send"){
-    var email=document.getElementById("modal-email").value.trim();
     var msg=document.getElementById("modal-msg");
-    if(!email||email.indexOf("@")<0){ if(msg){msg.style.color="#ef4444";msg.textContent="Bitte gültige E-Mail eingeben.";} return; }
     var btn=document.getElementById("modal-send");
-    if(btn){ btn.textContent="Sende…"; btn.disabled=true; }
-    if(SBC){
-      SBC.auth.signInWithOtp({email:email}).then(function(r){
-        if(msg){
-          if(r.error){ msg.style.color="#ef4444"; msg.textContent=r.error.message; if(btn){btn.textContent="Magic Link senden ✉";btn.disabled=false;} }
-          else{ msg.style.color="#10b981"; msg.textContent="✓ Link gesendet! Schau ins Postfach."; if(btn){btn.textContent="Link gesendet ✓";} }
-        }
-      });
-    } else {
-      if(msg){ msg.style.color="#ef4444"; msg.textContent="Supabase nicht konfiguriert. Siehe SETUP.md."; }
-      if(btn){ btn.textContent="Magic Link senden ✉"; btn.disabled=false; }
+    if(!SBC){
+      if(msg){ msg.textContent="Supabase nicht konfiguriert."; }
+      return;
     }
+    if(btn){ btn.disabled=true; btn.style.opacity="0.6"; }
+    SBC.auth.signInWithOAuth({
+      provider:"github",
+      options:{ redirectTo: location.href }
+    }).then(function(r){
+      if(r.error){
+        if(msg){ msg.textContent=r.error.message; }
+        if(btn){ btn.disabled=false; btn.style.opacity="1"; }
+      }
+      // on success browser redirects automatically
+    });
     return;
   }
 },false);
