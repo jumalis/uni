@@ -69,7 +69,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4)}
     <div class="hsm"><div class="mono" style="font-weight:600;font-size:14px;color:#f1f5f9">PhysioTrack</div><div style="font-size:10px;color:#475569">MHH &middot; HannibaL 2025/26</div></div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-    <div id="sync-pill" class="pill" style="background:#1e293b;border-color:#334155;color:#64748b;cursor:pointer" data-a="sync-info">&#9679; Lokal</div>
+    <div id="sync-pill" class="pill" style="background:#1e293b;border-color:#334155;color:#64748b;cursor:pointer" data-a="sync-info">&#9729; Lokal</div>
     <div id="pstr" class="pill" style="background:#431407;border-color:#9a3412;color:#fed7aa">0 Tage</div>
     <div id="psr" class="pill" style="background:#450a0a;border-color:#7f1d1d;color:#fca5a5;display:none">SR faellig</div>
     <div id="pmc1" class="pill" style="border-color:#10b981;color:#10b981">MC1</div>
@@ -79,19 +79,19 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4)}
 </div>
 
 <nav id="nav" style="display:none">
-  <button class="tbtn on" data-tab="db">Dashboard</button>
-  <button class="tbtn" data-tab="lp">Lehrplan</button>
-  <button class="tbtn" data-tab="kal">Kalender</button>
-  <button class="tbtn" data-tab="rad">Radar</button>
-  <button class="tbtn" data-tab="tmr">Timer</button>
-  <button class="tbtn" data-tab="exp">Export</button>
+  <button class="tbtn on" data-tab="db">&#128202; Dashboard</button>
+  <button class="tbtn" data-tab="lp">&#128218; Lehrplan</button>
+  <button class="tbtn" data-tab="kal">&#128197; Kalender</button>
+  <button class="tbtn" data-tab="rad">&#128269; Radar</button>
+  <button class="tbtn" data-tab="tmr">&#9203; Timer</button>
+  <button class="tbtn" data-tab="exp">&#128228; Export</button>
 </nav>
 <main id="main"></main>
 
 <script>
 'use strict';
 
-// ── Config ────────────────────────────────────────────────────────────────────
+// -- Config --------------------------------------------------------------------
 var SB_URL = "https://dwgahbmfcfumiahjjlaf.supabase.co";   // z.B. https://abcdef.supabase.co
 var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3Z2FoYm1mY2Z1bWlhaGpqbGFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczOTY0MTksImV4cCI6MjA5Mjk3MjQxOX0.hEpCHTsGti-7mFVyVtwk9fPT4RuKiGkFZw7T98U4cbU";        // beginnt mit eyJ...
 var APP_URL = "https://jumalis.github.io/uni";
@@ -100,7 +100,7 @@ var MC1  = new Date("2026-05-24");
 var MC2D = new Date("2026-07-07");
 var ORAL = new Date("2026-08-15");
 var SC = {open:"#334155",working:"#d97706",done:"#059669",gaps:"#dc2626"};
-var SL = {open:"Offen",working:"In Arbeit",done:"Fertig",gaps:"Luecken"};
+var SL = {open:"&#9711; Offen",working:"&#9681; In Arbeit",done:"&#10003; Fertig",gaps:"&#9888; Luecken"};
 
 var UNITS = [
   {id:1, p:1,mc2:false,rev:false,title:"Blut",                        topics:["Blutbestandteile und Haematopoese","Blutgruppen AB0 und Rhesus","Haemostase und Gerinnung","Blutbild Hb Hk MCV","Plasmapuffer"]},
@@ -141,7 +141,7 @@ var CAL_M=new Date().getMonth(),CAL_Y=new Date().getFullYear();
 var T_SEC=0,T_RUN=false,T_MODE="study",T_INT=null,T_SAVE=null;
 var SBC=null,SBU=null;
 
-// ── Data helpers ──────────────────────────────────────────────────────────────
+// -- Data helpers --------------------------------------------------------------
 function mkU(){return{status:"open",score:0,planned:"",completed:"",tags:[],notes:"",srNext:"",srInterval:1,srReps:0,srLast:""};}
 function initDB(){var d={};UNITS.forEach(function(u){d[u.id]=mkU();});return d;}
 function ensureFields(){
@@ -171,7 +171,7 @@ function streak(){
 function fmt(s){return pad(Math.floor(s/3600))+":"+pad(Math.floor((s%3600)/60))+":"+pad(s%60);}
 function pad(n){return String(n).padStart(2,"0");}
 
-// ── Spaced Repetition ─────────────────────────────────────────────────────────
+// -- Spaced Repetition ---------------------------------------------------------
 function srUpdate(id,score){
   var u=DB[id],td=today();
   u.srLast=td;u.srReps=(u.srReps||0)+1;
@@ -187,9 +187,9 @@ function srUpdate(id,score){
 function srDue(){var td=today();return UNITS.filter(function(u){var d=DB[u.id];return d&&d.srNext&&d.srNext<=td;});}
 function srSoon(){var td=today();var lim=new Date();lim.setDate(lim.getDate()+3);var ls=lim.toISOString().split("T")[0];return UNITS.filter(function(u){var d=DB[u.id];return d&&d.srNext&&d.srNext>td&&d.srNext<=ls;});}
 function srDays(id){var d=DB[id];if(!d||!d.srNext)return null;return Math.ceil((new Date(d.srNext)-new Date())/86400000);}
-function srBadge(id){var d=DB[id];if(!d||!d.srNext)return"";var days=srDays(id);if(days<=0)return'<span class="bdg" style="color:#ef4444;background:#450a0a">SR faellig</span>';if(days<=3)return'<span class="bdg" style="color:#f59e0b;background:#431407">SR '+days+'d</span>';return'<span class="bdg" style="color:#34d399;background:#052e16">SR '+days+'d</span>';}
+function srBadge(id){var d=DB[id];if(!d||!d.srNext)return"";var days=srDays(id);if(days<=0)return'<span class="bdg" style="color:#ef4444;background:#450a0a">&#128257; faellig</span>';if(days<=3)return'<span class="bdg" style="color:#f59e0b;background:#431407">&#128257; '+days+'d</span>';return'<span class="bdg" style="color:#34d399;background:#052e16">&#128257; '+days+'d</span>';}
 
-// ── Storage ───────────────────────────────────────────────────────────────────
+// -- Storage -------------------------------------------------------------------
 function loadLocal(){
   try{
     var d=localStorage.getItem("pt_v7_data");
@@ -212,10 +212,10 @@ function saveData(){
 }
 function markToday(){var t=today();if(DATES.indexOf(t)<0){DATES=DATES.concat([t]);saveData();}updateHdr();}
 
-// ── Supabase ──────────────────────────────────────────────────────────────────
+// -- Supabase ------------------------------------------------------------------
 function setSyncPill(txt,bg,col){
   var p=document.getElementById("sync-pill");
-  if(p){p.textContent=txt;p.style.background=bg;p.style.color=col;p.style.borderColor=col;}
+  if(p){p.innerHTML=txt;p.style.background=bg;p.style.color=col;p.style.borderColor=col;}
 }
 function loadSupabase(cb){
   if(typeof supabase!=="undefined"){cb();return;}
@@ -244,12 +244,12 @@ function initSupabase(){
       SBC.auth.onAuthStateChange(function(event,session){
         SBU=session?session.user:null;
         if(event==="SIGNED_IN"){
-          setSyncPill("&#9679; Synced","#052e16","#34d399");
+          setSyncPill("&#9989; Synced","#052e16","#34d399");
           loadFromCloud();
         }
         if(event==="SIGNED_OUT"){
           SBU=null;
-          setSyncPill("&#9679; Lokal","#1e293b","#64748b");
+          setSyncPill("&#9729; Lokal","#1e293b","#64748b");
           updateHdr();
         }
       });
@@ -257,7 +257,7 @@ function initSupabase(){
       SBC.auth.getSession().then(function(r){
         if(r.data&&r.data.session){
           SBU=r.data.session.user;
-          setSyncPill("&#9679; Synced","#052e16","#34d399");
+          setSyncPill("&#9989; Synced","#052e16","#34d399");
           loadFromCloud();
         }else{
           showApp();
@@ -274,7 +274,7 @@ function loginWithGitHub(){
     options:{redirectTo:APP_URL}
   }).then(function(r){
     if(r.error){
-      setSyncPill("&#9679; Lokal","#1e293b","#64748b");
+      setSyncPill("&#9729; Lokal","#1e293b","#64748b");
       alert("Login fehlgeschlagen: "+r.error.message);
     }
     // On success browser redirects to GitHub - no further action needed here
@@ -284,7 +284,7 @@ function logout(){
   if(!SBC)return;
   SBC.auth.signOut().then(function(){
     SBU=null;
-    setSyncPill("&#9679; Lokal","#1e293b","#64748b");
+    setSyncPill("&#9729; Lokal","#1e293b","#64748b");
     updateHdr();
   });
 }
@@ -298,9 +298,13 @@ function loadFromCloud(){
       ensureFields();
       saveLocal();
     }
-    setSyncPill("&#9679; Synced","#052e16","#34d399");
+    if(r.error&&r.error.code!=="PGRST116"){
+      // PGRST116 = no rows found (first login) - that's OK
+      console.warn("Cloud load error:",r.error.message);
+    }
+    setSyncPill("&#9989; Synced","#052e16","#34d399");
     showApp();
-  }).catch(function(){showApp();});
+  }).catch(function(e){console.warn("loadFromCloud catch:",e);showApp();});
 }
 function saveToCloud(){
   if(!SBC||!SBU)return;
@@ -311,8 +315,8 @@ function saveToCloud(){
     streak_dates:DATES,
     updated_at:new Date().toISOString()
   },{onConflict:"user_id"}).then(function(r){
-    if(r.error){setSyncPill("&#9679; Fehler","#450a0a","#ef4444");}
-    else{setSyncPill("&#9679; Synced","#052e16","#34d399");}
+    if(r.error){setSyncPill("&#10060; Fehler","#450a0a","#ef4444");}
+    else{setSyncPill("&#9989; Synced","#052e16","#34d399");}
   });
 }
 function showApp(){
@@ -322,7 +326,7 @@ function showApp(){
   renderAll();
 }
 
-// ── UI helpers ────────────────────────────────────────────────────────────────
+// -- UI helpers ----------------------------------------------------------------
 function ring(p,size,col,label,sub){
   var st=10,r=(size-st)/2,circ=2*Math.PI*r,d=(p/100)*circ;
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">'
@@ -340,7 +344,7 @@ function starsH(id,score){
   return h+'</div>';
 }
 function ampel(label,done,total,days,col){
-  var p=total?Math.round(done/total*100):0,amp=days<7?"[!]":days<28?"[~]":"[ok]";
+  var p=total?Math.round(done/total*100):0,ampC=days<7?"#ef4444":days<28?"#f59e0b":"#10b981",amp='<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+ampC+';margin-right:4px;flex-shrink:0"></span>';
   return '<div style="background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'
     +'<span style="font-size:12px;font-weight:600">'+amp+' '+label+'</span>'
@@ -350,18 +354,18 @@ function ampel(label,done,total,days,col){
 }
 function lbl(t){return '<div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:8px">'+t+'</div>';}
 
-// ── Render ────────────────────────────────────────────────────────────────────
+// -- Render --------------------------------------------------------------------
 function renderAll(){updateHdr();renderMain();}
 function updateHdr(){
   var s=streak(),mc1d=daysUntil(MC1),mc2d=daysUntil(MC2D),od=daysUntil(ORAL);
-  document.getElementById("pstr").textContent=s+" Tage";
+  document.getElementById("pstr").innerHTML="&#128293; "+s+" Tage";
   var mc1c=mc1d<7?"#ef4444":mc1d<28?"#f59e0b":"#10b981";
   var mc2c=mc2d<7?"#ef4444":mc2d<28?"#f59e0b":"#10b981";
   var p1=document.getElementById("pmc1");p1.textContent="MC1 "+mc1d+"d";p1.style.borderColor=mc1c;p1.style.color=mc1c;
   var p2=document.getElementById("pmc2");p2.textContent="MC2 "+mc2d+"d";p2.style.borderColor=mc2c;p2.style.color=mc2c;
   document.getElementById("por").textContent=od;
   var due=srDue(),srP=document.getElementById("psr");
-  if(srP){if(due.length){srP.style.display="flex";srP.textContent="SR "+due.length+" faellig";}else{srP.style.display="none";}}
+  if(srP){if(due.length){srP.style.display="flex";srP.innerHTML="&#128257; "+due.length+" faellig";}else{srP.style.display="none";}}
 }
 function renderMain(){
   var m=document.getElementById("main");
@@ -373,7 +377,7 @@ function renderMain(){
   else if(TAB==="exp")m.innerHTML=rExp();
 }
 
-// ── Dashboard ─────────────────────────────────────────────────────────────────
+// -- Dashboard -----------------------------------------------------------------
 function rDash(){
   var mc1d=daysUntil(MC1),mc2d=daysUntil(MC2D),od=daysUntil(ORAL);
   var p1d=P1.filter(function(u){return DB[u.id]&&DB[u.id].status==="done";}).length;
@@ -391,7 +395,7 @@ function rDash(){
   }
   var srSec="";
   if(due.length||soon.length){
-    srSec='<div class="card" style="border-color:#7f1d1d">'+lbl('<span style="color:#fca5a5">SR HEUTE WIEDERHOLEN</span>');
+    srSec='<div class="card" style="border-color:#7f1d1d">'+lbl('<span style="color:#fca5a5">&#128257; SR &mdash; HEUTE WIEDERHOLEN</span>');
     if(due.length){
       srSec+='<div style="font-size:12px;font-weight:600;color:#ef4444;margin-bottom:6px">Faellig ('+due.length+')</div>';
       due.forEach(function(u){var d=DB[u.id];srSec+='<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#7f1d1d;margin-bottom:5px"><div class="dot" style="background:#ef4444"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LE'+u.id+' '+u.title+'</div><div style="font-size:11px;color:#ef4444">Intervall: '+d.srInterval+'d &middot; '+d.srReps+'x</div></div>'+starsH(u.id,d.score)+'</div>';});
@@ -404,59 +408,59 @@ function rDash(){
   }
   var tagSec="";
   if(tags.length){tagSec='<div class="card"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">OFFENE LUECKEN ('+tags.length+')</div><div style="display:flex;flex-wrap:wrap;gap:6px">';tags.slice(0,10).forEach(function(t){tagSec+='<span class="tag">'+t.tag+' <span style="color:#475569;font-size:10px">('+t.title+')</span></span>';});if(tags.length>10)tagSec+='<span style="color:#475569;font-size:12px;align-self:center">+'+(tags.length-10)+' Radar</span>';tagSec+='</div></div>';}
-  var nextSec='<div class="card">'+lbl("NAECHSTE LERNEINHEITEN");
+  var nextSec='<div class="card">'+lbl("&#9654; NAECHSTE LERNEINHEITEN");
   next.forEach(function(u){var d=DB[u.id];nextSec+='<div class="urow" data-a="ou" data-id="'+u.id+'"><div class="dot" style="background:'+SC[d.status]+'"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="mono" style="color:#475569;font-size:11px">LE'+pad(u.id)+' </span>'+u.title+'</div>'+(d.planned?'<div style="font-size:11px;color:#475569">'+d.planned+'</div>':"")+'</div>'+starsH(u.id,d.score)+'</div>';});
   nextSec+='</div>';
 
   // Sync card if not logged in
   var syncCard="";
   if(!SBU&&SBC){
-    syncCard='<div class="card" style="border-color:#1d4ed8"><div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">Sync aktivieren</div><div style="font-size:12px;color:#64748b;margin-bottom:12px">Melde dich an um Daten auf iPhone, iPad und Mac zu synchronisieren.</div><button data-a="login" style="padding:12px 20px;border-radius:10px;background:#24292e;color:#fff;font-weight:700;font-size:14px;min-height:50px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>Mit GitHub anmelden</button></div>';
+    syncCard='<div class="card" style="border-color:#1d4ed8"><div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">Sync aktivieren</div><div style="font-size:12px;color:#64748b;margin-bottom:12px">Melde dich an um Daten auf iPhone, iPad und Mac zu synchronisieren.</div><button data-a="login" style="padding:12px 20px;border-radius:10px;background:#24292e;color:#fff;font-weight:700;font-size:14px;min-height:50px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>Mit GitHub anmelden &#8594;</button></div>';
   }
 
   return '<div style="display:flex;flex-direction:column;gap:14px">'
-    +'<div class="rg">'+[[pct(P1),"#06b6d4",p1d+"/"+P1.length,"MC 1",mc1d+"d"],[pct(MC2U),"#f59e0b",m2d+"/"+MC2U.length,"MC 2",mc2d+"d"],[pct(P2),"#8b5cf6",p2d+"/"+P2.length,"Mdl.",od+"d"],[Math.round(tot/UNITS.length*100),"#10b981",tot+"/"+UNITS.length,"Gesamt",Math.round(tot/UNITS.length*100)+"%"]].map(function(r){return'<div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px">'+ring(r[0],90,r[1],r[2],r[3])+'<span style="font-size:11px;color:'+r[1]+';font-weight:600">'+r[4]+'</span></div>';}).join("")+'</div>'
+    +'<div class="rg">'+[[pct(P1),"#06b6d4",p1d+"/"+P1.length,"MC 1",mc1d+"d &#8987;"],[pct(MC2U),"#f59e0b",m2d+"/"+MC2U.length,"MC 2",mc2d+"d &#8987;"],[pct(P2),"#8b5cf6",p2d+"/"+P2.length,"Mdl.","&#127891; "+od+"d"],[Math.round(tot/UNITS.length*100),"#10b981",tot+"/"+UNITS.length,"Gesamt",Math.round(tot/UNITS.length*100)+"%"]].map(function(r){return'<div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px">'+ring(r[0],90,r[1],r[2],r[3])+'<span style="font-size:11px;color:'+r[1]+';font-weight:600">'+r[4]+'</span></div>';}).join("")+'</div>'
     +syncCard
-    +'<div class="card">'+lbl("PRUEFUNGS-AMPEL")+ampel("MC 1 - 24.05.2026",p1d,P1.length,mc1d,"#06b6d4")+ampel("MC 2 - 07.07.2026",m2d,MC2U.length,mc2d,"#f59e0b")+ampel("Muendliche - ~15.08.2026",tot,UNITS.length,od,"#8b5cf6")+'</div>'
+    +'<div class="card">'+lbl("&#128680; PRUEFUNGS-AMPEL")+ampel("MC 1 - 24.05.2026",p1d,P1.length,mc1d,"#06b6d4")+ampel("MC 2 - 07.07.2026",m2d,MC2U.length,mc2d,"#f59e0b")+ampel("Muendliche - ~15.08.2026",tot,UNITS.length,od,"#8b5cf6")+'</div>'
     +srSec
-    +'<div class="card">'+lbl("LERN-STREAK - LETZTE 30 TAGE")+'<div class="sg">'+sg+'</div><button data-a="mt" style="margin-top:12px;padding:9px 16px;background:#164e63;border:1px solid #0e7490;border-radius:8px;color:#67e8f9;font-size:13px;font-weight:600;min-height:44px">Heute als gelernt markieren</button></div>'
+    +'<div class="card">'+lbl("&#128293; LERN-STREAK &mdash; LETZTE 30 TAGE")+'<div class="sg">'+sg+'</div><button data-a="mt" style="margin-top:12px;padding:9px 16px;background:#164e63;border:1px solid #0e7490;border-radius:8px;color:#67e8f9;font-size:13px;font-weight:600;min-height:44px">&#10003; Heute als gelernt markieren</button></div>'
     +tagSec+nextSec+'</div>';
 }
 
-// ── Lehrplan ──────────────────────────────────────────────────────────────────
+// -- Lehrplan ------------------------------------------------------------------
 function rLP(){
   var u=SEL?UNITS.filter(function(x){return x.id===SEL;})[0]:null;
   var d=SEL?DB[SEL]:null;
   var list='<div class="lplist">';
   [1,2].forEach(function(phase){
-    list+='<div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin:14px 0 8px;border-bottom:1px solid #1e293b;padding-bottom:4px">'+(phase===1?"PHASE 1 - MC 1 (24.05.2026)":"PHASE 2 - MC 2 (07.07.) UND MUENDLICHE (15.08.2026)")+'</div>';
+    list+='<div style="font-size:11px;font-weight:700;color:#64748b;letter-spacing:.1em;margin:14px 0 8px;border-bottom:1px solid #1e293b;padding-bottom:6px;display:flex;align-items:center;gap:6px">'+(phase===1?"&#128209; PHASE 1 &mdash; MC 1 (24.05.2026)":"&#127891; PHASE 2 &mdash; MC 2 (07.07.) &amp; MUENDLICHE (15.08.2026)")+'</div>';
     UNITS.filter(function(x){return x.p===phase;}).forEach(function(x){
       var dx=DB[x.id];
-      list+='<div class="urow'+(SEL===x.id?" on":"")+'" data-a="su" data-id="'+x.id+'"><div class="dot" style="background:'+SC[dx.status]+'"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="mono" style="color:#475569;font-size:11px">LE'+pad(x.id)+' </span>'+x.title+(x.rev?'<span class="bdg" style="color:#a78bfa;background:#2e1065">WDH</span>':"")+(x.mc2?'<span class="bdg" style="color:#fbbf24;background:#451a03">MC2</span>':"")+srBadge(x.id)+'</div>'+(dx.planned?'<div style="font-size:11px;color:#475569">'+dx.planned+'</div>':"")+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">'+starsH(x.id,dx.score)+((dx.tags&&dx.tags.length)?'<span style="font-size:10px;color:#ef4444">! '+dx.tags.length+'</span>':"")+'</div></div>';
+      list+='<div class="urow'+(SEL===x.id?" on":"")+'" data-a="su" data-id="'+x.id+'"><div class="dot" style="background:'+SC[dx.status]+'"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="mono" style="color:#475569;font-size:11px">LE'+pad(x.id)+' </span>'+x.title+(x.rev?'<span class="bdg" style="color:#a78bfa;background:#2e1065">WDH</span>':"")+(x.p===1&&!x.rev?'<span class="bdg" style="color:#06b6d4;background:#164e63">MC1</span>':"")+(x.mc2?'<span class="bdg" style="color:#fbbf24;background:#451a03">MC2</span>':"")+srBadge(x.id)+'</div>'+(dx.planned?'<div style="font-size:11px;color:#475569">'+dx.planned+'</div>':"")+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">'+starsH(x.id,dx.score)+((dx.tags&&dx.tags.length)?'<span style="font-size:10px;color:#ef4444">! '+dx.tags.length+'</span>':"")+'</div></div>';
     });
   });
   list+='</div>';
   var det;
   if(u&&d){
     var days=srDays(u.id);
-    var srInfo=d.srNext?'<div style="margin-top:14px;padding:12px;background:#1e293b;border-radius:10px;border:1px solid '+(days<=0?"#7f1d1d":days<=3?"#78350f":"#1e3a5f")+'">'+lbl("SPACED REPETITION")+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px"><div><div style="color:#64748b;margin-bottom:2px">Naechste Wdh.</div><div style="font-weight:600;color:'+(days<=0?"#ef4444":days<=3?"#f59e0b":"#34d399")+'">'+(days<=0?"Heute faellig!":days+" Tage")+'</div></div><div><div style="color:#64748b;margin-bottom:2px">Intervall</div><div style="font-weight:600;color:#94a3b8">'+d.srInterval+' Tage</div></div><div><div style="color:#64748b;margin-bottom:2px">Wiederholt</div><div style="font-weight:600;color:#94a3b8">'+d.srReps+'x</div></div><div><div style="color:#64748b;margin-bottom:2px">Zuletzt</div><div style="font-weight:600;color:#94a3b8">'+(d.srLast||"-")+'</div></div></div></div>':'<div style="margin-top:14px;font-size:11px;color:#475569;padding:10px;background:#1e293b;border-radius:8px">Sternebewertung vergeben um Spaced Repetition zu starten.</div>';
-    var tagList="";(d.tags||[]).forEach(function(tag,i){tagList+='<span class="tag">'+tag+'<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:22px;text-align:center">x</span></span>';});
+    var srInfo=d.srNext?'<div style="margin-top:14px;padding:12px;background:#1e293b;border-radius:10px;border:1px solid '+(days<=0?"#7f1d1d":days<=3?"#78350f":"#1e3a5f")+'">'+lbl("&#128257; SPACED REPETITION")+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px"><div><div style="color:#64748b;margin-bottom:2px">Naechste Wdh.</div><div style="font-weight:600;color:'+(days<=0?"#ef4444":days<=3?"#f59e0b":"#34d399")+'">'+(days<=0?"&#9888; Heute faellig!":days+" Tage")+'</div></div><div><div style="color:#64748b;margin-bottom:2px">Intervall</div><div style="font-weight:600;color:#94a3b8">'+d.srInterval+' Tage</div></div><div><div style="color:#64748b;margin-bottom:2px">Wiederholt</div><div style="font-weight:600;color:#94a3b8">'+d.srReps+'x</div></div><div><div style="color:#64748b;margin-bottom:2px">Zuletzt</div><div style="font-weight:600;color:#94a3b8">'+(d.srLast||"-")+'</div></div></div></div>':'<div style="margin-top:14px;font-size:11px;color:#475569;padding:10px;background:#1e293b;border-radius:8px">Sternebewertung vergeben um Spaced Repetition zu starten.</div>';
+    var tagList="";(d.tags||[]).forEach(function(tag,i){tagList+='<span class="tag">'+tag+'<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:22px;text-align:center">&times;</span></span>';});
     var topicList="";u.topics.forEach(function(t){topicList+='<li style="font-size:12px;color:#94a3b8;margin-bottom:4px">'+t+'</li>';});
-    det='<div id="dp"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div class="mono" style="font-size:11px;color:#475569">LERNEINHEIT '+u.id+'</div><div style="font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.3;margin-top:2px">'+u.title+'</div></div><button data-a="cu" style="color:#475569;font-size:20px;padding:4px;min-width:44px;min-height:44px">x</button></div>'
-      +'<div style="margin-bottom:16px">'+lbl("STATUS")+'<div style="display:flex;gap:6px;flex-wrap:wrap">'+["open","working","done","gaps"].map(function(s){var on=d.status===s;return'<button class="sbtn" data-a="ss" data-id="'+u.id+'" data-val="'+s+'" style="'+(on?"background:"+SC[s]+"33;border-color:"+SC[s]+";color:"+SC[s]:"")+'">'+SL[s]+'</button>';}).join("")+'</div></div>'
-      +'<div style="margin-bottom:16px">'+lbl("SELBSTEINSCHAETZUNG")+'<div style="display:flex;align-items:center;gap:10px">'+starsH(u.id,d.score)+'<span style="font-size:12px;color:#475569">'+["","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score]+'</span></div></div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div>'+lbl("GEPLANT")+'<input type="date" id="fp" value="'+(d.planned||"")+'" style="width:100%;font-size:13px"></div><div>'+lbl("ERLEDIGT")+'<input type="date" id="fc" value="'+(d.completed||"")+'" style="width:100%;font-size:13px"></div></div>'
-      +(u.topics.length?'<div style="margin-bottom:16px">'+lbl("KERNTHEMEN")+'<ul style="margin:0;padding-left:16px">'+topicList+'</ul></div>':"")
-      +'<div style="margin-bottom:16px">'+lbl("LUECKEN-TAGS")+'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">'+tagList+'</div><div style="display:flex;gap:8px"><input id="ti" placeholder="Stichwort + Enter" style="flex:1;font-size:13px"><button data-a="at" data-id="'+u.id+'" style="padding:10px 14px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:8px;color:#60a5fa;font-size:18px;min-width:44px;min-height:44px">+</button></div></div>'
-      +'<div>'+lbl("NOTIZEN")+'<textarea id="fn" rows="3" placeholder="Eigene Notizen..." style="width:100%;font-size:13px;resize:vertical;padding:10px 12px">'+(d.notes||"")+'</textarea></div>'
+    det='<div id="dp"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div class="mono" style="font-size:11px;color:#475569">LERNEINHEIT '+u.id+'</div><div style="font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.3;margin-top:2px">'+u.title+'</div></div><button data-a="cu" style="color:#475569;font-size:20px;padding:4px;min-width:44px;min-height:44px">&times;</button></div>'
+      +'<div style="margin-bottom:16px">'+lbl("&#9998; STATUS")+'<div style="display:flex;gap:6px;flex-wrap:wrap">'+["open","working","done","gaps"].map(function(s){var on=d.status===s;return'<button class="sbtn" data-a="ss" data-id="'+u.id+'" data-val="'+s+'" style="'+(on?"background:"+SC[s]+"33;border-color:"+SC[s]+";color:"+SC[s]:"")+'">'+SL[s]+'</button>';}).join("")+'</div></div>'
+      +'<div style="margin-bottom:16px">'+lbl("&#11088; SELBSTEINSCHAETZUNG")+'<div style="display:flex;align-items:center;gap:10px">'+starsH(u.id,d.score)+'<span style="font-size:12px;color:#475569">'+["","Sehr unsicher","Unsicher","Mittel","Gut","Sehr sicher"][d.score]+'</span></div></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div>'+lbl("&#128197; GEPLANT")+'<input type="date" id="fp" value="'+(d.planned||"")+'" style="width:100%;font-size:13px"></div><div>'+lbl("&#10004; ERLEDIGT")+'<input type="date" id="fc" value="'+(d.completed||"")+'" style="width:100%;font-size:13px"></div></div>'
+      +(u.topics.length?'<div style="margin-bottom:16px">'+lbl("&#128218; KERNTHEMEN")+'<ul style="margin:0;padding-left:16px">'+topicList+'</ul></div>':"")
+      +'<div style="margin-bottom:16px">'+lbl("&#9888; LUECKEN-TAGS")+'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">'+tagList+'</div><div style="display:flex;gap:8px"><input id="ti" placeholder="Stichwort + Enter" style="flex:1;font-size:13px"><button data-a="at" data-id="'+u.id+'" style="padding:10px 14px;background:#1e3a5f;border:1px solid #1d4ed8;border-radius:8px;color:#60a5fa;font-size:18px;min-width:44px;min-height:44px">+</button></div></div>'
+      +'<div>'+lbl("&#128221; NOTIZEN")+'<textarea id="fn" rows="3" placeholder="Eigene Notizen..." style="width:100%;font-size:13px;resize:vertical;padding:10px 12px">'+(d.notes||"")+'</textarea></div>'
       +srInfo+'</div>';
   }else{
-    det='<div class="card es" style="min-height:200px"><div style="font-size:36px">+</div><div>Lerneinheit auswaehlen</div></div>';
+    det='<div class="card es" style="min-height:200px"><div style="font-size:36px">&#128218;</div><div style="font-weight:600;color:#475569">Lerneinheit auswaehlen</div><div style="font-size:12px;color:#334155">Tippe links auf eine LE</div></div>';
   }
   return '<div class="lpg">'+list+det+'</div>';
 }
 
-// ── Kalender ──────────────────────────────────────────────────────────────────
+// -- Kalender ------------------------------------------------------------------
 function rKal(){
   var first=new Date(CAL_Y,CAL_M,1),last=new Date(CAL_Y,CAL_M+1,0);
   var sd=(first.getDay()||7)-1,plan={};
@@ -477,27 +481,107 @@ function rKal(){
     +'<div class="cg">'+cells+'</div>';
 }
 
-// ── Radar ─────────────────────────────────────────────────────────────────────
+// -- Radar ---------------------------------------------------------------------
 function rRad(){
   var tags=allTags(),due=srDue();
   var gu=UNITS.filter(function(u){return(DB[u.id]&&DB[u.id].tags&&DB[u.id].tags.length>0)||(DB[u.id]&&DB[u.id].status==="gaps");});
   var ut=[];tags.forEach(function(t){if(ut.indexOf(t.title)<0)ut.push(t.title);});
-  var html='<div style="display:flex;flex-direction:column;gap:12px"><div class="card">'+lbl("WIEDERHOLUNGS-RADAR")+'<div style="font-size:12px;color:#64748b">Alle Luecken auf einen Blick.</div></div>';
-  if(due.length){html+='<div class="card" style="border-color:#7f1d1d">'+lbl('<span style="color:#fca5a5">SR FAELLIG ('+due.length+')</span>');due.forEach(function(u){var d=DB[u.id];html+='<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#7f1d1d;margin-bottom:5px"><div class="dot" style="background:#ef4444"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">LE'+u.id+' - '+u.title+'</div><div style="font-size:11px;color:#ef4444">Intervall: '+d.srInterval+'d &middot; '+d.srReps+'x &middot; '+d.score+'/5</div></div></div>';});html+='</div>';}
-  gu.forEach(function(u){var d=DB[u.id];html+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:600;font-size:14px">LE '+u.id+' - '+u.title+'</div>'+starsH(u.id,d.score)+'</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">';(d.tags||[]).forEach(function(tag,i){html+='<span class="tag">'+tag+'<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:22px;text-align:center">x</span></span>';});html+='</div>'+(d.notes?'<div style="font-size:12px;color:#64748b;font-style:italic;border-left:2px solid #334155;padding-left:8px">'+d.notes+'</div>':"")+'</div>';});
-  if(!gu.length&&!due.length)html+='<div class="card es"><div style="font-weight:600">Keine Luecken eingetragen</div></div>';
-  if(tags.length){html+='<div class="card" style="border-color:#1d4ed8"><div style="font-size:12px;font-weight:600;color:#60a5fa;margin-bottom:10px">WOCHENEND-CHECKLISTE</div>';ut.forEach(function(title){var cnt=tags.filter(function(t){return t.title===title;}).length;html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:13px;min-height:44px">[ ] '+title+' <span style="font-size:11px;color:#475569">('+cnt+')</span></div>';});html+='</div>';}
+  var html='<div style="display:flex;flex-direction:column;gap:12px">';
+
+  // Header card with stats
+  var totalTags=tags.length, totalGapUnits=gu.length;
+  html+='<div class="card" style="display:flex;gap:12px;align-items:center">'
+    +'<div style="font-size:32px">&#128269;</div>'
+    +'<div style="flex:1">'
+    +lbl("WIEDERHOLUNGS-RADAR")
+    +'<div style="font-size:12px;color:#64748b">Alle Luecken und faelligen Wiederholungen auf einen Blick.</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;flex-shrink:0">'
+    +'<div style="text-align:center;background:#1e293b;border-radius:10px;padding:8px 12px"><div style="font-size:18px;font-weight:700;color:#ef4444">'+totalGapUnits+'</div><div style="font-size:10px;color:#475569">Luecken</div></div>'
+    +'<div style="text-align:center;background:#1e293b;border-radius:10px;padding:8px 12px"><div style="font-size:18px;font-weight:700;color:#f59e0b">'+due.length+'</div><div style="font-size:10px;color:#475569">SR faellig</div></div>'
+    +'</div></div>';
+
+  // SR due section
+  if(due.length){
+    html+='<div class="card" style="border-color:#7f1d1d">';
+    html+=lbl('<span style="color:#fca5a5">&#128257; SPACED REPETITION FAELLIG ('+due.length+')</span>');
+    due.forEach(function(u){
+      var d=DB[u.id];
+      html+='<div class="urow" data-a="ou" data-id="'+u.id+'" style="border-color:#7f1d1d;margin-bottom:5px">'
+        +'<div style="width:36px;height:36px;border-radius:8px;background:#7f1d1d;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">&#128257;</div>'
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LE'+u.id+' &mdash; '+u.title+'</div>'
+        +'<div style="font-size:11px;color:#ef4444;margin-top:2px">Intervall: '+d.srInterval+'d &middot; '+d.srReps+'x wiederholt &middot; &#11088; '+d.score+'/5</div>'
+        +'</div>'+starsH(u.id,d.score)+'</div>';
+    });
+    html+='</div>';
+  }
+
+  // Gap units
+  if(gu.length){
+    html+='<div class="card"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.1em;margin-bottom:10px">&#9888; EINHEITEN MIT LUECKEN</div>';
+    gu.forEach(function(u){
+      var d=DB[u.id];
+      html+='<div style="border:1px solid #1e293b;border-radius:10px;padding:12px;margin-bottom:8px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<div><span class="mono" style="font-size:11px;color:#475569">LE'+pad(u.id)+'</span> <span style="font-size:13px;font-weight:600">'+u.title+'</span></div>'
+        +starsH(u.id,d.score)
+        +'</div>';
+      if(d.tags&&d.tags.length){
+        html+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">';
+        d.tags.forEach(function(tag,i){
+          html+='<span class="tag">&#9888; '+tag
+            +'<span data-a="rt" data-id="'+u.id+'" data-idx="'+i+'" style="color:#ef4444;margin-left:4px;cursor:pointer;min-width:20px;text-align:center">&times;</span>'
+            +'</span>';
+        });
+        html+='</div>';
+      }
+      if(d.notes){
+        html+='<div style="font-size:12px;color:#64748b;font-style:italic;border-left:3px solid #334155;padding-left:8px;margin-top:4px">'+d.notes+'</div>';
+      }
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+
+  // Empty state
+  if(!gu.length&&!due.length){
+    html+='<div class="card" style="text-align:center;padding:48px 16px">'
+      +'<div style="font-size:48px;margin-bottom:12px">&#9989;</div>'
+      +'<div style="font-weight:700;font-size:16px;color:#e2e8f0;margin-bottom:6px">Alles sauber!</div>'
+      +'<div style="font-size:13px;color:#475569">Keine Luecken eingetragen. Fuege im Lehrplan Luecken-Tags hinzu.</div>'
+      +'</div>';
+  }
+
+  // Weekend checklist
+  if(tags.length){
+    html+='<div class="card" style="border-color:#1d4ed8">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+      +'<span style="font-size:20px">&#128203;</span>'
+      +'<div style="font-size:12px;font-weight:700;color:#60a5fa;letter-spacing:.08em">WOCHENEND-CHECKLISTE</div>'
+      +'</div>';
+    ut.forEach(function(title,idx){
+      var cnt=tags.filter(function(t){return t.title===title;}).length;
+      html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #1e293b;cursor:pointer;min-height:44px">'
+        +'<input type="checkbox" style="width:18px;height:18px;accent-color:#3b82f6;cursor:pointer;flex-shrink:0">'
+        +'<span style="font-size:13px;flex:1">'+title+'</span>'
+        +'<span style="font-size:11px;color:#475569;background:#1e293b;padding:2px 8px;border-radius:10px">'+cnt+' Luecken</span>'
+        +'</label>';
+    });
+    html+='</div>';
+  }
+
   return html+'</div>';
 }
 
-// ── Timer ─────────────────────────────────────────────────────────────────────
+// -- Timer ---------------------------------------------------------------------
 function rTmr(){
   var col=T_MODE==="study"?(T_SEC>=10800?"#10b981":"#06b6d4"):"#10b981";
   var goal=T_MODE==="study"?10800:900,p=Math.min(T_SEC/goal*100,100);
-  return '<div style="display:flex;flex-direction:column;align-items:center;gap:16px"><div class="card" style="width:100%;text-align:center;padding:32px"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.15em;margin-bottom:16px">'+(T_MODE==="study"?"LERNPHASE":"PAUSE")+'</div><div id="tdisp" class="mono tdisp" style="color:'+col+'">'+fmt(T_SEC)+'</div><div style="font-size:12px;color:#475569;margin-top:8px">'+(T_MODE==="study"?"Ziel: 3h":"Ziel: 15 Min")+'</div><div class="pb" style="margin-top:14px"><div class="pf" style="width:'+p+'%;background:'+col+'"></div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button data-a="tt" class="abtn" style="background:'+(T_RUN?"#7f1d1d":"#164e63")+';border-color:'+(T_RUN?"#ef4444":"#06b6d4")+';color:'+(T_RUN?"#fca5a5":"#67e8f9")+'">'+(T_RUN?"Pause":"Start")+'</button><button data-a="tr" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">Reset</button><button data-a="tm" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">'+(T_MODE==="study"?"Pause-Modus":"Lern-Modus")+'</button></div><div class="card" style="width:100%">'+lbl("SCHNELL-TIMER")+'<div style="display:flex;gap:8px;flex-wrap:wrap">'+[["1,5h",5400],["1h",3600],["30min",1800],["15min",900]].map(function(r){return'<button data-a="ts" data-val="'+r[1]+'" style="padding:10px 14px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px;min-height:44px">'+r[0]+'</button>';}).join("")+'</div></div></div>';
+  return '<div style="display:flex;flex-direction:column;align-items:center;gap:16px"><div class="card" style="width:100%;text-align:center;padding:32px"><div style="font-size:11px;font-weight:700;color:#475569;letter-spacing:.15em;margin-bottom:16px">'+(T_MODE==="study"?"&#9889; LERNPHASE":"&#9749; PAUSE")+'</div><div id="tdisp" class="mono tdisp" style="color:'+col+'">'+fmt(T_SEC)+'</div><div style="font-size:12px;color:#475569;margin-top:8px">'+(T_MODE==="study"?"Ziel: 3h":"Ziel: 15 Min")+'</div><div class="pb" style="margin-top:14px"><div class="pf" style="width:'+p+'%;background:'+col+'"></div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button data-a="tt" class="abtn" style="background:'+(T_RUN?"#7f1d1d":"#164e63")+';border-color:'+(T_RUN?"#ef4444":"#06b6d4")+';color:'+(T_RUN?"#fca5a5":"#67e8f9")+'">'+(T_RUN?"Pause":"Start")+'</button><button data-a="tr" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">&#8635; Reset</button><button data-a="tm" class="abtn" style="background:#1e293b;border-color:#334155;color:#94a3b8">'+(T_MODE==="study"?"Pause-Modus":"Lern-Modus")+'</button></div><div class="card" style="width:100%">'+lbl("&#9201; SCHNELL-TIMER")+'<div style="display:flex;gap:8px;flex-wrap:wrap">'+[["1,5h",5400],["1h",3600],["30min",1800],["15min",900]].map(function(r){return'<button data-a="ts" data-val="'+r[1]+'" style="padding:10px 14px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px;min-height:44px">'+r[0]+'</button>';}).join("")+'</div></div></div>';
 }
 
-// ── Export ────────────────────────────────────────────────────────────────────
+// -- Export --------------------------------------------------------------------
 function rExp(){
   var mc1d=daysUntil(MC1),mc2d=daysUntil(MC2D),od=daysUntil(ORAL),s=streak();
   var p1d=P1.filter(function(u){return DB[u.id]&&DB[u.id].status==="done";}).length;
@@ -514,10 +598,10 @@ function rExp(){
     +"Unsicher:\n"+(wLEs.length?wLEs.map(function(u){return"  LE"+u.id+" "+u.title+" ("+DB[u.id].score+"/5)";}).join("\n"):"  -")+"\n\n"
     +"SR faellig:\n"+(due.length?due.map(function(u){return"  LE"+u.id+" "+u.title;}).join("\n"):"  -")+"\n\n"
     +"Naechste: "+(nxt?"LE"+nxt.id+" - "+nxt.title:"Alle fertig!")+"\n----------------------\nBitte hilf mir gezielt weiter.";
-  return '<div style="display:flex;flex-direction:column;gap:14px"><div class="card" style="border-color:#1d4ed8"><div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">SMART-EXPORT</div><div style="font-size:12px;color:#94a3b8;line-height:1.7">Kopiere diesen Text fuer einen neuen Chat.</div></div><pre id="etxt" class="mono" style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.7;word-break:break-word">'+txt+'</pre><button data-a="ce" style="padding:13px 24px;border-radius:12px;font-weight:700;font-size:14px;align-self:flex-start;background:#164e63;border:2px solid #06b6d4;color:#67e8f9;min-height:50px">Kopieren</button>'+(SBU?'<button data-a="logout" style="padding:10px 16px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#64748b;font-size:12px;min-height:44px;align-self:flex-start">GitHub abmelden</button>':"")+  '</div>';
+  return '<div style="display:flex;flex-direction:column;gap:14px"><div class="card" style="border-color:#1d4ed8"><div style="font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:8px">SMART-EXPORT</div><div style="font-size:12px;color:#94a3b8;line-height:1.7">Kopiere diesen Text fuer einen neuen Chat.</div></div><pre id="etxt" class="mono" style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.7;word-break:break-word">'+txt+'</pre><button data-a="ce" style="padding:13px 24px;border-radius:12px;font-weight:700;font-size:14px;align-self:flex-start;background:#164e63;border:2px solid #06b6d4;color:#67e8f9;min-height:50px">&#128203; Kopieren</button>'+(SBU?'<button data-a="logout" style="padding:10px 16px;border-radius:8px;background:#1e293b;border:1px solid #334155;color:#64748b;font-size:12px;min-height:44px;align-self:flex-start">&#128682; Abmelden</button>':"")+  '</div>';
 }
 
-// ── Events ────────────────────────────────────────────────────────────────────
+// -- Events --------------------------------------------------------------------
 document.addEventListener("click",function(e){
   var tb=e.target.closest(".tbtn[data-tab]");
   if(tb){TAB=tb.dataset.tab;document.querySelectorAll(".tbtn").forEach(function(b){b.classList.remove("on");});tb.classList.add("on");renderMain();return;}
@@ -554,7 +638,7 @@ document.addEventListener("keydown",function(e){
   if(e.key==="Enter"&&e.target.id==="ti"&&SEL){var v=e.target.value.trim();if(!v)return;DB[SEL].tags=(DB[SEL].tags||[]).concat([v]);e.target.value="";saveData();renderMain();}
 },true);
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// -- Boot ----------------------------------------------------------------------
 loadLocal();
 document.getElementById("loading-msg").textContent="Verbinde...";
 initSupabase();
