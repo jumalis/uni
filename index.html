@@ -8,6 +8,7 @@
 <script>
 const SUPABASE_URL = "https://dwgahbmfcfumiahjjlaf.supabase.co/rest/v1/";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3Z2FoYm1mY2Z1bWlhaGpqbGFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczOTY0MTksImV4cCI6MjA5Mjk3MjQxOX0.hEpCHTsGti-7mFVyVtwk9fPT4RuKiGkFZw7T98U4cbU";
+
 </script>
 <script>/* Supabase loaded below */</script>
 <style>
@@ -289,15 +290,23 @@ function markToday(){
 // -- Supabase ------------------------------------------------------------------
 function initSB(){
   if(SUPABASE_URL==="DEINE_SUPABASE_URL") return;
-  // Dynamically load Supabase to avoid blocking
-  if(typeof supabase!=="undefined"){
-    connectSB(); return;
+  if(typeof supabase!=="undefined"){ connectSB(); return; }
+  // Try multiple CDNs in sequence
+  var cdns=[
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js",
+    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+    "https://esm.sh/@supabase/supabase-js@2/dist/umd/supabase.js"
+  ];
+  var idx=0;
+  function tryNext(){
+    if(idx>=cdns.length){ console.warn("All Supabase CDNs failed"); setSS("local"); return; }
+    var s=document.createElement("script");
+    s.src=cdns[idx++];
+    s.onload=function(){ if(typeof supabase!=="undefined"){ connectSB(); } else { tryNext(); } };
+    s.onerror=function(){ tryNext(); };
+    document.head.appendChild(s);
   }
-  var s=document.createElement("script");
-  s.src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js";
-  s.onload=function(){ connectSB(); };
-  s.onerror=function(){ console.warn("Supabase CDN failed to load"); setSS("local"); };
-  document.head.appendChild(s);
+  tryNext();
 }
 function connectSB(){
   try{
@@ -784,7 +793,7 @@ document.addEventListener("click",function(e){
     var btn=document.getElementById("modal-send");
     if(btn){ btn.textContent="Sende…"; btn.disabled=true; }
     if(SBC){
-      SBC.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.href}}).then(function(r){
+      SBC.auth.signInWithOtp({email:email}).then(function(r){
         if(msg){
           if(r.error){ msg.style.color="#ef4444"; msg.textContent=r.error.message; if(btn){btn.textContent="Magic Link senden ✉";btn.disabled=false;} }
           else{ msg.style.color="#10b981"; msg.textContent="✓ Link gesendet! Schau ins Postfach."; if(btn){btn.textContent="Link gesendet ✓";} }
