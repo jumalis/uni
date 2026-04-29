@@ -310,14 +310,42 @@ function initSB(){
 }
 function connectSB(){
   try{
-    SBC=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    SBC=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+      auth:{
+        detectSessionInUrl:true,
+        persistSession:true,
+        autoRefreshToken:true
+      }
+    });
+    // Handle OAuth callback - exchange code/token in URL
     SBC.auth.getSession().then(function(r){
-      if(r.data&&r.data.session){ SBU=r.data.session.user; loadFromSB(); }
+      if(r.data&&r.data.session){
+        SBU=r.data.session.user;
+        // Clean URL after OAuth redirect
+        if(window.location.hash&&window.location.hash.indexOf("access_token")>=0){
+          history.replaceState(null,"",window.location.pathname);
+        }
+        loadFromSB();
+      } else {
+        // Try to exchange code from URL (PKCE flow)
+        SBC.auth.exchangeCodeForSession(window.location.search).catch(function(){});
+      }
     });
-    SBC.auth.onAuthStateChange(function(_,session){
-      SBU=session?session.user:null; if(SBU) loadFromSB();
+    SBC.auth.onAuthStateChange(function(event,session){
+      SBU=session?session.user:null;
+      if(event==="SIGNED_IN"&&SBU){
+        setSS("synced");
+        updateHdr();
+        loadFromSB();
+        hideLogin();
+      }
+      if(event==="SIGNED_OUT"){
+        SBU=null;
+        setSS("local");
+        updateHdr();
+      }
     });
-  }catch(e){}
+  }catch(e){ console.warn("connectSB error:",e); }
 }
 function loadFromSB(){
   if(!SBC||!SBU) return;
